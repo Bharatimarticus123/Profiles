@@ -1,43 +1,4 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><html>
+<html>
 <head>
 <title>Hexaware - PGFAP/CIBOP Lot 2</title>
 <style>
@@ -99,14 +60,6 @@ button {
 button:hover {
   transform: scale(1.05);
 }
-.resume-link {
-  color: #ff6f61;
-  text-decoration: none;
-  font-weight: 500;
-}
-.resume-link:hover {
-  text-decoration: underline;
-}
 .action-buttons {
   margin-bottom: 20px;
   text-align: center;
@@ -156,7 +109,6 @@ footer {
 <th>Gender</th>
 <th>Mobile Number</th>
 <th>Email ID</th>
-<th>Resume</th>
 </tr>
 </thead>
 <tbody>
@@ -172,7 +124,6 @@ footer {
 <td>Male</td>
 <td>9597456978</td>
 <td><a href="mailto:vetrymmba@gmail.com">vetrymmba@gmail.com</a></td>
-<td><a href="resumes/Vetry_M.pdf" download class="resume-link">Download</a></td>
 </tr>
 <tr>
 <td>2</td>
@@ -186,7 +137,6 @@ footer {
 <td>Male</td>
 <td>8999731066</td>
 <td><a href="mailto:pratyushchans@gmail.com">pratyushchans@gmail.com</a></td>
-<td><a href="resumes/Pratyush_Chandekar.pdf" download class="resume-link">Download</a></td>
 </tr>
 <tr>
 <td>3</td>
@@ -200,7 +150,6 @@ footer {
 <td>Female</td>
 <td>6379111820</td>
 <td><a href="mailto:snehapriyaramamoorthy@gmail.com">snehapriyaramamoorthy@gmail.com</a></td>
-<td><a href="resumes/Snehapriya_R.pdf" download class="resume-link">Download</a></td>
 </tr>
 <tr>
 <td>4</td>
@@ -214,7 +163,6 @@ footer {
 <td>Female</td>
 <td>6382548221</td>
 <td><a href="mailto:vanikannan2007@gmail.com">vanikannan2007@gmail.com</a></td>
-<td><a href="resumes/Vani.pdf" download class="resume-link">Download</a></td>
 </tr>
 <tr>
 <td>5</td>
@@ -228,7 +176,6 @@ footer {
 <td>Male</td>
 <td>9380987396</td>
 <td><a href="mailto:mudugullapraveenreddy928@gmail.com">mudugullapraveenreddy928@gmail.com</a></td>
-<td><a href="resumes/Mudugulla_Praveen_Kumar_Reddy.pdf" download class="resume-link">Download</a></td>
 </tr>
 <tr>
 <td>6</td>
@@ -242,7 +189,6 @@ footer {
 <td>Male</td>
 <td>8919486477</td>
 <td><a href="mailto:nareshbanka3232@gmail.com">nareshbanka3232@gmail.com</a></td>
-<td><a href="resumes/Naresh_Banka.pdf" download class="resume-link">Download</a></td>
 </tr>
 <tr>
 <td>7</td>
@@ -256,21 +202,19 @@ footer {
 <td>Male</td>
 <td>9742657662</td>
 <td><a href="mailto:abhishekladwa47@gmail.com">abhishekladwa47@gmail.com</a></td>
-<td><a href="resumes/Abhishek_S_Ladwa.pdf" download class="resume-link">Download</a></td>
 </tr>
 <tr>
 <td>8</td>
 <td>Manoj Kumar R</td>
 <td>CIBOP</td>
 <td>3.58</td>
-<td>BGL</td>
+<td>Bangalore</td>
 <td>B.Com</td>
 <td>2021</td>
 <td>0.83</td>
 <td>Male</td>
 <td>8105967042</td>
 <td><a href="mailto:manuk8479@gmail.com">manuk8479@gmail.com</a></td>
-<td><a href="resumes/Manoj_Kumar_R.pdf" download class="resume-link">Download</a></td>
 </tr>
 <tr>
 <td>9</td>
@@ -284,7 +228,6 @@ footer {
 <td>Male</td>
 <td>9956713851</td>
 <td><a href="mailto:nilay.kumar.bhatnagar@gmail.com">nilay.kumar.bhatnagar@gmail.com</a></td>
-<td><a href="resumes/Nilay_Kumar_Bhatnagar.pdf" download class="resume-link">Download</a></td>
 </tr>
 </tbody>
 </table>
@@ -294,13 +237,10 @@ footer {
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 function downloadAllResumes() {
-  document.getElementById('downloadMessage').innerText = 'Downloading resumes...';
-  const links = document.querySelectorAll('.resume-link');
-  links.forEach(link => {
-    link.click();
-  });
+  document.getElementById('downloadMessage').innerText = 'Redirecting to resume folder...';
+  window.open('https://drive.google.com/drive/folders/1GOKWqKNEORQ36qSbAmmTls4D7jTy2ak4?usp=sharing', '_blank');
   setTimeout(() => {
-    document.getElementById('downloadMessage').innerText = 'Download complete!';
+    document.getElementById('downloadMessage').innerText = '';
   }, 3000);
 }
 function exportToExcel() {
