@@ -1,0 +1,313 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><html>
+<head>
+<title>Hexaware - PGFAP/CIBOP Lot 2</title>
+<style>
+body {
+  background-color: #f0f2f5;
+  color: #333;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  padding: 30px;
+}
+h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1a3c87;
+  text-align: center;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  background-color: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+}
+th, td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+th {
+  background: linear-gradient(135deg, #1a3c87, #3f7bff);
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+tr:nth-child(odd) {
+  background-color: #f9f9ff;
+}
+tr:nth-child(even) {
+  background-color: #f1f5ff;
+}
+tr:hover {
+  background-color: #e6efff;
+  transition: background-color 0.3s ease;
+}
+button {
+  background: linear-gradient(135deg, #ff6f61, #ff9a76);
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-right: 10px;
+  transition: transform 0.2s ease;
+}
+button:hover {
+  transform: scale(1.05);
+}
+.resume-link {
+  color: #ff6f61;
+  text-decoration: none;
+  font-weight: 500;
+}
+.resume-link:hover {
+  text-decoration: underline;
+}
+.action-buttons {
+  margin-bottom: 20px;
+  text-align: center;
+}
+footer {
+  margin-top: 30px;
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+}
+#downloadMessage {
+  margin-left: 10px;
+  color: #1a3c87;
+  font-weight: 500;
+}
+@media (max-width: 768px) {
+  table {
+    display: block;
+    overflow-x: auto;
+  }
+  th, td {
+    min-width: 120px;
+  }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Hexaware - PGFAP/CIBOP Lot 2</h1>
+</header>
+<div class="action-buttons">
+  <button onclick="downloadAllResumes()">Download All Resumes</button>
+  <button onclick="exportToExcel()">Export to Excel</button>
+  <span id="downloadMessage"></span>
+</div>
+<table>
+<thead>
+<tr>
+<th>Serial No.</th>
+<th>Name</th>
+<th>Product</th>
+<th>HR Mock Score</th>
+<th>Center</th>
+<th>Graduation Degree</th>
+<th>Graduation Year</th>
+<th>Experience (Years)</th>
+<th>Gender</th>
+<th>Mobile Number</th>
+<th>Email ID</th>
+<th>Resume</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Vetry M</td>
+<td>CIBOP</td>
+<td>4.16</td>
+<td>Chennai</td>
+<td>B.Com</td>
+<td>2021</td>
+<td>0.5</td>
+<td>Male</td>
+<td>9597456978</td>
+<td><a href="mailto:vetrymmba@gmail.com">vetrymmba@gmail.com</a></td>
+<td><a href="resumes/Vetry_M.pdf" download class="resume-link">Download</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Pratyush Chandekar</td>
+<td>CIBOP</td>
+<td>4.1</td>
+<td>Pune</td>
+<td>MBA</td>
+<td>2021</td>
+<td>0</td>
+<td>Male</td>
+<td>8999731066</td>
+<td><a href="mailto:pratyushchans@gmail.com">pratyushchans@gmail.com</a></td>
+<td><a href="resumes/Pratyush_Chandekar.pdf" download class="resume-link">Download</a></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Snehapriya.R</td>
+<td>CIBOP</td>
+<td>3.93</td>
+<td>Coimbatore</td>
+<td>B.Com</td>
+<td>2021</td>
+<td>0</td>
+<td>Female</td>
+<td>6379111820</td>
+<td><a href="mailto:snehapriyaramamoorthy@gmail.com">snehapriyaramamoorthy@gmail.com</a></td>
+<td><a href="resumes/Snehapriya_R.pdf" download class="resume-link">Download</a></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Vani</td>
+<td>PGFAP</td>
+<td>4</td>
+<td>Chennai</td>
+<td>B.Com</td>
+<td>2023</td>
+<td>0.67</td>
+<td>Female</td>
+<td>6382548221</td>
+<td><a href="mailto:vanikannan2007@gmail.com">vanikannan2007@gmail.com</a></td>
+<td><a href="resumes/Vani.pdf" download class="resume-link">Download</a></td>
+</tr>
+<tr>
+<td>5</td>
+<td>Mudugulla Praveen Kumar Reddy</td>
+<td>CIBOP</td>
+<td>4</td>
+<td>Andheri</td>
+<td>B.Tech</td>
+<td>2025</td>
+<td>0</td>
+<td>Male</td>
+<td>9380987396</td>
+<td><a href="mailto:mudugullapraveenreddy928@gmail.com">mudugullapraveenreddy928@gmail.com</a></td>
+<td><a href="resumes/Mudugulla_Praveen_Kumar_Reddy.pdf" download class="resume-link">Download</a></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Naresh Banka</td>
+<td>CIBOP</td>
+<td>4</td>
+<td>Andheri</td>
+<td>B.Tech</td>
+<td>2022</td>
+<td>0</td>
+<td>Male</td>
+<td>8919486477</td>
+<td><a href="mailto:nareshbanka3232@gmail.com">nareshbanka3232@gmail.com</a></td>
+<td><a href="resumes/Naresh_Banka.pdf" download class="resume-link">Download</a></td>
+</tr>
+<tr>
+<td>7</td>
+<td>Abhishek S Ladwa</td>
+<td>PGFAP</td>
+<td>3.4</td>
+<td>Bangalore</td>
+<td>B.Com</td>
+<td>2023</td>
+<td>0.5</td>
+<td>Male</td>
+<td>9742657662</td>
+<td><a href="mailto:abhishekladwa47@gmail.com">abhishekladwa47@gmail.com</a></td>
+<td><a href="resumes/Abhishek_S_Ladwa.pdf" download class="resume-link">Download</a></td>
+</tr>
+<tr>
+<td>8</td>
+<td>Manoj Kumar R</td>
+<td>CIBOP</td>
+<td>3.58</td>
+<td>BGL</td>
+<td>B.Com</td>
+<td>2021</td>
+<td>0.83</td>
+<td>Male</td>
+<td>8105967042</td>
+<td><a href="mailto:manuk8479@gmail.com">manuk8479@gmail.com</a></td>
+<td><a href="resumes/Manoj_Kumar_R.pdf" download class="resume-link">Download</a></td>
+</tr>
+<tr>
+<td>9</td>
+<td>Nilay Kumar Bhatnagar</td>
+<td>PGFAP</td>
+<td>3.4</td>
+<td>Lucknow</td>
+<td>BA</td>
+<td>2022</td>
+<td>0</td>
+<td>Male</td>
+<td>9956713851</td>
+<td><a href="mailto:nilay.kumar.bhatnagar@gmail.com">nilay.kumar.bhatnagar@gmail.com</a></td>
+<td><a href="resumes/Nilay_Kumar_Bhatnagar.pdf" download class="resume-link">Download</a></td>
+</tr>
+</tbody>
+</table>
+<footer>
+  © 2023 Hexaware Technologies
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+function downloadAllResumes() {
+  document.getElementById('downloadMessage').innerText = 'Downloading resumes...';
+  const links = document.querySelectorAll('.resume-link');
+  links.forEach(link => {
+    link.click();
+  });
+  setTimeout(() => {
+    document.getElementById('downloadMessage').innerText = 'Download complete!';
+  }, 3000);
+}
+function exportToExcel() {
+  const table = document.querySelector('table');
+  const wb = XLSX.utils.table_to_book(table, {sheet:"Lot 2"});
+  XLSX.writeFile(wb, 'Lot_2.xlsx');
+}
+</script>
+</body>
+</html>
