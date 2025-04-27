@@ -1,0 +1,313 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate List</title>
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <!-- Buttons extension CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f3;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #006400;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .buttons-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .action-button {
+            background-color: #2E8B57;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            margin: 0 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .action-button:hover {
+            background-color: #3CB371;
+        }
+        #candidatesTable {
+            width: 100%;
+            background-color: #ffffff;
+            border-collapse: collapse;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        #candidatesTable th, #candidatesTable td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        #candidatesTable th {
+            background-color: #2E8B57;
+            color: white;
+            font-weight: bold;
+        }
+        #candidatesTable tbody tr:hover {
+            background-color: #e9f7ef;
+        }
+        .resume-link {
+            color: #006400;
+            text-decoration: none;
+        }
+        .resume-link:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            .action-button {
+                display: block;
+                margin: 10px auto;
+            }
+            #candidatesTable th, #candidatesTable td {
+                padding: 8px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Candidate List</h1>
+    </div>
+    <div class="container">
+        <div class="buttons-container">
+            <a href="https://docs.google.com/spreadsheets/d/1FCr8aJhemq9nIQdkIauw3PID1zoDHWsUEJJZih9eyXU/edit?usp=sharing" target="_blank" class="action-button">Access Google Sheets</a>
+            <a href="https://drive.google.com/drive/folders/1vZwsDcGKsANLPWIqsN5kHciRf0Ktqth4?usp=drive_link" target="_blank" class="action-button">Access Resume Folder</a>
+        </div>
+        <table id="candidatesTable" class="display">
+            <thead>
+                <tr>
+                    <th>Serial Number</th>
+                    <th>Name</th>
+                    <th>Product</th>
+                    <th>Center</th>
+                    <th>Mobile</th>
+                    <th>Email</th>
+                    <th>Graduation Degree</th>
+                    <th>Graduation Year</th>
+                    <th>Resume Link</th>
+                    <th>Experience</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <!-- Buttons extension JS -->
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    <script>
+        var data = [
+            {"Name":"Abhay Pratap Singh","Product":"PGFAP","Center":"Lucknow","Mobile":"7311174465","Email":"abhaypratap656500@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2024","Resume_Link":"https://drive.google.com/open?id=1CcpwM_F2KTWERdgcTs2baf_WwtuYKn34","Experience":"1"},
+            {"Name":"Devesh kumar","Product":"PGFAP","Center":"Lucknow","Mobile":"7565930377","Email":"devesh3105kumar@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2020","Resume_Link":"https://drive.google.com/open?id=1xKEheERlzOo-tNQlT_WveIvoS6gM1UZD","Experience":"0"},
+            {"Name":"Aishwarya Lakshmi","Product":"PGFAP","Center":"Lucknow","Mobile":"7979015185","Email":"aish229@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2017","Resume_Link":"https://drive.google.com/open?id=1uLfYyMBmXUsvlFLRX9KvyQN108antB2y","Experience":"0"},
+            {"Name":"Radhika Bagalkoti","Product":"PGFAP","Center":"Bangalore","Mobile":"8105059381","Email":"bagalkotiradhika81@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2024","Resume_Link":"https://drive.google.com/open?id=1ZdsvYu4Q948x3LTyB4gbtvKr-ydgUEJO","Experience":"0"},
+            {"Name":"YASHASWI","Product":"PGFAP","Center":"Bangalore","Mobile":"6370510327","Email":"vysyaraju.yashaswi05@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2013-2016","Resume_Link":"https://drive.google.com/open?id=1bGZKuHVAH8rUxIxt9vxeJvK7OnbsvHvD","Experience":"5"},
+            {"Name":"Ashi Agarwal","Product":"PGFAP","Center":"IEE","Mobile":"8171057346","Email":"Ashiagarwal411@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2019","Resume_Link":"https://drive.google.com/open?id=1F8Dl1Vx6GBCnbcHbbwM-oVuUMOVQp4Am","Experience":"0"},
+            {"Name":"Krishna Makhija","Product":"PGFAP","Center":"Lucknow","Mobile":"8840007277","Email":"krishmakhija1011@gmail.com","Graduation_Degree":"Bachelor of Business Administration (BBA)","Graduation_Year":"2023","Resume_Link":"https://drive.google.com/open?id=16P2cgEZcDFA6Hnd8eTza9Pm-i4JBrNfB","Experience":"2"},
+            {"Name":"Aniruddh Ranaware","Product":"PGFAP","Center":"Thane","Mobile":"7506642649","Email":"aniruddh.ranaware09@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2023","Resume_Link":"https://drive.google.com/open?id=1GF9XCqBehFodPlGOFTewVrPO-61OKy31","Experience":"0.5"},
+            {"Name":"Mansi Bhargava","Product":"PGFAP","Center":"Lucknow","Mobile":"7985022302","Email":"mansikbhargava@gmail.com","Graduation_Degree":"Bachelor of Business Administration (BBA)","Graduation_Year":"2020","Resume_Link":"https://drive.google.com/open?id=1Nby0xVRCC5TNWvtFak_rQVCc5QbdOw0h","Experience":"0"},
+            {"Name":"Sagar Atri","Product":"PGFAP","Center":"NCR","Mobile":"8812995703","Email":"sagaratri8@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2020","Resume_Link":"https://drive.google.com/open?id=1Qj4hFTepNjqbe4YNfoJa6jrss2rjcK3m","Experience":"2"},
+            {"Name":"Jaya Shankar","Product":"PGFAP","Center":"Coimbatore","Mobile":"8883498999","Email":"jaishankarbpa@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2017","Resume_Link":"https://drive.google.com/open?id=1fZwUUWaVs15ba2KE9wKHTOMn5Dstt8V9","Experience":"2.5"},
+            {"Name":"Archana Ramesh","Product":"PGFAP","Center":"Chennai","Mobile":"9688167607","Email":"Archanaramesh9199@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2019","Resume_Link":"https://drive.google.com/open?id=1ZXIqvCsl11WrIn67PDZBKyezeeE0A81L","Experience":"5.8"},
+            {"Name":"Shivangi Singh","Product":"PGFAP","Center":"Lucknow","Mobile":"6386320632","Email":"Singh.shivangi0286@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2021","Resume_Link":"https://drive.google.com/open?id=1yj--vf9wsLQvtS_iQ9paH65j-RngtVQ7","Experience":"0"},
+            {"Name":"Kiran kumar","Product":"PGFAP","Center":"Bangalore","Mobile":"6362636526","Email":"Imr.Kirankumar@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2021","Resume_Link":"https://drive.google.com/open?id=1NQy6d-6Z7VeUeHW0d7-hKbmRjM4CkSjW","Experience":"2"},
+            {"Name":"Anjali","Product":"CIBOP","Center":"NCR","Mobile":"8826878508","Email":"anjalikhurana9485@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2022","Resume_Link":"https://drive.google.com/open?id=1NwX3Lwi8wjHwCVQFjpgtk0G1p_PiX-Rh","Experience":"0"},
+            {"Name":"Gaurav Pandey","Product":"PGFAP","Center":"Pune","Mobile":"7985323906","Email":"gauravpandey0804@gmail.com","Graduation_Degree":"Bachelor of Business Administration (BBA)","Graduation_Year":"2013","Resume_Link":"https://drive.google.com/open?id=1U1Jqt8NYqfnBp81tzC0FeuagKpleXZun","Experience":"4"},
+            {"Name":"Sanjana Wadhwani","Product":"CIBOP","Center":"Jaipur","Mobile":"7427895245","Email":"sanjanawadhwani46@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2019","Resume_Link":"https://drive.google.com/open?id=1hDem2Qj3Ej9LPcuh8jnvJhnqZV9A4vkJ","Experience":"1"},
+            {"Name":"Isha Dixit","Product":"CIBOP","Center":"Lucknow","Mobile":"9305198684","Email":"dixitisha0710@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2023","Resume_Link":"https://drive.google.com/open?id=1nZDQk1C56_bY0bSXLNXANzcXV_AjNr4n","Experience":"0"},
+            {"Name":"Mahek Saxena","Product":"PGFAP","Center":"Lucknow","Mobile":"9120356884","Email":"maheksaxena125@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2024","Resume_Link":"https://drive.google.com/open?id=1W5h7SPMjL8PZA5LC2TTUlj9wvAqbmUTZ","Experience":"0"},
+            {"Name":"Mukund Rathi","Product":"PGFAP","Center":"Chennai","Mobile":"7303384498","Email":"mukundrathi17.mr@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2017","Resume_Link":"https://drive.google.com/open?id=1h76nVGhzPZvvyp_GLonl8Qa8TKUJmnpD","Experience":"3"},
+            {"Name":"BALAMURUGAN T","Product":"PGFAP","Center":"Coimbatore","Mobile":"9952573098","Email":"Balacgm97@gmail.com","Graduation_Degree":"Bachelor of Engineering (Civil Engineering)","Graduation_Year":"2017","Resume_Link":"https://drive.google.com/open?id=1wXWW9zERGgZXvvyopIUMGS7tvKV6tW5v","Experience":"5"},
+            {"Name":"Mrinal","Product":"PGFAP","Center":"NCR","Mobile":"9306234075","Email":"mrinal08matta@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2024","Resume_Link":"https://drive.google.com/open?id=1K7Mbr__z8IIxX3P9ePhMTZ4m_lxRCqdC","Experience":"0"},
+            {"Name":"Rajaprasanth","Product":"PGFAP","Center":"Chennai","Mobile":"8072686008","Email":"rajaprasanth.rp19@gmail.com","Graduation_Degree":"Bachelor of Engineering (Electronics and Communication)","Graduation_Year":"2021","Resume_Link":"https://drive.google.com/open?id=1dyNS1jf2i2x7dGgmwuGEf8BP8_VMgf4W","Experience":"1.2"},
+            {"Name":"T S L Nikhila Devi","Product":"PGFAP","Center":"NCR","Mobile":"8918366502","Email":"nikhiladevi777@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2021","Resume_Link":"https://drive.google.com/open?id=1y1rpMGDGwpKCXQYgFwPnSwB5O3QQzXmT","Experience":"0"},
+            {"Name":"Sweatha V J","Product":"PGFAP","Center":"Chennai","Mobile":"7010378282","Email":"sweathavjjayaraman@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2019","Resume_Link":"https://drive.google.com/open?id=1LkWY8ZFlZ4rR9TEvtncN4eu-aoKyYgkz","Experience":"1"},
+            {"Name":"Kandula Sai Shravya","Product":"PGFAP","Center":"Bangalore","Mobile":"7995195551","Email":"reddyshravya79@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2023","Resume_Link":"https://drive.google.com/open?id=15HD5S2AieFO4NZvRqU7HezgGDgAyYgVx","Experience":"0"},
+            {"Name":"Akshay Semwal","Product":"PGFAP","Center":"Lucknow","Mobile":"9149003625","Email":"akshaygolu4321@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2021","Resume_Link":"https://drive.google.com/open?id=1AlwN2PbNy122v0aX7fGo72gIytD3ZQG2","Experience":"0"},
+            {"Name":"Gagan HM","Product":"PGFAP","Center":"Bangalore","Mobile":"9481245388","Email":"gaganhm99@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2021","Resume_Link":"https://drive.google.com/open?id=1RnESVksM2dKDMmZLU9vLtdxuc6eSajsH","Experience":"0"},
+            {"Name":"Tanmay Sen","Product":"PGFAP","Center":"Lucknow","Mobile":"9598002795","Email":"tanmaysen37@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2019","Resume_Link":"https://drive.google.com/open?id=1O_H3PkSsL0dqrP9MZPv-5QCmgS9PPqB5","Experience":"5"},
+            {"Name":"Nishika chauhan","Product":"PGFAP","Center":"NCR","Mobile":"9990204431","Email":"nishikachauhan697@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2023","Resume_Link":"https://drive.google.com/open?id=1s-Iwri02798duh0qF7K-Gc4_Dr6Epjhk","Experience":"3.7"},
+            {"Name":"Amit chaturvedi","Product":"CIBOP","Center":"Lucknow","Mobile":"8874865697","Email":"chaturvediamit157@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2024","Resume_Link":"https://drive.google.com/open?id=1yeZ5dGzcHj_vo5KCkKdycwKPwMWCdD81","Experience":"0"},
+            {"Name":"Aaditya Gogna","Product":"CIBOP","Center":"NCR","Mobile":"9352026614","Email":"aadityagogna3275@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2015","Resume_Link":"https://drive.google.com/open?id=1Os7g_Uvb_GgGAKOEsnERz-OZpndL1xM2","Experience":"5"},
+            {"Name":"Renu Pal","Product":"CIBOP","Center":"Jaipur","Mobile":"9509896349","Email":"renu.pal10297@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2017","Resume_Link":"https://drive.google.com/open?id=1B6NEtCGCn-ZnyOyOZ66UzQCPiReZGrgH","Experience":"3"},
+            {"Name":"Kanika kapoor","Product":"CIBOP","Center":"NCR","Mobile":"9315290019","Email":"kapoorkanika123123@gmail.com","Graduation_Degree":"Bachelor of Business Administration (BBA)","Graduation_Year":"2024","Resume_Link":"https://drive.google.com/open?id=177Wm60HpHfS9TX9vTzAnYPzkWJLfwaR0","Experience":"0"},
+            {"Name":"Vanshika Jain","Product":"CIBOP","Center":"Lucknow","Mobile":"8004188128","Email":"vanshikajain0305@gmail.com","Graduation_Degree":"Bachelor of Business Administration (BBA)","Graduation_Year":"2021","Resume_Link":"https://drive.google.com/open?id=1CNv3zDca5K0P04WJHbUri1cZu78pvMFx","Experience":"1"},
+            {"Name":"Parvesh Bhandari","Product":"CIBOP","Center":"Lucknow","Mobile":"9839718840","Email":"bhandari123prince@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2024","Resume_Link":"https://drive.google.com/open?id=1U5rknO9e1dqUxH2MSUvZTVyBXRa6hRFm","Experience":"0.08"},
+            {"Name":"Garima","Product":"CIBOP","Center":"NCR","Mobile":"8955800204","Email":"Garimaaj044@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2018","Resume_Link":"https://drive.google.com/open?id=1GgWEtgHu3ad_NeGWA71Oq84pFnuBNZH1","Experience":"5"},
+            {"Name":"Paridhi mantri","Product":"CIBOP","Center":"Jaipur","Mobile":"7878667160","Email":"paridhimantri25@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2020","Resume_Link":"https://drive.google.com/open?id=1iYaO9uFWq_NRM62uWjMOg-j-cB1X4gHo","Experience":"0.67"},
+            {"Name":"Lakshay Khandelwal","Product":"CIBOP","Center":"Jaipur","Mobile":"8955314646","Email":"lakshaykhandelwal76@gmail.com","Graduation_Degree":"Bachelor of Science (B.Sc)","Graduation_Year":"2022","Resume_Link":"https://drive.google.com/open?id=1CNC6sZpm2UGXHgzNEoPzsCb17QjN1n2p","Experience":"1"},
+            {"Name":"Tushar","Product":"CIBOP","Center":"NCR","Mobile":"7505517445","Email":"tushargoldy796@gmail.com","Graduation_Degree":"Bachelor of Arts (BA)","Graduation_Year":"2024","Resume_Link":"https://drive.google.com/open?id=1wGMiocUf3isORHbnSr4bOeoi8KEw9cak","Experience":"0"},
+            {"Name":"Asha khubwani","Product":"CIBOP","Center":"Jiapur","Mobile":"8696084369","Email":"ashakhubwani980@gmail.com","Graduation_Degree":"Bachelor of Business Administration (BBA)","Graduation_Year":"2023-2024","Resume_Link":"https://drive.google.com/open?id=1vWsBhq8y4iu9YsgVoca2-5bucP1WH7Me","Experience":"0"},
+            {"Name":"Nistha Singhal","Product":"CIBOP","Center":"Jaipur","Mobile":"9828102892","Email":"singhalnistha138@gmail.com","Graduation_Degree":"Bachelor of Business Administration (BBA)","Graduation_Year":"2020","Resume_Link":"https://drive.google.com/open?id=19piIYtIT6itpkumxXkqzO8Y1zd98_VJu","Experience":"0"},
+            {"Name":"Mridul Bhardwaj","Product":"CIBOP","Center":"Jaipur","Mobile":"9509244087","Email":"Bmridul115@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2020","Resume_Link":"https://drive.google.com/open?id=1QaPVwePfOSyOjXByFHwJR802JyZvvp8x","Experience":"1.33"},
+            {"Name":"Tushar soni","Product":"CIBOP","Center":"Jaipur","Mobile":"9636410120","Email":"sonitushar108@gmail.com","Graduation_Degree":"Bachelor of Business Administration (BBA)","Graduation_Year":"2023","Resume_Link":"https://drive.google.com/open?id=1zphdZcbZDgEbXsRpohimp6bjJHtrP_t_","Experience":"0"},
+            {"Name":"Parth sen","Product":"CIBOP","Center":"Jaipur","Mobile":"8502969975","Email":"parthsen8435@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2024","Resume_Link":"https://drive.google.com/open?id=1E_e5gSrRkLPrUPNE4aP3YWuI2DytAaWY","Experience":"0"},
+            {"Name":"Sawan kumar","Product":"CIBOP","Center":"NCR","Mobile":"9643626947","Email":"sawankhokhar3@gmail.com","Graduation_Degree":"Bachelor of Arts (BA)","Graduation_Year":"2021","Resume_Link":"https://drive.google.com/open?id=118k-8QcDLFOl88Sdb6vbdvShs88ap8Lf","Experience":"0"},
+            {"Name":"SHIVANI SINGH","Product":"CIBOP","Center":"Lucknow","Mobile":"7755067517","Email":"shivanisingh04121998@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2017","Resume_Link":"https://drive.google.com/open?id=14msnq1NG8kbEbaLixDarNdt4M-qrBJ56","Experience":"3"},
+            {"Name":"Aviral","Product":"CIBOP","Center":"Lucknow","Mobile":"9120754993","Email":"aviraljaiswal680@gmail.com","Graduation_Degree":"Bachelor of Vocation (Banking and Finance)","Graduation_Year":"2023","Resume_Link":"https://drive.google.com/open?id=1-8jfUsMt-_Sx5ZrsFJ11t5d5g62eRzdb","Experience":"1.8"},
+            {"Name":"Farhan Ahmad","Product":"CIBOP","Center":"Lucknow","Mobile":"9120037790","Email":"faran0490@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2024","Resume_Link":"https://drive.google.com/open?id=1MrjgeEHQIhLeML_EqtuLCeqA7LtL21HW","Experience":"0"},
+            {"Name":"Rishav kumar singh","Product":"CIBOP","Center":"NCR","Mobile":"6205081107","Email":"rks494038@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2021","Resume_Link":"https://drive.google.com/open?id=1jI1Dvm7uNFXMrCOAqfZprFPeM87A9mqg","Experience":"0"},
+            {"Name":"Abhinav Kumar Verma","Product":"CIBOP","Center":"Lucknow","Mobile":"9696249303","Email":"abhinav.verma234@gmail.com","Graduation_Degree":"Bachelor of Technology (B.Tech)","Graduation_Year":"2023","Resume_Link":"https://drive.google.com/open?id=1AAbbpIsOmsjlUw4f9zerbL7bQOR0jUBz","Experience":"0"},
+            {"Name":"MAHEK SAHU","Product":"CIBOP","Center":"Lucknow","Mobile":"7084117434","Email":"mahek.gupta1029@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2021","Resume_Link":"https://drive.google.com/open?id=111rxeT4hsiVCcRo5RqihFZw6iU8rj_pf","Experience":"0"},
+            {"Name":"Umme Kulsum","Product":"CIBOP","Center":"Lucknow","Mobile":"8081829307","Email":"ummek8389@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2022","Resume_Link":"https://drive.google.com/open?id=1cduhQgfqwlJopEtRKIrFudEPpmENRxnV","Experience":"0"},
+            {"Name":"AYUSHI PANDEY","Product":"CIBOP","Center":"NCR","Mobile":"8595893067","Email":"ayushiap16@gmail.com","Graduation_Degree":"Bachelor of Business Administration (BBA)","Graduation_Year":"2023","Resume_Link":"https://drive.google.com/open?id=1BGr4573HEDK4qUMXD10UgNhN1FU7ZWid","Experience":"0.17"},
+            {"Name":"Satyam singh","Product":"CIBOP","Center":"Lucknow","Mobile":"9696180871","Email":"satyamsinghrajput455@gmail.com","Graduation_Degree":"Bachelor of Business Administration (BBA)","Graduation_Year":"2024","Resume_Link":"https://drive.google.com/open?id=1MPQwncm7lVz_Qo8IB7oyRgLiLv9FOcma","Experience":"0"},
+            {"Name":"Prakash Singh","Product":"CIBOP","Center":"Lucknow","Mobile":"639460637","Email":"psingh58464@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2024","Resume_Link":"https://drive.google.com/open?id=1SJv_wprpXpaXhhlovO7C0GWrrTDgwe5v","Experience":"0.33"},
+            {"Name":"Pururaj Singh","Product":"PGFAP","Center":"Jaipur","Mobile":"8949118301","Email":"pururajsingh990@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2021","Resume_Link":"https://drive.google.com/open?id=13iuaePB3w5T5Qi0GzXfAU-4ERSgRIQ9x","Experience":"0.11"},
+            {"Name":"Atul Sharma","Product":"CIBOP","Center":"Jaipur","Mobile":"8529505850","Email":"atulsharma7378@gmail.com","Graduation_Degree":"Bachelor of Science (B.Sc)","Graduation_Year":"2022","Resume_Link":"https://drive.google.com/open?id=1wzRSUsJ-_fjCE18aWOAGlPJBZ32QvUWK","Experience":"1"},
+            {"Name":"Muskan kanoujia","Product":"CIBOP","Center":"Lucknow","Mobile":"9651792661","Email":"sk2744254@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2024","Resume_Link":"https://drive.google.com/open?id=1EbNb5xQsVozBGC67-a49DRjSB7zYBasr","Experience":"0"},
+            {"Name":"Yashasvi Singh","Product":"CIBOP","Center":"Hyderabad","Mobile":"8688588458","Email":"yashasvisingh1102@gmail.com","Graduation_Degree":"Bachelor of Science (B.Sc)","Graduation_Year":"2023","Resume_Link":"https://drive.google.com/open?id=1Jb08XVmKxTyWq8nlGIBB2uRLskai8CHG","Experience":"0"},
+            {"Name":"Arunkumar","Product":"CIBOP","Center":"Coimbatore","Mobile":"8056838808","Email":"arunkumar13mar@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2019","Resume_Link":"https://drive.google.com/open?id=1Qofu56NO_QJl8AlM1eGor4f4XaUOvyWG","Experience":"2.3"},
+            {"Name":"Harini Balaji","Product":"CIBOP","Center":"Chennai","Mobile":"8608564146","Email":"harinibalaji98@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2019","Resume_Link":"https://drive.google.com/open?id=14t8GPr2O5i0HqUE9RX42f-9e4z37IyLV","Experience":"1"},
+            {"Name":"Laxmi","Product":"CIBOP","Center":"NCR","Mobile":"9310700149","Email":"laxmivashisht@gmail.com","Graduation_Degree":"Bachelor of Arts (BA)","Graduation_Year":"2023","Resume_Link":"https://drive.google.com/open?id=1vgMyGvNPR4UaI5xQtBBwXZZZCZlyDSQV","Experience":"0"},
+            {"Name":"Shoaib Akhtar","Product":"CIBOP","Center":"NCR","Mobile":"8181820395","Email":"soebkhan440@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2020","Resume_Link":"https://drive.google.com/open?id=1Vl7_GQMcCwpdf-Jt5EpnPCXa3dFelg1d","Experience":"3"},
+            {"Name":"Vivek","Product":"CIBOP","Center":"Lucknow","Mobile":"6203521361","Email":"vivekjha6203@gmail.com","Graduation_Degree":"Bachelor of Science (B.Sc)","Graduation_Year":"2022","Resume_Link":"https://drive.google.com/open?id=1Zg8s9A3T6OdYblIqwkSZazTkhP3tOU8o","Experience":"0"},
+            {"Name":"Vikram Singh","Product":"CIBOP","Center":"Lucknow","Mobile":"8127949302","Email":"8127949302v@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2019","Resume_Link":"https://drive.google.com/open?id=1NSoCYqv5rjRtl6axTFtRW1HbYIESWuqg","Experience":"0"},
+            {"Name":"Tushar Sharma","Product":"CIBOP","Center":"NCR","Mobile":"9999249458","Email":"Tusharsharma042002@gmail.com","Graduation_Degree":"Bachelor of Business Administration (BBA)","Graduation_Year":"2023","Resume_Link":"https://drive.google.com/open?id=1Oz5COaTJ-IZUp-925bYg-Ehr4Ruu1xTa","Experience":"0"},
+            {"Name":"Sushil Chaudhary","Product":"CIBOP","Center":"NCR","Mobile":"7250939234","Email":"sushilc206@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2023","Resume_Link":"https://drive.google.com/open?id=1WMVHEjWW_oH-8r1RIWu-U8JLvFor0j1a","Experience":"1"},
+            {"Name":"Khushbu Goyal","Product":"CIBOP","Center":"Jaipur","Mobile":"9116711339","Email":"khushbhugoyal5@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2021","Resume_Link":"https://drive.google.com/open?id=1tDyYiHCJUb2bcZTu5UJVwIU5l-wrkwZO","Experience":"0"},
+            {"Name":"Balkishan yadav","Product":"CIBOP","Center":"NCR","Mobile":"6393032141","Email":"kishanyadav.1033@gmail.com","Graduation_Degree":"Bachelor of Business Administration (BBA)","Graduation_Year":"2023","Resume_Link":"https://drive.google.com/open?id=1ke0xuIzlPV7eDZUdzeOWccF0bRcI0g1J","Experience":"0"},
+            {"Name":"Shivam verma","Product":"CIBOP","Center":"NCR","Mobile":"9013979270","Email":"shivam.verma9013@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2021","Resume_Link":"https://drive.google.com/open?id=1uInfvAojp3O3Vowe5y2B1VHwleQE1nIg","Experience":"1.3"},
+            {"Name":"Bilal","Product":"CIBOP","Center":"NCR","Mobile":"7310559183","Email":"mdahil7310@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2020","Resume_Link":"https://drive.google.com/open?id=1zXcKtevv6ffrW385UdDu4Ki6Tr8QnJkp","Experience":"0"},
+            {"Name":"Yogendra sharma","Product":"CIBOP","Center":"Jaipur","Mobile":"7902146395","Email":"yogipandit144@gmail.com","Graduation_Degree":"Bachelor of Business Administration (BBA)","Graduation_Year":"2021","Resume_Link":"https://drive.google.com/open?id=1_rYUssjuUs8Tj8497FwOJgYfJ86HFGG8","Experience":"0.75"},
+            {"Name":"Yash Jain","Product":"CIBOP","Center":"Jaipur","Mobile":"9079880573","Email":"jnyash01@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2022","Resume_Link":"https://drive.google.com/open?id=13Urvlbpq6sk9Staacs1JbOxs8osFfL-z","Experience":"1.75"},
+            {"Name":"Roushan kumar","Product":"CIBOP","Center":"Lucknow","Mobile":"9155204214","Email":"roushanmahir@gmail.com","Graduation_Degree":"Bachelor of Arts (BA)","Graduation_Year":"2021","Resume_Link":"https://drive.google.com/open?id=1M5egsx9-G1iTWLIRrlGQNAE1i2dBMvvx","Experience":"0"},
+            {"Name":"Samuktha R","Product":"PGFAP","Center":"Chennai","Mobile":"8300955845","Email":"samuktharavi1383@gmail.com","Graduation_Degree":"Bachelor of Business Administration (BBA)","Graduation_Year":"2023","Resume_Link":"https://drive.google.com/open?id=1kgFemvNDyDJUMuH3lNwjltD08dH-KFYM","Experience":"0"},
+            {"Name":"Lakshaya Srivastava","Product":"CIBOP","Center":"Lucknow","Mobile":"9598807996","Email":"lakshayasrivastava18@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2024","Resume_Link":"https://drive.google.com/open?id=1fqexRM_TI5aahBLSA4u6PiyYLx_S87zA","Experience":"0"},
+            {"Name":"Shyamji Mishra","Product":"CIBOP","Center":"Lucknow","Mobile":"8840550036","Email":"365shyamji@gmail.com","Graduation_Degree":"Bachelor of Science (B.Sc)","Graduation_Year":"2021","Resume_Link":"https://drive.google.com/open?id=1rbDTiYuGHsP9S533jdpuukznVsT5tImp","Experience":"0"},
+            {"Name":"Chul Sunitha","Product":"CIBOP","Center":"Hyderabad","Mobile":"9052769871","Email":"chulsunitha09@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2023","Resume_Link":"https://drive.google.com/open?id=19uOSIj3w6iD8K439pwWa7XRpVNKtD0OC","Experience":"0.75"},
+            {"Name":"Sanjeev Singh","Product":"PGFAP","Center":"Hyderabad","Mobile":"9182624553","Email":"rajsanjeev127@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2023","Resume_Link":"https://drive.google.com/open?id=1ZuMU5CUVgS-4LYknoU_AIhAs_nyD9SYN","Experience":"0"},
+            {"Name":"Diksha Mahawar","Product":"CIBOP","Center":"Jaipur","Mobile":"7878380705","Email":"dikshamahawar172@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2024","Resume_Link":"https://drive.google.com/open?id=1A7fL7i4Ptn_V1p5_HdYktlyiGD0bvonI","Experience":"0"},
+            {"Name":"Shivani Pandey","Product":"CIBOP","Center":"NCR","Mobile":"8826861356","Email":"shivani.pandey1596@gmail.com","Graduation_Degree":"Bachelor of Arts (BA)","Graduation_Year":"2017","Resume_Link":"https://drive.google.com/open?id=1h4etZtHH0iRbx5LhKDfSAtL1WU3SjWka","Experience":"3.5"},
+            {"Name":"Neha Dulwani","Product":"CIBOP","Center":"Jaipur","Mobile":"6376287151","Email":"dulwanineha288@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2024","Resume_Link":"https://drive.google.com/open?id=1CfjtqjzgxLtyU6v1N-8SCS5_XX0Krvq2","Experience":"0"},
+            {"Name":"nishant jaiman","Product":"CIBOP","Center":"Jaipur","Mobile":"9079052405","Email":"jnishant932@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2020","Resume_Link":"https://drive.google.com/open?id=1Xb43D7segNOnChrcI2ULkUIhWQlLZu36","Experience":"0"},
+            {"Name":"Guruharan R","Product":"PGFAP","Center":"Coimbatore","Mobile":"7540063729","Email":"guruharan45@gmail.com","Graduation_Degree":"Bachelor of Business Administration (BBA)","Graduation_Year":"2023","Resume_Link":"https://drive.google.com/open?id=119k1xDQBxoUyXx6kd145dVRpbl880lah","Experience":"1.4"},
+            {"Name":"Samanvitha S","Product":"PGFAP","Center":"Bangalore","Mobile":"9902175926","Email":"Samanvithaprasad@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2019","Resume_Link":"https://drive.google.com/open?id=1_muk2upQ8WXwtHKfSX8ZqvbF2BzFaK3_","Experience":"0"},
+            {"Name":"Anudeep Ratna","Product":"CIBOP","Center":"Lucknow","Mobile":"9528708920","Email":"anudeepratna2002@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2021","Resume_Link":"https://drive.google.com/open?id=1RZFsjOREgazpyPMdsW69LRTD_P_j6Jwj","Experience":"0"},
+            {"Name":"Lakshya khandelwal","Product":"CIBOP","Center":"Jaipur","Mobile":"8955311544","Email":"khandelwallakshya1990@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2022","Resume_Link":"https://drive.google.com/open?id=1IDhAFaqf0DiOMzfPNrYml4bw3emxFP_c","Experience":"1"},
+            {"Name":"Karan Singh","Product":"CIBOP","Center":"Lucknow","Mobile":"7007298254","Email":"singhkaran.web@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2018","Resume_Link":"https://drive.google.com/open?id=1CRLplcrBV5m3ORYoLv4wHrMzdlRbDvPt","Experience":"0"},
+            {"Name":"Abhishek Malhotra","Product":"PGFAP","Center":"NCR","Mobile":"6280861502","Email":"abhi11malhotra@gmail.com","Graduation_Degree":"Bachelor of Business Administration (BBA)","Graduation_Year":"2023","Resume_Link":"https://drive.google.com/open?id=1pHD_o6sUCxb3weP8M0npRFjNt1vBQ1z1","Experience":"2"},
+            {"Name":"jyoti peswani","Product":"CIBOP","Center":"Jaipur","Mobile":"8619684288","Email":"jyotipeswani14@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2024","Resume_Link":"https://eckcoursemedia.s3.ap-southeast-1.amazonaws.com/6712138c8a790586af51a60d-1745426559399.pdf","Experience":"1"},
+            {"Name":"Harendra singh shekhawat","Product":"CIBOP","Center":"Jaipur","Mobile":"9983389332","Email":"himmatkanwar29@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2023","Resume_Link":"https://eckcoursemedia.s3.ap-southeast-1.amazonaws.com/6718debaaa5f8839c017d88b-1745650936670.pdf","Experience":"0"},
+            {"Name":"Shalu Sharma","Product":"CIBOP","Center":"Jaipur","Mobile":"9027253938","Email":"shalusaraswat000123@gmail.com","Graduation_Degree":"Bachelor of Business Administration (BBA)","Graduation_Year":"2018","Resume_Link":"https://eckcoursemedia.s3.ap-southeast-1.amazonaws.com/66864d98d8754537f567e67a-1743747933465.pdf","Experience":"0"},
+            {"Name":"Priya","Product":"CIBOP","Center":"Jaipur","Mobile":"9829291327","Email":"prathore9571@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2024","Resume_Link":"https://eckcoursemedia.s3.ap-southeast-1.amazonaws.com/673c2b3af491c1e1e4fe1c43-1745426239671.pdf","Experience":"0"},
+            {"Name":"Neeraj Kumar Jain","Product":"CIBOP","Center":"Jaipur","Mobile":"8209896820","Email":"neerajjain71197@gmail.com","Graduation_Degree":"Bachelor of Arts (BA)","Graduation_Year":"2017","Resume_Link":"https://eckcoursemedia.s3.ap-southeast-1.amazonaws.com/6698f3d3f411db36b291655d-1745496486943.pdf","Experience":"0"},
+            {"Name":"Ishant Sharma","Product":"CIBOP","Center":"Jaipur","Mobile":"8764155763","Email":"ishanishantsharma3054@gmail.com","Graduation_Degree":"Bachelor of Arts (BA)","Graduation_Year":"2023","Resume_Link":"https://eckcoursemedia.s3.ap-southeast-1.amazonaws.com/66f69d9215a0028d10d5f928-1745649393855.pdf","Experience":"0"},
+            {"Name":"Komal Diwaker","Product":"CIBOP","Center":"Jaipur","Mobile":"8209828132","Email":"kdts1994@gmail.com","Graduation_Degree":"Bachelor of Commerce (B.Com)","Graduation_Year":"2014","Resume_Link":"https://eckcoursemedia.s3.ap-southeast-1.amazonaws.com/64c15d0dc271597b4b47bfcb-1741263538257.pdf","Experience":"1"},
+            {"Name":"Faris","Product":"CIBOP","Center":"Jaipur","Mobile":"9116414997","Email":"kfaris872@gmail.com","Graduation_Degree":"Bachelor of Commerce (BCOM)","Graduation_Year":"2024","Resume_Link":"https://eckcoursemedia.s3.ap-southeast-1.amazonaws.com/66b5b2b3fe60468ead0be483-1741775388864.pdf","Experience":"1"},
+            {"Name":"Aimadul Islam","Product":"CIBOP","Center":"Lucknow","Mobile":"7013319911","Email":"aimadulislam05@gmail.com","Graduation_Degree":"Bcom","Graduation_Year":"2022","Resume_Link":"https://eckcoursemedia.s3.ap-southeast-1.amazonaws.com/675693f478021c736672757c-1745162324900.pdf","Experience":"0"}
+        ];
+
+        $(document).ready(function() {
+            $('#candidatesTable').DataTable({
+                data: data,
+                columns: [
+                    {
+                        data: null,
+                        render: function (data, type, row, meta) {
+                            return meta.row + 1;
+                        }
+                    },
+                    { data: 'Name' },
+                    { data: 'Product' },
+                    { data: 'Center' },
+                    { data: 'Mobile' },
+                    { data: 'Email' },
+                    { data: 'Graduation_Degree' },
+                    { data: 'Graduation_Year' },
+                    { 
+                        data: 'Resume_Link',
+                        render: function(data) {
+                            return '<a href="' + data + '" target="_blank" class="resume-link">View Resume</a>';
+                        }
+                    },
+                    { data: 'Experience' }
+                ],
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'excelHtml5',
+                        text: 'Export to Excel',
+                        title: 'Candidate_List'
+                    }
+                ],
+                pageLength: 10,
+                responsive: true
+            });
+        });
+    </script>
+</body>
+</html>
