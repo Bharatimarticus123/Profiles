@@ -1,0 +1,482 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Imarticus Learning: Finance Placement Report: April 2025</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(45deg, #1a2a2a, #003300, #1a2a2a);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #aaffaa;
+            font-family: 'Orbitron', sans-serif;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(0, 50, 50, 0.8);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px #00ff00;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            text-shadow: 0 0 10px #00ff00;
+            margin-bottom: 20px;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            background: #004400;
+            color: #aaffaa;
+            border: 2px solid #00ff00;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            border-radius: 5px;
+            box-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+        }
+        .btn:hover {
+            background: #00ff00;
+            color: #002200;
+            box-shadow: 0 0 15px #00ff00;
+            transform: scale(1.05);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(0, 20, 20, 0.9);
+            border: 1px solid #00ff00;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #00ff00;
+        }
+        th {
+            background: #004400;
+            color: #aaffaa;
+            text-transform: uppercase;
+            text-shadow: 0 ivity: 0 0 5px #00ff00;
+        }
+        tr {
+            transition: background 0.3s;
+        }
+        tr:hover {
+            background: linear-gradient(90deg, rgba(0,255,0,0.2), rgba(0,255,0,0.4), rgba(0,255,0,0.2));
+        }
+        tr:nth-child(even) {
+            background: rgba(0, 50, 50, 0.5);
+        }
+        .filter-container {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        select, input[type="text"] {
+            background: #004400;
+            color: #aaffaa;
+            border: 2px solid #00ff00;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        #modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+        }
+        #modal div {
+            background: linear-gradient(45deg, #003300, #1a2a2a);
+            padding: 20px;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: 100px auto;
+            color: #aaffaa;
+            box-shadow: 0 0 20px #00ff00;
+        }
+        #modal h2, #modal p {
+            text-shadow: 0 0 5px #00ff00;
+        }
+        @media (max-width: 768px) {
+            .controls, .filter-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            table {
+                font-size: 0.9em;
+            }
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Imarticus Learning: Finance Placement Report: April 2025</h1>
+        <div class="filter-container">
+            <input type="text" id="searchInput" placeholder="Search by Name or Email..." oninput="filterTable()">
+            <select id="centerFilter" onchange="filterTable(); playSound('selectSound')">
+                <option value="">All Centers</option>
+                <option value="Lucknow">Lucknow</option>
+                <option value="NCR">NCR</option>
+                <option value="Bangalore">Bangalore</option>
+                <option value="Andheri">Andheri</option>
+                <option value="Hyderabad">Hyderabad</option>
+                <option value="Chennai">Chennai</option>
+                <option value="Jaipur">Jaipur</option>
+                <option value="Coimbatore">Coimbatore</option>
+                <option value="Thane">Thane</option>
+                <option value="Pune">Pune</option>
+                <option value="Reg Online">Reg Online</option>
+            </select>
+            <select id="productFilter" onchange="filterTable(); playSound('selectSound')">
+                <option value="">All Products</option>
+                <option value="PGFAP">PGFAP</option>
+                <option value="CIBOP">CIBOP</option>
+                <option value="BAF">BAF</option>
+            </select>
+            <select id="placementTypeFilter" onchange="filterTable(); playSound('selectSound')">
+                <option value="">All Placement Types</option>
+                <option value="Placed through Imarticus">Placed through Imarticus</option>
+                <option value="Self Placed">Self Placed</option>
+            </select>
+            <select id="sortCTC" onchange="sortTable(); playSound('selectSound')">
+                <option value="">Sort by CTC</option>
+                <option value="asc">CTC Ascending</option>
+                <option value="desc">CTC Descending</option>
+            </select>
+        </div>
+        <div class="controls">
+            <button class="btn" onclick="window.open('https://docs.google.com/spreadsheets/d/1xGiVP5pR9Q5vHSUixiVIgcECQIqP_92QHu91PHSPFqk/edit?usp=sharing', '_blank'); playSound('clickSound')">Open Google Sheets</button>
+            <button class="btn" onclick="exportToExcel(); playSound('clickSound')">Export to Excel</button>
+            <button class="btn" id="muteBtn" onclick="toggleMute()">Mute Sounds</button>
+        </div>
+        <table id="placementTable">
+            <thead>
+                <tr>
+                    <th>S.No.</th>
+                    <th>Student Name</th>
+                    <th>Student Email ID</th>
+                    <th>Center</th>
+                    <th>Product</th>
+                    <th>Placed Company</th>
+                    <th>Role</th>
+                    <th>CTC (in Lakhs)</th>
+                    <th>Placement Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>1</td><td>Bhavesh Rikhari</td><td>bhaveshrikhari617@gmail.com</td><td>Lucknow</td><td>PGFAP</td><td>Trestvista</td><td>Procure-to-Pay (P2P)</td><td>5.4</td><td>Placed through Imarticus</td></tr>
+                <tr><td>2</td><td>Ronit Chopra</td><td>ronitchopra100@gmail.com</td><td>NCR</td><td>PGFAP</td><td>Incedo</td><td>Financial reporting</td><td>3.8</td><td>Placed through Imarticus</td></tr>
+                <tr><td>3</td><td>Paul Santosh John</td><td>paulsjohn978@gmail.com</td><td>Bangalore</td><td>PGFAP</td><td></td><td></td><td>4.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>4</td><td>Preeti Naiksatam</td><td>preeti07satam@gmail.com</td><td>Andheri</td><td>PGFAP</td><td>MSCI</td><td>F&A</td><td>4.8</td><td>Placed through Imarticus</td></tr>
+                <tr><td>5</td><td>Ashish Sengupta</td><td>80431ashish@gmail.com</td><td>Bangalore</td><td>PGFAP</td><td></td><td></td><td>4.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>6</td><td>Kadiri Neeraj Kumar</td><td>praveenvarma4343@gmail.com</td><td>Hyderabad</td><td>PGFAP</td><td>Gallagher &Mohan</td><td>Financial Analyst</td><td>4.1</td><td>Placed through Imarticus</td></tr>
+                <tr><td>7</td><td>Nikhil Narala</td><td>nikhilnarala97@gmail.com</td><td>Hyderabad</td><td>PGFAP</td><td>Gallagher &Mohan</td><td></td><td>4.2</td><td>Placed through Imarticus</td></tr>
+                <tr><td>8</td><td>Sagar P</td><td>sagarsag7263@gmail.com</td><td>Bangalore</td><td>PGFAP</td><td></td><td></td><td>4.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>9</td><td>Moushmi Mukhi</td><td>moushmimukhi19@gmail.com</td><td>Bangalore</td><td>PGFAP</td><td></td><td></td><td>4.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>10</td><td>Bhumi Kosia</td><td>bhumikosia19@gmail.com</td><td>Andheri</td><td>PGFAP</td><td>GallagherCL5062</td><td>Jr Financial Analyst</td><td>0.15</td><td>Placed through Imarticus</td></tr>
+                <tr><td>11</td><td>Milind Nivruti Ajarekar</td><td>milindajarekar.ma.ma@gmail.com</td><td>Andheri</td><td>PGFAP</td><td></td><td></td><td>4.5</td><td>Self Placed</td></tr>
+                <tr><td>12</td><td>Aarti Chaudhary</td><td>chaudharyaarti753@gmail.com</td><td>NCR</td><td>PGFAP</td><td>AML Rightsource</td><td>Analyst</td><td>5</td><td>Self Placed</td></tr>
+                <tr><td>13</td><td>Anurag Anand</td><td>anuraganand4397@gmail.com</td><td>NCR</td><td>PGFAP</td><td>Daloopa</td><td>Data Analyst</td><td>6</td><td>Self Placed</td></tr>
+                <tr><td>14</td><td>Rohan Kothari</td><td>rohan31596@gmail.com</td><td>Andheri</td><td>PGFAP</td><td>Deutsche Bank</td><td>Quality Analyst</td><td>5.3</td><td>Self Placed</td></tr>
+                <tr><td>15</td><td>Aesha jadeja</td><td>aesha.ajadeja@gmail.com</td><td>Bangalore</td><td>PGFAP</td><td>GoldMan</td><td>Analyst</td><td>5.2</td><td>Self Placed</td></tr>
+                <tr><td>16</td><td>Vinutha R</td><td>vinutha0803@gmail.com</td><td>Bangalore</td><td>PGFAP</td><td></td><td></td><td>4.5</td><td>Self Placed</td></tr>
+                <tr><td>17</td><td>Sandra Puthenkai</td><td>sandrakai2909@gmail.com</td><td>Bangalore</td><td>PGFAP</td><td></td><td></td><td>4.5</td><td>Self Placed</td></tr>
+                <tr><td>18</td><td>Rohit Ravishankar</td><td>rohitravishankar131@gmail.com</td><td>Chennai</td><td>PGFAP</td><td>Health Care</td><td>Financial Analyst</td><td>5.2</td><td>Self Placed</td></tr>
+                <tr><td>19</td><td>Mahek Saxena</td><td>maheksaxena125@gmail.com</td><td>Lucknow</td><td>PGFAP</td><td>Trestvista</td><td>Analyst</td><td>4.5</td><td>Self Placed</td></tr>
+                <tr><td>20</td><td>Adithya K</td><td>adithyakumar6637@gmail.com</td><td>Bangalore</td><td>CIBOP</td><td>Gres37440001</td><td>Analyst</td><td>4.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>21</td><td>Deepthi H R</td><td>deepthideeksha111@gmail.com</td><td>Bangalore</td><td>CIBOP</td><td>Societe Generale</td><td>Analyst</td><td>3.25</td><td>Placed through Imarticus</td></tr>
+                <tr><td>22</td><td>Pooja D</td><td>poojadevraj03@gmail.com</td><td>Bangalore</td><td>CIBOP</td><td>State Street Bank</td><td>Analyst</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>23</td><td>Pavan N</td><td>pavanrajattibele@gmail.com</td><td>Bangalore</td><td>CIBOP</td><td>Societe Generale</td><td>Analyst</td><td>3.25</td><td>Placed through Imarticus</td></tr>
+                <tr><td>24</td><td>ANAGHA S</td><td>anaghas2373@gmail.com</td><td>Bangalore</td><td>CIBOP</td><td>State Street Bank</td><td>Apprentice</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>25</td><td>Neha N</td><td>neha200316@gmail.com</td><td>Bangalore</td><td>CIBOP</td><td>Societe Generale</td><td>Analyst</td><td>3.25</td><td>Placed through Imarticus</td></tr>
+                <tr><td>26</td><td>Sadaquathulla Khan S</td><td>sadakathkhan55@gmail.com</td><td>Bangalore</td><td>CIBOP</td><td>Goldman Sachs</td><td>Platform Solution Analyst</td><td>3.8</td><td>Placed through Imarticus</td></tr>
+                <tr><td>27</td><td>Anuj Edward</td><td>edwardanuj80@gmail.com</td><td>Bangalore</td><td>CIBOP</td><td>JPCL61740004</td><td>Credit Support - Operation Analyst</td><td>4.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>28</td><td>Deepa Dharawadmath</td><td>deepadmath@gmail.com</td><td>Bangalore</td><td>CIBOP</td><td>Gres37440001</td><td>Analyst</td><td>4.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>29</td><td>Manisha G</td><td>manishagopinathan372@gmail.com</td><td>Bangalore</td><td>CIBOP</td><td>JPCL61740004</td><td>Credit Support - Operation Analyst</td><td>4.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>30</td><td>Muhammed Shanis A S</td><td>shanismuhammed313@gmail.com</td><td>Bangalore</td><td>CIBOP</td><td>Societe Generale</td><td>Analyst</td><td>3.25</td><td>Placed through Imarticus</td></tr>
+                <tr><td>31</td><td>Nivedita Sangannavar</td><td>niveditasangannavar2000@gmail.com</td><td>Bangalore</td><td>CIBOP</td><td>Gres37440001</td><td>Analyst</td><td>4.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>32</td><td>Prajwal V S</td><td>prajwalshettyy007@gmail.com</td><td>Bangalore</td><td>CIBOP</td><td>JPMC</td><td>Transaction Specilist Analyst</td><td>4.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>33</td><td>Samarth Bhat</td><td>bhatsamarth9@gmail.com</td><td>Bangalore</td><td>CIBOP</td><td>Societe Generale</td><td>Analyst</td><td>3.25</td><td>Placed through Imarticus</td></tr>
+                <tr><td>34</td><td>Mohan Kumar R (Manjula)</td><td>mohank8620@gmail.com</td><td>Bangalore</td><td>CIBOP</td><td>Broadridge</td><td>IB Ops Analyst</td><td>4</td><td>Placed through Imarticus</td></tr>
+                <tr><td>35</td><td>Abdul gafar</td><td>abdulgafarrr08@gmail.com</td><td>Bangalore</td><td>CIBOP</td><td>Societe Generale</td><td>S2P Analyst</td><td>3.25</td><td>Placed through Imarticus</td></tr>
+                <tr><td>36</td><td>Deenashree M</td><td>deenashree05@gmail.com</td><td>Bangalore</td><td>CIBOP</td><td>Societe Generale</td><td>S2P Analyst</td><td>3.25</td><td>Placed through Imarticus</td></tr>
+                <tr><td>37</td><td>Bhanuchandra</td><td>bhanuchandra426@gmail.com</td><td>Bangalore</td><td>CIBOP</td><td>Societe Generale</td><td>S2P Analyst</td><td>3.25</td><td>Placed through Imarticus</td></tr>
+                <tr><td>38</td><td>Sunny Kumar</td><td>sunnykumarmandal15@gmail.com</td><td>Bangalore</td><td>CIBOP</td><td>STAT0960004</td><td>Analyst</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>39</td><td>G Surekha</td><td>surekhanavya1@gmail.com</td><td>Hyderabad</td><td>CIBOP</td><td>Collabera</td><td>Operation Processor Analyst</td><td>4.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>40</td><td>B Ayush Singh</td><td>ayushbidhaniya963@gmail.com</td><td>Hyderabad</td><td>CIBOP</td><td>Coforge</td><td>Analyst</td><td>3.6</td><td>Placed through Imarticus</td></tr>
+                <tr><td>41</td><td>Mode Ganesh</td><td>ganeshnick609@gmail.com</td><td>Hyderabad</td><td>CIBOP</td><td>Collabera</td><td>Operation Processor Analyst</td><td>3.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>42</td><td>Sridhar Reddy Navari</td><td>sridharreddynavari@gmail.com</td><td>Hyderabad</td><td>CIBOP</td><td>State Street</td><td>Apprentice</td><td>3.25</td><td>Placed through Imarticus</td></tr>
+                <tr><td>43</td><td>PENDEM RAMCHANDHAR</td><td>ramchandar96420@gmail.com</td><td>Hyderabad</td><td>CIBOP</td><td>Collabera</td><td>Operation Processor Analyst</td><td>3-3.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>44</td><td>SHAILAJA SANKARAMANSHI</td><td>shailajassvn6@gmail.com</td><td>Hyderabad</td><td>CIBOP</td><td>Societe Generale</td><td>S2P</td><td>3.25</td><td>Placed through Imarticus</td></tr>
+                <tr><td>45</td><td>T.Akshay Kumar</td><td>akshayanupala89@gmail.com</td><td>Hyderabad</td><td>CIBOP</td><td>State Street</td><td>Apprentice</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>46</td><td>Dheeraj madishetty</td><td>dheerajmadishetty11@gmail.com</td><td>Hyderabad</td><td>CIBOP</td><td>Coforge</td><td>Analyst</td><td>3.6</td><td>Placed through Imarticus</td></tr>
+                <tr><td>47</td><td>Anikesh Babu</td><td>anikeshbabu04@gmail.com</td><td>Hyderabad</td><td>CIBOP</td><td>Societe Generale</td><td>S2P</td><td>3.25</td><td>Placed through Imarticus</td></tr>
+                <tr><td>48</td><td>Kaitoju VenuGopal</td><td>venugopal00264@gmail.com</td><td>Hyderabad</td><td>CIBOP</td><td>WNS</td><td>Associate Level</td><td>2.9</td><td>Placed through Imarticus</td></tr>
+                <tr><td>49</td><td>Saicharan</td><td>cherrypatel410@gmail.com</td><td>Hyderabad</td><td>CIBOP</td><td>Coforge</td><td>Analyst</td><td>3.6</td><td>Placed through Imarticus</td></tr>
+                <tr><td>50</td><td>SHANIGARAPU AJAY</td><td>ajayprudhvi55@gmail.com</td><td>Hyderabad</td><td>CIBOP</td><td>Coforge</td><td>Analyst</td><td>3.6</td><td>Placed through Imarticus</td></tr>
+                <tr><td>51</td><td>Govardhan Govi</td><td>govardhangovi0309@gmail.com</td><td>Hyderabad</td><td>CIBOP</td><td>Coforge</td><td>IB Analyst</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>52</td><td>Harsh Kumar</td><td>harshkumarkirito@gmail.com</td><td>Hyderabad</td><td>CIBOP</td><td>Coforge</td><td>IB Analyst</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>53</td><td>Louis ghughu</td><td>louisghughu@gmail.com</td><td>Andheri</td><td>CIBOP</td><td>WAHE4540001</td><td>KYC Analyst</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>54</td><td>Akash Vishwashrao</td><td>vishwasraoakash29@gmail.com</td><td>Andheri</td><td>CIBOP</td><td>SBI</td><td>Fund Accounting</td><td>2.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>55</td><td>Ayushi singh</td><td>ayusshi123@gmail.com</td><td>Andheri</td><td>CIBOP</td><td>State Street</td><td>Apprenticeship</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>56</td><td>Vidhya Parmar</td><td>vidhya.parmar0412@gmail.com</td><td>Andheri</td><td>CIBOP</td><td>MSCI</td><td>Analyst</td><td>5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>57</td><td>Ravi Kundan Chauhan</td><td>ravi1904chauhan@gmail.com</td><td>Andheri</td><td>CIBOP</td><td>SBI 4180007</td><td>Fund Accounting</td><td>2.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>58</td><td>Akash Bangal</td><td>bangalakash424@gmail.com</td><td>Andheri</td><td>CIBOP</td><td>STAT0960004</td><td>Transfer Agency</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>59</td><td>Anjali yadav</td><td>anjalijyadav48@gmail.com</td><td>Andheri</td><td>CIBOP</td><td>ITBrisk</td><td>Analyst</td><td>4</td><td>Placed through Imarticus</td></tr>
+                <tr><td>60</td><td>Bhakti Nitin Rajapkar</td><td>bhaktirajapkar1307@gmail.com</td><td>Andheri</td><td>CIBOP</td><td>WTW</td><td>Analyst</td><td>4</td><td>Placed through Imarticus</td></tr>
+                <tr><td>61</td><td>Mayank tyagi</td><td>tyagimayank446@gmail.com</td><td>Andheri</td><td>CIBOP</td><td>Nomura</td><td>Operations - Loans – Analyst</td><td>3.86</td><td>Placed through Imarticus</td></tr>
+                <tr><td>62</td><td>Ashish Iyer</td><td>iyerashish2002@gmail.com</td><td>Andheri</td><td>CIBOP</td><td>SBI 4180007</td><td>Fund Accounting</td><td>2.8</td><td>Placed through Imarticus</td></tr>
+                <tr><td>63</td><td>ROHIT KAMTI</td><td>anilkamti099@gmail.com</td><td>Andheri</td><td>CIBOP</td><td>Destar Consulting Private Limited.</td><td>Associate</td><td>6.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>64</td><td>Akshata Kartule</td><td>akshatakartule81@gmail.com</td><td>Andheri</td><td>CIBOP</td><td>BOFA</td><td>Analyst</td><td>3.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>65</td><td>Himanshu Prabhutendolkar</td><td>prabhutendolkarhimanshu@gmail.com</td><td>Andheri</td><td>CIBOP</td><td>Nomura</td><td>FID GMO</td><td>3.86</td><td>Placed through Imarticus</td></tr>
+                <tr><td>66</td><td>Sanjiti Devdas Amin</td><td>sanjitiamin9@gmail.com</td><td>Andheri</td><td>CIBOP</td><td>Citco</td><td>Interface solution</td><td>5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>67</td><td>Sahil Kokate</td><td>sahilkokate7@gmail.com</td><td>Andheri</td><td>CIBOP</td><td>State Street</td><td>Transfer Agency</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>68</td><td>Dilip Chaudhary</td><td>dilipchoudharydp92@gmail.com</td><td>Andheri</td><td>CIBOP</td><td>Eclerx</td><td>Financial Analyst</td><td>2.7</td><td>Placed through Imarticus</td></tr>
+                <tr><td>69</td><td>Amit Digvijay Nath Pandey</td><td>amitpandey19072002@gmail.com</td><td>Andheri</td><td>CIBOP</td><td>Eclerx</td><td>Financial Analyst</td><td>2.7</td><td>Placed through Imarticus</td></tr>
+                <tr><td>70</td><td>Dhruvi Shah</td><td>dhruvishah816@gmail.com</td><td>Andheri</td><td>CIBOP</td><td>SSB</td><td>Trasfer Agency</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>71</td><td>Ayush Seth</td><td>ayushsheth9592@gmail.com</td><td>Andheri</td><td>CIBOP</td><td>State Street</td><td>Apprenticeship</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>72</td><td>Madhur Jain</td><td>madhurjain135@gmail.com</td><td>Andheri</td><td>CIBOP</td><td></td><td></td><td>0</td><td>Placed through Imarticus</td></tr>
+                <tr><td>73</td><td>Akshay Sharma</td><td>Akshay.sharma.8380@gmail.com</td><td>Jaipur</td><td>CIBOP</td><td>Coforge</td><td>Investment Baking-Back office</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>74</td><td>Rohit Singh Bhati</td><td>itsmerohitbhati@gmail.com</td><td>Jaipur</td><td>CIBOP</td><td>CitiCorp</td><td>Analyst-Securities & Derivatives</td><td>6.2</td><td>Placed through Imarticus</td></tr>
+                <tr><td>75</td><td>CHANCHAL GOLECHA</td><td>chanchalgolecha20@gmail.com</td><td>Jaipur</td><td>CIBOP</td><td>Coforge</td><td>Investment Banking-Back office</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>76</td><td>Simran Kumari</td><td>simrankumari56115@gmail.com</td><td>Jaipur</td><td>CIBOP</td><td>Goldman Sachs</td><td>Analyst-Platform Solution</td><td>4.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>77</td><td>Tusshar Garg</td><td>tusshargarg17@gmail.com</td><td>Jaipur</td><td>CIBOP</td><td>Credit Agricole</td><td>Assistant-Trade Finance</td><td>6</td><td>Placed through Imarticus</td></tr>
+                <tr><td>78</td><td>Samriddhi Dixit</td><td>samriddhidixit100@gmail.com</td><td>Lucknow</td><td>CIBOP</td><td>Coforge</td><td>Investment Banking-Back office</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>79</td><td>Kalpana Gautam</td><td>k.g182027@gmail.com</td><td>Lucknow</td><td>CIBOP</td><td>Coforge</td><td>IB Back office</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>80</td><td>Ishita Gupta</td><td>Khandelwalishita076@gmail.com</td><td>Reg Online</td><td>BAF</td><td>HDFC</td><td>Officer Customer Service</td><td>3.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>81</td><td>ravina</td><td>ravinakuma102@gmail.com</td><td>Jaipur</td><td>BAF</td><td>HDFC</td><td>Officer Customer Service</td><td>0</td><td>Placed through Imarticus</td></tr>
+                <tr><td>82</td><td>Saniya Saleem</td><td>saniyaaa251@gmail.com</td><td>Lucknow</td><td>BAF</td><td>Imarticus Learning</td><td>Intern</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>83</td><td>Manikandan G</td><td>manikandan257g@gmail.com</td><td>Coimbatore</td><td>BAF</td><td>HDFC</td><td>VKYC</td><td>2.6</td><td>Placed through Imarticus</td></tr>
+                <tr><td>84</td><td>LAKSHMI S</td><td>lakshmisanthosh001@gmail.com</td><td>Coimbatore</td><td>BAF</td><td>HDFC</td><td>VRM</td><td>2.6</td><td>Placed through Imarticus</td></tr>
+                <tr><td>85</td><td>Nithya Poorani</td><td>nithyapoorani7@gmail.com</td><td>Coimbatore</td><td>BAF</td><td>HDFC</td><td>VRM</td><td>2.6</td><td>Placed through Imarticus</td></tr>
+                <tr><td>86</td><td>AKASH E</td><td>akashelan18@gmail.com</td><td>Coimbatore</td><td>BAF</td><td>HDFC</td><td>Phone Banking Officer</td><td>2.6</td><td>Placed through Imarticus</td></tr>
+                <tr><td>87</td><td>SIVA SUBIKSHA S</td><td>sivasubikshas@gmail.com</td><td>Coimbatore</td><td>BAF</td><td>HDFC</td><td>Phone Banking Officer</td><td>2.6</td><td>Placed through Imarticus</td></tr>
+                <tr><td>88</td><td>Dharani M</td><td>cmadharani56@gmail.com</td><td>Coimbatore</td><td>BAF</td><td>HDFC</td><td>EMT Officer</td><td>2.6</td><td>Placed through Imarticus</td></tr>
+                <tr><td>89</td><td>Swasthick Ramesh</td><td>swasthickramesh12@gmail.com</td><td>Coimbatore</td><td>BAF</td><td>HDFC</td><td>Assistant Manager</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>90</td><td>Pirai Sudan M</td><td>piraisudanmarimuthu11@gmail.com</td><td>Coimbatore</td><td>BAF</td><td>HDFC</td><td>Assistant Manager</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>91</td><td>SHREEMATHI SHAMYUKTHA B</td><td>shreemathishamyuktha@gmail.com</td><td>Coimbatore</td><td>BAF</td><td>HDFC</td><td>Assistant Manager</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>92</td><td>Prayash Mathur</td><td>prayashmathur@gmail.com</td><td>Lucknow</td><td>CIBOP</td><td>Coforge</td><td>Investment Banking-Back office</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>93</td><td>Anjali Gupta</td><td>anjaligupta4576@gmail.com</td><td>Lucknow</td><td>CIBOP</td><td>Coforge</td><td>Investment Banking-Back office</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>94</td><td>Rahul Kumar Tiwari</td><td>tiwarirahu5446@gmail.com</td><td>Lucknow</td><td>CIBOP</td><td>Saxo Bank</td><td>Post Trade Analyst</td><td>5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>95</td><td>Sarthak Gupta</td><td>sarthakgupta8871@gmail.com</td><td>Lucknow</td><td>CIBOP</td><td>Incedo</td><td>Associate-AML/KYC</td><td>4.8</td><td>Placed through Imarticus</td></tr>
+                <tr><td>96</td><td>Aman Ullah</td><td>anamarzoo795@gmail.com</td><td>Lucknow</td><td>CIBOP</td><td>Coforge</td><td>Investment Banking-Back office</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>97</td><td>Riya Pandey</td><td>rehupandey123@gmail.com</td><td>Lucknow</td><td>CIBOP</td><td>Incedo</td><td>Associate-Books & records</td><td>4.05</td><td>Placed through Imarticus</td></tr>
+                <tr><td>98</td><td>Swati Yadav</td><td>yadavswati331@gmail.com</td><td>Lucknow</td><td>CIBOP</td><td>Coforge</td><td>IB Back office</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>99</td><td>Sadhna Yadav</td><td>sadhnayadav746@gmail.com</td><td>Lucknow</td><td>CIBOP</td><td>Goldman Sachs</td><td>Analyst-Platform Solutions</td><td>3.85</td><td>Placed through Imarticus</td></tr>
+                <tr><td>100</td><td>Pooja Vishwakarma</td><td>pvishwakarma9699@gmail.com</td><td>Thane</td><td>CIBOP</td><td>Eclerx</td><td>Financial Analyst</td><td>2.8</td><td>Placed through Imarticus</td></tr>
+                <tr><td>101</td><td>Priya Rathi</td><td>priyarathi573@gmail.com</td><td>Thane</td><td>CIBOP</td><td>State Street</td><td>Apprentice</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>102</td><td>Ujjwal Marathe</td><td>ujjwalmarathe4@gmail.com</td><td>Thane</td><td>CIBOP</td><td>Eclers</td><td>Financial Analyst</td><td>2.8</td><td>Placed through Imarticus</td></tr>
+                <tr><td>103</td><td>Ankit Pandya</td><td>pandyaankit530@gmail.com</td><td>Thane</td><td>CIBOP</td><td>Goldman Sachs</td><td>Platform Solutions</td><td>3.86</td><td>Placed through Imarticus</td></tr>
+                <tr><td>104</td><td>Lavanya Someshwara Reddy</td><td>lavanyare35@gmail.com</td><td>Thane</td><td>CIBOP</td><td>Goldman Sachs</td><td>Platform Solutions</td><td>3.86</td><td>Placed through Imarticus</td></tr>
+                <tr><td>105</td><td>Purva S Mavinkurve</td><td>purvas.k.22@gmail.com</td><td>Thane</td><td>CIBOP</td><td>OracleMah17020002</td><td>Capital Market</td><td>4</td><td>Placed through Imarticus</td></tr>
+                <tr><td>106</td><td>Sejal Mahadik</td><td>sejalsmahadik@gmail.com</td><td>Thane</td><td>CIBOP</td><td>Goldman Sachs</td><td>Platform Solutions</td><td>3.86</td><td>Placed through Imarticus</td></tr>
+                <tr><td>107</td><td>Kartik Trimbakkar</td><td>kartiktrimbakkar01@gmail.com</td><td>Thane</td><td>CIBOP</td><td>Nomura</td><td>Operations Loans</td><td>4.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>108</td><td>Aniruddha Shirke</td><td>anirudhashirke9@gmail.com</td><td>Thane</td><td>CIBOP</td><td>SBI</td><td>Corporate Actions</td><td>4.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>109</td><td>Pavan Kalyan V</td><td>pavanabd360@gmail.com</td><td>Hyderabad</td><td>CIBOP</td><td>State Street</td><td>Apprenticeship</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>110</td><td>Anishala M A</td><td>maanishala1968@gmail.com</td><td>Chennai</td><td>CIBOP</td><td>Societe Genarale0006</td><td>Analyst - IB</td><td>3.25</td><td>Placed through Imarticus</td></tr>
+                <tr><td>111</td><td>Anagha Phadke</td><td>anaghaphadke121@gmail.com</td><td>Pune</td><td>CIBOP</td><td>CitiCorp</td><td>Retail Ops</td><td>4.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>112</td><td>Alfiya</td><td>alfiyashaikh0405@gmail.com</td><td>Pune</td><td>CIBOP</td><td>CitiCorp</td><td>Retail Ops</td><td>4.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>113</td><td>Amith Kumar</td><td>amithkumarak0@gmail.com</td><td>Pune</td><td>CIBOP</td><td>CitiCorp</td><td>Retail Ops</td><td>4.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>114</td><td>Febin Biju</td><td>febinbiju123@gmail.com</td><td>Coimbatore</td><td>CIBOP</td><td>Societe Genarale0006</td><td>Analyst - IB</td><td>3.25</td><td>Placed through Imarticus</td></tr>
+                <tr><td>115</td><td>Jeeva</td><td>jeevasekar121@gmail.com</td><td>Coimbatore</td><td>CIBOP</td><td>CitiCorp</td><td>Retail Ops</td><td>4.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>116</td><td>Shyam Karthik</td><td>Shyamkarthikm@gmail.com</td><td>Coimbatore</td><td>CIBOP</td><td>CitiCorp</td><td>Retail Ops</td><td>4.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>117</td><td>Milind Dave</td><td>milind.dave24qf@sibm.edu.in</td><td>Lucknow</td><td>CIBOP</td><td>Goldman Sachs</td><td>Analyst -Platform solutions</td><td>4.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>118</td><td>Shreyanka</td><td>shreyankasaravanan@gmail.com</td><td>Chennai</td><td>CIBOP</td><td>Societe Genarale0006</td><td>Analyst - IB</td><td>3.25</td><td>Placed through Imarticus</td></tr>
+                <tr><td>119</td><td>Prasad Giri</td><td>prasadgiri0077@gmail.com</td><td>Pune</td><td>CIBOP</td><td>State Street</td><td>Apprenticeship</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>120</td><td>Aditya C Sarode</td><td>adityasarode07@gmail.com</td><td>NCR</td><td>CIBOP</td><td>CitiCorp</td><td>Retail Ops</td><td>4.5</td><td>Placed through Imarticus</td></tr>
+                <tr><td>121</td><td>Evangeline Bosco</td><td>211ib009@gmail.com</td><td>Coimbatore</td><td>CIBOP</td><td>State Street</td><td>Apprenticeship</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>122</td><td>Shimpy Yadav</td><td>shimpyyadav63@gmail.com</td><td>NCR</td><td>CIBOP</td><td>Coforge</td><td>Analyst IB Ops</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>123</td><td>Vetry</td><td>Vetrymmba@gmail.com</td><td>Chennai</td><td>CIBOP</td><td>State Street</td><td>Apprenticeship</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>124</td><td>Risha Choubey</td><td>rishachaubey6@gmail.com</td><td>Lucknow</td><td>CIBOP</td><td>Coforge</td><td>Analyst IB Ops</td><td>3</td><td>Placed through Imarticus</td></tr>
+                <tr><td>125</td><td>Shadab Ahmed Khan</td><td>shadab2708msk@gmail.com</td><td>NCR</td><td>CIBOP</td><td>WNS Global Services</td><td>Associate</td><td>4.8</td><td>Self Placed</td></tr>
+                <tr><td>126</td><td>Charanpreet Singh</td><td>scharanpreet0906@gmail.com</td><td>NCR</td><td>CIBOP</td><td>AML Right Source</td><td>AML/KYC</td><td>4.9</td><td>Self Placed</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="modal">
+        <div>
+            <h2 id="modalTitle"></h2>
+            <p id="modalContent"></p>
+            <button class="btn" onclick="closeModal(); playSound('clickSound')">Close</button>
+        </div>
+    </div>
+    <audio id="selectSound" src="https://freesound.org/data/previews/151/151605_1038806-lq.mp3" preload="auto"></audio>
+    <audio id="clickSound" src="https://freesound.org/data/previews/171/171671_2437358-lq.mp3" preload="auto"></audio>
+    <script>
+        let isMuted = false;
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            document.getElementById('muteBtn').textContent = isMuted ? 'Unmute Sounds' : 'Mute Sounds';
+        }
+
+        function playSound(id) {
+            if (!isMuted) {
+                const sound = document.getElementById(id);
+                sound.currentTime = 0; // Reset to start for immediate replay
+                sound.play().catch(error => console.error('Audio playback failed:', error));
+            }
+        }
+
+        function filterTable() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const centerFilter = document.getElementById('centerFilter').value;
+            const productFilter = document.getElementById('productFilter').value;
+            const placementTypeFilter = document.getElementById('placementTypeFilter').value;
+            const rows = document.querySelectorAll('#placementTable tbody tr');
+
+            rows.forEach(row => {
+                const name = row.cells[1].textContent.toLowerCase();
+                const email = row.cells[2].textContent.toLowerCase();
+                const center = row.cells[3].textContent;
+                const product = row.cells[4].textContent;
+                const placementType = row.cells[8].textContent;
+
+                const matchesSearch = name.includes(searchInput) || email.includes(searchInput);
+                const matchesCenter = !centerFilter || center === centerFilter;
+                const matchesProduct = !productFilter || product === productFilter;
+                const matchesPlacementType = !placementTypeFilter || placementType === placementTypeFilter;
+
+                row.style.display = matchesSearch && matchesCenter && matchesProduct && matchesPlacementType ? '' : 'none';
+            });
+        }
+
+        function parseCTC(ctc) {
+            if (ctc.includes('-')) {
+                const [min, max] = ctc.split('-').map(Number);
+                return (min + max) / 2;
+            } else {
+                return parseFloat(ctc);
+            }
+        }
+
+        function sortTable() {
+            const sortValue = document.getElementById('sortCTC').value;
+            if (!sortValue) return;
+            const table = document.getElementById('placementTable');
+            const tbody = table.tBodies[0];
+            const rows = Array.from(tbody.rows);
+            const sortedRows = rows.sort((a, b) => {
+                const aCTC = parseCTC(a.cells[7].textContent);
+                const bCTC = parseCTC(b.cells[7].textContent);
+                if (sortValue === 'asc') {
+                    return aCTC - bCTC;
+                } else {
+                    return bCTC - aCTC;
+                }
+            });
+            tbody.innerHTML = '';
+            sortedRows.forEach(row => tbody.appendChild(row));
+        }
+
+        function exportToExcel() {
+            const table = document.getElementById('placementTable');
+            const ws = XLSX.utils.table_to_sheet(table);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Placement Data');
+            XLSX.writeFile(wb, 'Finance_Placement_April_2025.xlsx');
+        }
+
+        document.querySelectorAll('#placementTable tbody tr').forEach(row => {
+            row.addEventListener('click', () => {
+                const name = row.cells[1].textContent;
+                const email = row.cells[2].textContent;
+                const center = row.cells[3].textContent;
+                const product = row.cells[4].textContent;
+                const company = row.cells[5].textContent;
+                const role = row.cells[6].textContent;
+                const ctc = row.cells[7].textContent;
+                const placementType = row.cells[8].textContent;
+                document.getElementById('modalTitle').textContent = name;
+                document.getElementById('modalContent').innerHTML = `
+                    <strong>Email:</strong> ${email}<br>
+                    <strong>Center:</strong> ${center}<br>
+                    <strong>Product:</strong> ${product}<br>
+                    <strong>Company:</strong> ${company}<br>
+                    <strong>Role:</strong> ${role}<br>
+                    <strong>CTC:</strong> ${ctc} Lakhs<br>
+                    <strong>Placement Type:</strong> ${placementType}
+                `;
+                document.getElementById('modal').style.display = 'block';
+                playSound('clickSound');
+            });
+        });
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            playSound('clickSound');
+        }
+    </script>
+</body>
+</html>
