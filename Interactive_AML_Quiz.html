@@ -1,0 +1,1396 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Training 2050: Interactive AML Master Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            color: #00ffff;
+            font-size: 2.2em;
+            text-shadow: 0 0 10px #00ffff;
+        }
+        #progress-bar {
+            width: 100%;
+            background: #222;
+            height: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        #progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #00ff00, #ffff00);
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+        #progress-text, #score-text {
+            font-family: 'Orbitron', sans-serif;
+            color: #ffff00;
+            text-align: center;
+            margin: 5px 0;
+        }
+        .question-container {
+            background: #1a1a2e;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px #00ffff;
+            margin-bottom: 15px;
+        }
+        .question-text {
+            font-size: 1.2em;
+            color: #00ffff;
+            margin-bottom: 10px;
+        }
+        .option {
+            background: linear-gradient(45deg, #1a1a2e, #24243e);
+            color: #00ffff;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .option:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 15px #ff00ff;
+        }
+        .option.selected {
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            color: #000;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .feedback.correct {
+            background: #00ff00;
+            color: #000;
+        }
+        .feedback.incorrect {
+            background: #ff4444;
+            color: #fff;
+        }
+        #certificate {
+            background: #1a1a2e;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+        }
+        #certificate button {
+            background: #00ff00;
+            color: #000;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+        }
+        #start-quiz {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #00ff00;
+            color: #000;
+            padding: 7px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+        }
+        #start-quiz:hover {
+            background: #00ffff;
+        }
+        @media (max-width: 600px) {
+            h1 { font-size: 1.5em; }
+            .question-text { font-size: 1em; }
+            .option { padding: 8px; font-size: 0.9em; }
+            #start-quiz { font-size: 0.8em; padding: 5px 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Cyber Training 2050: Interactive AML Master Quiz</h1>
+            <p>Answer all 100 AML questions to secure the financial grid!</p>
+            <div id="progress-bar"><div id="progress-fill"></div></div>
+            <p id="progress-text">Progress: 0%</p>
+            <p id="score-text">Score: 0</p>
+        </header>
+        <main id="questions-container"></main>
+        <section id="certificate">
+            <h3>Mission Complete!</h3>
+            <p>Congratulations, Agent! You've secured the financial grid.</p>
+            <button id="download-certificate">Download Certificate</button>
+        </section>
+        <div id="start-quiz">Start Quiz</div>
+    </div>
+    <script>
+        let score = 0;
+        let answeredQuestions = 0;
+
+        const questions = [
+            {
+                question: "How do you differentiate legitimate activities from money laundering?",
+                options: [
+                    "By checking if the transaction amount is above $10,000.",
+                    "By verifying the customer's identity through KYC.",
+                    "By analyzing patterns, profiles, and context, looking for anomalies such as large cash deposits or transfers to risky jurisdictions.",
+                    "By monitoring only international transactions."
+                ],
+                correct: 2,
+                explanation: "Legitimate transactions match expected behavior (e.g., retail sales), while money laundering shows anomalies like large cash deposits or transfers to risky jurisdictions. Example: A café receiving $50,000 daily from unknown sources signals layering."
+            },
+            {
+                question: "What is the primary purpose of AML Transaction Monitoring?",
+                options: [
+                    "To increase customer satisfaction",
+                    "To identify and report suspicious activities related to financial crimes",
+                    "To maximize profits for the financial institution",
+                    "To comply with tax regulations"
+                ],
+                correct: 1,
+                explanation: "AML Transaction Monitoring is the process used by financial institutions to monitor and analyze customer transactions in real-time or on a daily basis to identify and report suspicious activities that could be related to money laundering, terrorist financing, or other financial crimes."
+            },
+            {
+                question: "What is a key indicator of potential money laundering in a business account?",
+                options: [
+                    "Consistent monthly revenue",
+                    "Frequent large cash deposits inconsistent with business type",
+                    "Regular payroll transactions",
+                    "Payments to known suppliers"
+                ],
+                correct: 1,
+                explanation: "Large cash deposits that do not align with the business’s profile (e.g., a small retail store depositing $100,000 weekly in cash) suggest potential money laundering, as they may indicate layering or placement of illicit funds."
+            },
+            {
+                question: "What does KYC stand for in AML processes?",
+                options: [
+                    "Know Your Cash",
+                    "Know Your Customer",
+                    "Keep Your Compliance",
+                    "Know Your Currency"
+                ],
+                correct: 1,
+                explanation: "KYC (Know Your Customer) involves verifying the identity of clients, understanding their financial behavior, and assessing their risk profile to prevent money laundering and other financial crimes."
+            },
+            {
+                question: "Which stage of money laundering involves breaking large amounts of illicit funds into smaller transactions?",
+                options: [
+                    "Integration",
+                    "Placement",
+                    "Layering",
+                    "Structuring"
+                ],
+                correct: 2,
+                explanation: "Layering involves creating complex transactions to obscure the origin of illicit funds, often by breaking large sums into smaller, less noticeable transactions across multiple accounts or jurisdictions."
+            },
+            {
+                question: "What is a Suspicious Activity Report (SAR)?",
+                options: [
+                    "A report on customer satisfaction",
+                    "A report filed to report suspicious transactions to authorities",
+                    "A financial statement for tax purposes",
+                    "A customer feedback survey"
+                ],
+                correct: 1,
+                explanation: "A Suspicious Activity Report (SAR) is a document that financial institutions must file with the Financial Crimes Enforcement Network (FinCEN) when they detect transactions that may indicate money laundering or other financial crimes."
+            },
+            {
+                question: "Which of the following is a red flag for money laundering?",
+                options: [
+                    "Regular mortgage payments",
+                    "Rapid movement of funds between multiple accounts",
+                    "Monthly utility bill payments",
+                    "Direct deposits from an employer"
+                ],
+                correct: 1,
+                explanation: "Rapid movement of funds, especially between unrelated accounts or jurisdictions, is a common layering technique used to obscure the trail of illicit funds."
+            },
+            {
+                question: "What is the role of the Financial Action Task Force (FATF)?",
+                options: [
+                    "To regulate international banking",
+                    "To set global AML and counter-terrorism financing standards",
+                    "To audit financial institutions",
+                    "To manage cross-border payments"
+                ],
+                correct: 1,
+                explanation: "The FATF is an intergovernmental organization that develops policies and standards to combat money laundering and terrorist financing globally."
+            },
+            {
+                question: "What is smurfing in money laundering?",
+                options: [
+                    "Using cryptocurrencies for transactions",
+                    "Structuring transactions to avoid reporting thresholds",
+                    "Falsifying financial statements",
+                    "Creating fake invoices"
+                ],
+                correct: 1,
+                explanation: "Smurfing, also known as structuring, involves breaking down large transactions into smaller ones to evade detection or reporting requirements, such as those above $10,000 in the U.S."
+            },
+            {
+                question: "Why is customer due diligence (CDD) important?",
+                options: [
+                    "To improve customer service",
+                    "To assess and manage money laundering risks",
+                    "To increase transaction speed",
+                    "To reduce banking fees"
+                ],
+                correct: 1,
+                explanation: "CDD involves identifying and verifying customers and understanding their transactions to assess risks of money laundering or terrorist financing."
+            },
+            {
+                question: "What is a common method used in trade-based money laundering?",
+                options: [
+                    "Paying regular salaries",
+                    "Over- or under-invoicing goods or services",
+                    "Using debit cards for purchases",
+                    "Depositing payroll checks"
+                ],
+                correct: 1,
+                explanation: "Trade-based money laundering often involves manipulating invoices (over- or under-invoicing) to move illicit funds across borders under the guise of legitimate trade."
+            },
+            {
+                question: "What does the term 'beneficial owner' refer to in AML?",
+                options: [
+                    "The bank that benefits from a transaction",
+                    "The individual who ultimately owns or controls an account or entity",
+                    "The person receiving a loan",
+                    "The company that profits from a transaction"
+                ],
+                correct: 1,
+                explanation: "The beneficial owner is the natural person who owns or controls a legal entity or account, often hidden behind complex corporate structures to obscure money laundering activities."
+            },
+            {
+                question: "Which of the following is a sign of terrorist financing?",
+                options: [
+                    "Monthly rent payments",
+                    "Small, frequent transactions to high-risk jurisdictions",
+                    "Regular grocery purchases",
+                    "Annual tax payments"
+                ],
+                correct: 1,
+                explanation: "Terrorist financing often involves small, frequent transactions to high-risk areas to fund illicit activities, distinguishing it from typical money laundering patterns."
+            },
+            {
+                question: "What is enhanced due diligence (EDD)?",
+                options: [
+                    "Basic identity verification",
+                    "Additional scrutiny for high-risk customers",
+                    "Routine account monitoring",
+                    "Customer service training"
+                ],
+                correct: 1,
+                explanation: "EDD involves deeper investigation into high-risk customers, such as politically exposed persons (PEPs) or those in high-risk jurisdictions, to mitigate money laundering risks."
+            },
+            {
+                question: "What is the purpose of sanctions screening?",
+                options: [
+                    "To approve customer loans",
+                    "To identify transactions involving sanctioned individuals or entities",
+                    "To monitor employee performance",
+                    "To calculate tax liabilities"
+                ],
+                correct: 1,
+                explanation: "Sanctions screening checks customers and transactions against lists of sanctioned individuals, entities, or countries to prevent illegal financial activities."
+            },
+            {
+                question: "What is a Politically Exposed Person (PEP)?",
+                options: [
+                    "A customer with high credit scores",
+                    "An individual with prominent public functions",
+                    "A person with multiple bank accounts",
+                    "A corporate executive"
+                ],
+                correct: 1,
+                explanation: "PEPs are individuals with significant public roles (e.g., government officials) who may pose higher risks for money laundering due to their influence or access to resources."
+            },
+            {
+                question: "Which regulation requires U.S. banks to file Currency Transaction Reports (CTRs)?",
+                options: [
+                    "Sarbanes-Oxley Act",
+                    "Bank Secrecy Act (BSA)",
+                    "Patriot Act",
+                    "Dodd-Frank Act"
+                ],
+                correct: 1,
+                explanation: "The Bank Secrecy Act requires financial institutions to file CTRs for cash transactions exceeding $10,000 to help detect potential money laundering."
+            },
+            {
+                question: "What is the purpose of a risk-based approach in AML?",
+                options: [
+                    "To standardize all transactions",
+                    "To allocate resources based on the level of risk",
+                    "To reduce customer onboarding time",
+                    "To automate all transactions"
+                ],
+                correct: 1,
+                explanation: "A risk-based approach prioritizes resources and scrutiny for high-risk customers or transactions, optimizing AML efforts while minimizing disruption to low-risk activities."
+            },
+            {
+                question: "Which of the following is a common tool for AML transaction monitoring?",
+                options: [
+                    "Payroll software",
+                    "Automated transaction monitoring systems",
+                    "Customer relationship management (CRM) systems",
+                    "Accounting software"
+                ],
+                correct: 1,
+                explanation: "Automated transaction monitoring systems analyze patterns and flag suspicious activities based on predefined rules or anomalies, critical for effective AML compliance."
+            },
+            {
+                question: "What is the primary goal of the Wolfsberg Group?",
+                options: [
+                    "To regulate cryptocurrencies",
+                    "To promote best practices in AML and financial crime prevention",
+                    "To standardize global tax policies",
+                    "To facilitate cross-border loans"
+                ],
+                correct: 1,
+                explanation: "The Wolfsberg Group, formed by major global banks, develops guidelines and best practices to combat money laundering and financial crimes."
+            },
+            {
+                question: "What is a common indicator of layering in money laundering?",
+                options: [
+                    "Regular savings deposits",
+                    "Multiple transfers between unrelated accounts",
+                    "Monthly loan repayments",
+                    "Direct payroll deposits"
+                ],
+                correct: 1,
+                explanation: "Layering often involves multiple transfers between unrelated accounts to obscure the origin of illicit funds, making it harder to trace."
+            },
+            {
+                question: "What does the term 'placement' mean in money laundering?",
+                options: [
+                    "Spending illicit funds",
+                    "Introducing illicit funds into the financial system",
+                    "Hiding funds in offshore accounts",
+                    "Converting cash to digital currency"
+                ],
+                correct: 1,
+                explanation: "Placement is the initial stage of money laundering where illicit funds are introduced into the financial system, often through cash deposits or purchases."
+            },
+            {
+                question: "Which document is critical for reporting suspicious activities in the U.S.?",
+                options: [
+                    "Tax return",
+                    "Suspicious Activity Report (SAR)",
+                    "Financial statement",
+                    "Loan application"
+                ],
+                correct: 1,
+                explanation: "SARs are filed with FinCEN to report transactions that may indicate money laundering or other financial crimes, as required by the Bank Secrecy Act."
+            },
+            {
+                question: "What is a common characteristic of a shell company used in money laundering?",
+                options: [
+                    "High employee count",
+                    "No significant business operations",
+                    "Publicly traded status",
+                    "Large physical office"
+                ],
+                correct: 1,
+                explanation: "Shell companies often lack real business operations and are used to hide ownership or facilitate illicit transactions in money laundering schemes."
+            },
+            {
+                question: "What is the purpose of a Currency Transaction Report (CTR)?",
+                options: [
+                    "To report customer feedback",
+                    "To report cash transactions over $10,000",
+                    "To track employee expenses",
+                    "To monitor credit card usage"
+                ],
+                correct: 1,
+                explanation: "CTRs are filed under the Bank Secrecy Act to report cash transactions exceeding $10,000, helping authorities detect potential money laundering."
+            },
+            {
+                question: "Which of the following is a high-risk jurisdiction indicator?",
+                options: [
+                    "Strong banking regulations",
+                    "Weak AML enforcement",
+                    "High GDP per capita",
+                    "Transparent financial systems"
+                ],
+                correct: 1,
+                explanation: "Jurisdictions with weak AML enforcement are high-risk as they are more likely to be used for money laundering or terrorist financing activities."
+            },
+            {
+                question: "What is the main purpose of the Egmont Group?",
+                options: [
+                    "To regulate global trade",
+                    "To facilitate information sharing among Financial Intelligence Units",
+                    "To standardize banking fees",
+                    "To promote cryptocurrency adoption"
+                ],
+                correct: 1,
+                explanation: "The Egmont Group supports global cooperation by enabling Financial Intelligence Units (FIUs) to share information to combat money laundering and terrorist financing."
+            },
+            {
+                question: "What is a common sign of integration in money laundering?",
+                options: [
+                    "Small cash deposits",
+                    "Purchasing assets with laundered funds",
+                    "Frequent ATM withdrawals",
+                    "Paying utility bills"
+                ],
+                correct: 1,
+                explanation: "Integration is the final stage of money laundering, where laundered funds are used to purchase assets or reintegrated into the economy as legitimate funds."
+            },
+            {
+                question: "What is the role of a compliance officer in AML?",
+                options: [
+                    "To process customer transactions",
+                    "To ensure adherence to AML regulations",
+                    "To market financial products",
+                    "To manage IT systems"
+                ],
+                correct: 1,
+                explanation: "AML compliance officers oversee policies, training, and monitoring to ensure the institution complies with anti-money laundering regulations."
+            },
+            {
+                question: "What is a common use of cryptocurrencies in money laundering?",
+                options: [
+                    "Paying taxes",
+                    "Anonymizing transactions",
+                    "Funding public projects",
+                    "Processing payroll"
+                ],
+                correct: 1,
+                explanation: "Cryptocurrencies can be used to anonymize transactions, making it harder to trace illicit funds, a common tactic in money laundering."
+            },
+            {
+                question: "What is the purpose of the Patriot Act in the U.S.?",
+                options: [
+                    "To regulate stock markets",
+                    "To strengthen AML and counter-terrorism measures",
+                    "To protect consumer privacy",
+                    "To promote international trade"
+                ],
+                correct: 1,
+                explanation: "The Patriot Act enhances AML and counter-terrorism efforts by requiring stricter KYC, transaction monitoring, and information-sharing measures."
+            },
+            {
+                question: "What is a common indicator of a front company in money laundering?",
+                options: [
+                    "High employee turnover",
+                    "Transactions inconsistent with stated business purpose",
+                    "Regular dividend payments",
+                    "Public financial disclosures"
+                ],
+                correct: 1,
+                explanation: "Front companies often engage in transactions that do not align with their stated business purpose, used to disguise illicit funds as legitimate revenue."
+            },
+            {
+                question: "What is the purpose of a Financial Intelligence Unit (FIU)?",
+                options: [
+                    "To manage bank accounts",
+                    "To analyze and share financial crime intelligence",
+                    "To issue banking licenses",
+                    "To set interest rates"
+                ],
+                correct: 1,
+                explanation: "FIUs collect, analyze, and disseminate intelligence on financial crimes, such as money laundering and terrorist financing, to support law enforcement."
+            },
+            {
+                question: "What is a red flag for trade-based money laundering?",
+                options: [
+                    "Consistent export volumes",
+                    "Discrepancies between invoice and shipment values",
+                    "Regular supplier payments",
+                    "Transparent shipping records"
+                ],
+                correct: 1,
+                explanation: "Discrepancies between invoice values and actual shipment values can indicate trade-based money laundering, used to move illicit funds across borders."
+            },
+            {
+                question: "What is the significance of the 4th EU AML Directive?",
+                options: [
+                    "It regulates cryptocurrency exchanges",
+                    "It enhances beneficial ownership transparency",
+                    "It standardizes tax rates",
+                    "It promotes free trade"
+                ],
+                correct: 1,
+                explanation: "The 4th EU AML Directive strengthens requirements for identifying beneficial owners and enhances transparency to combat money laundering and terrorist financing."
+            },
+            {
+                question: "What is a common method to conceal beneficial ownership?",
+                options: [
+                    "Public financial reporting",
+                    "Using nominees or shell companies",
+                    "Regular audits",
+                    "Transparent banking"
+                ],
+                correct: 1,
+                explanation: "Nominees or shell companies are often used to hide the true beneficial owner, complicating efforts to trace illicit funds in money laundering schemes."
+            },
+            {
+                question: "What is the purpose of a compliance program in AML?",
+                options: [
+                    "To increase sales",
+                    "To prevent and detect money laundering activities",
+                    "To streamline customer onboarding",
+                    "To reduce operational costs"
+                ],
+                correct: 1,
+                explanation: "An AML compliance program includes policies, training, and monitoring to prevent and detect money laundering, ensuring regulatory adherence."
+            },
+            {
+                question: "What is a common indicator of structuring?",
+                options: [
+                    "Large single transactions",
+                    "Multiple small transactions just below reporting thresholds",
+                    "Regular loan payments",
+                    "Annual tax filings"
+                ],
+                correct: 1,
+                explanation: "Structuring involves breaking large transactions into smaller ones (e.g., deposits just under $10,000) to avoid triggering mandatory reporting requirements."
+            },
+            {
+                question: "What is the role of FinCEN in the U.S.?",
+                options: [
+                    "To regulate stock exchanges",
+                    "To combat financial crimes through intelligence",
+                    "To set monetary policy",
+                    "To issue consumer loans"
+                ],
+                correct: 1,
+                explanation: "FinCEN (Financial Crimes Enforcement Network) collects and analyzes financial data to combat money laundering, terrorist financing, and other financial crimes."
+            },
+            {
+                question: "What is a common sign of terrorist financing in transaction patterns?",
+                options: [
+                    "Large one-time purchases",
+                    "Small, frequent cross-border transfers",
+                    "Regular mortgage payments",
+                    "Annual investment contributions"
+                ],
+                correct: 1,
+                explanation: "Terrorist financing often involves small, frequent transfers to high-risk jurisdictions to fund illicit activities, distinguishing it from typical money laundering."
+            },
+            {
+                question: "What is the purpose of the 5th EU AML Directive?",
+                options: [
+                    "To regulate international trade",
+                    "To extend AML rules to virtual currencies and prepaid cards",
+                    "To standardize banking fees",
+                    "To promote economic growth"
+                ],
+                correct: 1,
+                explanation: "The 5th EU AML Directive expands AML regulations to include virtual currencies and prepaid cards, addressing new avenues for money laundering."
+            },
+            {
+                question: "What is a common red flag for cash-intensive businesses?",
+                options: [
+                    "Regular electronic payments",
+                    "Large cash deposits inconsistent with business size",
+                    "Transparent financial records",
+                    "Consistent payroll expenses"
+                ],
+                correct: 1,
+                explanation: "Large cash deposits that exceed the expected revenue of a cash-intensive business (e.g., a small café) may indicate money laundering activities."
+            },
+            {
+                question: "What is the purpose of a know-your-customer (KYC) program?",
+                options: [
+                    "To increase transaction speed",
+                    "To verify customer identity and assess risk",
+                    "To reduce banking fees",
+                    "To improve customer service"
+                ],
+                correct: 1,
+                explanation: "KYC programs verify customer identities, understand their financial behavior, and assess risks to prevent money laundering and other financial crimes."
+            },
+            {
+                question: "What is a common method of money laundering through real estate?",
+                options: [
+                    "Paying mortgages on time",
+                    "Purchasing properties with illicit funds",
+                    "Renting properties transparently",
+                    "Selling properties at market value"
+                ],
+                correct: 1,
+                explanation: "Real estate is often used in the integration stage of money laundering, where illicit funds are used to purchase properties to appear legitimate."
+            },
+            {
+                question: "What is the purpose of transaction thresholds in AML?",
+                options: [
+                    "To limit customer spending",
+                    "To trigger reporting for large or suspicious transactions",
+                    "To reduce banking fees",
+                    "To streamline account opening"
+                ],
+                correct: 1,
+                explanation: "Transaction thresholds (e.g., $10,000 for CTRs) trigger mandatory reporting to help authorities detect potential money laundering or financial crimes."
+            },
+            {
+                question: "What is a common indicator of a money mule?",
+                options: [
+                    "Regular salary deposits",
+                    "Receiving and forwarding funds for unknown parties",
+                    "Paying utility bills",
+                    "Investing in mutual funds"
+                ],
+                correct: 1,
+                explanation: "Money mules receive and transfer funds, often unknowingly, for criminals, facilitating money laundering by obscuring the source of illicit funds."
+            },
+            {
+                question: "What is the role of the Office of Foreign Assets Control (OFAC)?",
+                options: [
+                    "To regulate domestic banks",
+                    "To enforce U.S. sanctions programs",
+                    "To set tax policies",
+                    "To manage foreign investments"
+                ],
+                correct: 1,
+                explanation: "OFAC administers and enforces U.S. sanctions, ensuring financial institutions screen for transactions involving sanctioned entities or individuals."
+            },
+            {
+                question: "What is a common red flag for virtual currency transactions?",
+                options: [
+                    "Transparent wallet addresses",
+                    "Use of mixing services to obscure transaction trails",
+                    "Regular online purchases",
+                    "Publicly reported transactions"
+                ],
+                correct: 1,
+                explanation: "Mixing services anonymize cryptocurrency transactions, making it difficult to trace funds, a common tactic in money laundering."
+            },
+            {
+                question: "What is the purpose of a suspicious transaction alert system?",
+                options: [
+                    "To promote customer loyalty",
+                    "To flag unusual transactions for review",
+                    "To automate loan approvals",
+                    "To reduce transaction fees"
+                ],
+                correct: 1,
+                explanation: "Suspicious transaction alert systems use rules or analytics to flag unusual activities for further investigation, aiding AML compliance."
+            },
+            {
+                question: "What is a common characteristic of high-risk customers in AML?",
+                options: [
+                    "Regular savings deposits",
+                    "Connections to high-risk jurisdictions or PEPs",
+                    "Transparent financial records",
+                    "Consistent payroll payments"
+                ],
+                correct: 1,
+                explanation: "High-risk customers, such as those linked to high-risk jurisdictions or PEPs, require enhanced due diligence due to their potential for money laundering."
+            },
+            {
+                question: "What is the purpose of a compliance audit in AML?",
+                options: [
+                    "To increase transaction speed",
+                    "To evaluate the effectiveness of AML controls",
+                    "To reduce operational costs",
+                    "To improve customer service"
+                ],
+                correct: 1,
+                explanation: "Compliance audits assess the effectiveness of AML policies, procedures, and controls to ensure regulatory compliance and identify gaps."
+            },
+            {
+                question: "What is a common method of money laundering through casinos?",
+                options: [
+                    "Paying taxes on winnings",
+                    "Exchanging illicit cash for chips and redeeming them",
+                    "Transparent betting records",
+                    "Regular slot machine use"
+                ],
+                correct: 1,
+                explanation: "Casinos are used for money laundering by exchanging illicit cash for chips, gambling minimally, and redeeming chips for 'clean' funds."
+            },
+            {
+                question: "What is the purpose of the 6th EU AML Directive?",
+                options: [
+                    "To regulate international trade",
+                    "To harmonize criminal penalties for money laundering",
+                    "To standardize banking fees",
+                    "To promote economic growth"
+                ],
+                correct: 1,
+                explanation: "The 6th EU AML Directive standardizes definitions and penalties for money laundering crimes across EU member states to enhance enforcement."
+            },
+            {
+                question: "What is a common red flag for prepaid card usage?",
+                options: [
+                    "Regular grocery purchases",
+                    "High-value transactions in high-risk jurisdictions",
+                    "Transparent transaction records",
+                    "Monthly bill payments"
+                ],
+                correct: 1,
+                explanation: "Prepaid cards used for high-value transactions in high-risk jurisdictions can indicate money laundering due to their anonymity and ease of use."
+            },
+            {
+                question: "What is the purpose of a customer risk rating in AML?",
+                options: [
+                    "To determine loan eligibility",
+                    "To assess the money laundering risk of a customer",
+                    "To set account fees",
+                    "To evaluate customer satisfaction"
+                ],
+                correct: 1,
+                explanation: "Customer risk ratings evaluate factors like jurisdiction, occupation, or transaction patterns to determine the level of money laundering risk."
+            },
+            {
+                question: "What is a common method of money laundering through charities?",
+                options: [
+                    "Transparent donations",
+                    "Funneling illicit funds as donations",
+                    "Public financial reporting",
+                    "Regular volunteer activities"
+                ],
+                correct: 1,
+                explanation: "Illicit funds are sometimes funneled through charities as donations, exploiting their perceived legitimacy to launder money."
+            },
+            {
+                question: "What is the role of a designated non-financial business or profession (DNFBP) in AML?",
+                options: [
+                    "To issue banking licenses",
+                    "To comply with AML regulations in high-risk sectors",
+                    "To manage investment portfolios",
+                    "To set tax policies"
+                ],
+                correct: 1,
+                explanation: "DNFBPs, such as casinos, real estate agents, or lawyers, must comply with AML regulations due to their vulnerability to money laundering."
+            },
+            {
+                question: "What is a common red flag for money laundering in art transactions?",
+                options: [
+                    "Transparent auction records",
+                    "Overvaluation of artwork to move illicit funds",
+                    "Regular gallery purchases",
+                    "Publicly reported sales"
+                ],
+                correct: 1,
+                explanation: "Overvaluing artwork allows illicit funds to be moved under the guise of legitimate art transactions, a common money laundering tactic."
+            },
+            {
+                question: "What is the purpose of a transaction monitoring rule?",
+                options: [
+                    "To limit customer spending",
+                    "To detect patterns of suspicious activity",
+                    "To reduce banking fees",
+                    "To streamline account opening"
+                ],
+                correct: 1,
+                explanation: "Transaction monitoring rules use predefined criteria to identify unusual or suspicious patterns, triggering alerts for further investigation."
+            },
+            {
+                question: "What is a common characteristic of a high-risk jurisdiction?",
+                options: [
+                    "Strong financial regulations",
+                    "Lack of transparency in financial systems",
+                    "High economic stability",
+                    "Public financial disclosures"
+                ],
+                correct: 1,
+                explanation: "High-risk jurisdictions often lack transparency, making them attractive for money laundering and terrorist financing activities."
+            },
+            {
+                question: "What is the purpose of a beneficial ownership registry?",
+                options: [
+                    "To track employee salaries",
+                    "To identify the true owners of entities",
+                    "To monitor customer spending",
+                    "To calculate tax liabilities"
+                ],
+                correct: 1,
+                explanation: "Beneficial ownership registries provide transparency by identifying the individuals who ultimately own or control entities, reducing money laundering risks."
+            },
+            {
+                question: "What is a common method of money laundering through insurance?",
+                options: [
+                    "Paying premiums on time",
+                    "Purchasing policies with illicit funds and claiming refunds",
+                    "Transparent policy disclosures",
+                    "Regular claim submissions"
+                ],
+                correct: 1,
+                explanation: "Illicit funds are used to purchase insurance policies, which are later canceled or claimed to receive 'clean' funds, a money laundering tactic."
+            },
+            {
+                question: "What is the purpose of a sanctions list?",
+                options: [
+                    "To approve customer loans",
+                    "To identify prohibited individuals or entities",
+                    "To monitor employee performance",
+                    "To calculate tax liabilities"
+                ],
+                correct: 1,
+                explanation: "Sanctions lists identify individuals, entities, or countries subject to restrictions, helping financial institutions avoid illegal transactions."
+            },
+            {
+                question: "What is a common red flag for money laundering in retail?",
+                options: [
+                    "Regular customer purchases",
+                    "Large cash payments for high-value items",
+                    "Transparent sales records",
+                    "Consistent credit card use"
+                ],
+                correct: 1,
+                explanation: "Large cash payments for high-value retail items can indicate placement of illicit funds, a common money laundering technique."
+            },
+            {
+                question: "What is the purpose of a risk assessment in AML?",
+                options: [
+                    "To increase transaction speed",
+                    "To identify and mitigate money laundering risks",
+                    "To reduce banking fees",
+                    "To improve customer service"
+                ],
+                correct: 1,
+                explanation: "AML risk assessments identify vulnerabilities and prioritize resources to mitigate money laundering and terrorist financing risks."
+            },
+            {
+                question: "What is a common method of money laundering through securities?",
+                options: [
+                    "Transparent stock purchases",
+                    "Using illicit funds to buy and sell securities",
+                    "Regular dividend payments",
+                    "Public financial reporting"
+                ],
+                correct: 1,
+                explanation: "Illicit funds are used to purchase securities, which are later sold to integrate 'clean' funds into the financial system."
+            },
+            {
+                question: "What is the role of a Money Laundering Reporting Officer (MLRO)?",
+                options: [
+                    "To process customer transactions",
+                    "To oversee AML compliance and reporting",
+                    "To market financial products",
+                    "To manage IT systems"
+                ],
+                correct: 1,
+                explanation: "The MLRO is responsible for overseeing AML compliance, filing SARs, and ensuring the institution adheres to regulatory requirements."
+            },
+            {
+                question: "What is a common red flag for money laundering in wire transfers?",
+                options: [
+                    "Regular salary transfers",
+                    "Frequent transfers to unrelated accounts",
+                    "Transparent transfer records",
+                    "Consistent payment amounts"
+                ],
+                correct: 1,
+                explanation: "Frequent wire transfers to unrelated accounts, especially in high-risk jurisdictions, can indicate layering in money laundering schemes."
+            },
+            {
+                question: "What is the purpose of a customer identification program (CIP)?",
+                options: [
+                    "To increase transaction speed",
+                    "To verify customer identity during onboarding",
+                    "To reduce banking fees",
+                    "To improve customer service"
+                ],
+                correct: 1,
+                explanation: "CIPs require financial institutions to verify customer identities during onboarding to prevent money laundering and comply with regulations."
+            },
+            {
+                question: "What is a common method of money laundering through travel agencies?",
+                options: [
+                    "Transparent booking records",
+                    "Booking trips with illicit funds and canceling for refunds",
+                    "Regular customer bookings",
+                    "Publicly reported sales"
+                ],
+                correct: 1,
+                explanation: "Illicit funds are used to book trips, which are later canceled to receive 'clean' refunds, a money laundering technique."
+            },
+            {
+                question: "What is the purpose of a transaction monitoring system?",
+                options: [
+                    "To limit customer spending",
+                    "To detect and flag suspicious transactions",
+                    "To reduce banking fees",
+                    "To streamline account opening"
+                ],
+                correct: 1,
+                explanation: "Transaction monitoring systems analyze patterns and flag suspicious activities for review, a key component of AML compliance."
+            },
+            {
+                question: "What is a common red flag for money laundering in charities?",
+                options: [
+                    "Transparent donation records",
+                    "Large donations from unknown sources",
+                    "Regular volunteer activities",
+                    "Public financial reporting"
+                ],
+                correct: 1,
+                explanation: "Large donations from unknown or unverifiable sources can indicate money laundering through charities, exploiting their perceived legitimacy."
+            },
+            {
+                question: "What is the purpose of a compliance training program in AML?",
+                options: [
+                    "To increase sales",
+                    "To educate staff on AML regulations and red flags",
+                    "To streamline customer onboarding",
+                    "To reduce operational costs"
+                ],
+                correct: 1,
+                explanation: "AML compliance training educates employees on regulations, red flags, and procedures to prevent and detect money laundering activities."
+            },
+            {
+                question: "What is a common method of money laundering through pawnshops?",
+                options: [
+                    "Transparent loan records",
+                    "Purchasing items with illicit cash and reselling",
+                    "Regular customer loans",
+                    "Publicly reported sales"
+                ],
+                correct: 1,
+                explanation: "Illicit cash is used to purchase items at pawnshops, which are later resold to integrate 'clean' funds into the financial system."
+            },
+            {
+                question: "What is the purpose of a suspicious activity monitoring program?",
+                options: [
+                    "To limit customer spending",
+                    "To identify and report suspicious activities",
+                    "To reduce banking fees",
+                    "To streamline account opening"
+                ],
+                correct: 1,
+                explanation: "Suspicious activity monitoring programs use analytics and rules to identify and report activities that may indicate money laundering or financial crimes."
+            },
+            {
+                question: "What is a common red flag for money laundering in construction?",
+                options: [
+                    "Transparent project budgets",
+                    "Large cash payments for materials or services",
+                    "Regular supplier contracts",
+                    "Publicly reported expenses"
+                ],
+                correct: 1,
+                explanation: "Large cash payments in construction can indicate placement of illicit funds, a common money laundering technique in cash-intensive industries."
+            },
+            {
+                question: "What is the purpose of a customer onboarding process in AML?",
+                options: [
+                    "To increase transaction speed",
+                    "To verify identity and assess risk",
+                    "To reduce banking fees",
+                    "To improve customer service"
+                ],
+                correct: 1,
+                explanation: "The customer onboarding process includes KYC and risk assessments to verify identities and prevent money laundering from the outset."
+            },
+            {
+                question: "What is a common method of money laundering through luxury goods?",
+                options: [
+                    "Transparent purchase records",
+                    "Purchasing high-value items with illicit cash",
+                    "Regular retail purchases",
+                    "Publicly reported sales"
+                ],
+                correct: 1,
+                explanation: "Illicit cash is used to purchase luxury goods, which are later sold or used to integrate 'clean' funds into the financial system."
+            },
+            {
+                question: "What is the purpose of a regulatory reporting requirement in AML?",
+                options: [
+                    "To limit customer spending",
+                    "To provide authorities with financial crime data",
+                    "To reduce banking fees",
+                    "To streamline account opening"
+                ],
+                correct: 1,
+                explanation: "Regulatory reporting, such as SARs and CTRs, provides authorities with data to investigate and combat money laundering and financial crimes."
+            },
+            {
+                question: "What is a common red flag for money laundering in import/export businesses?",
+                options: [
+                    "Transparent shipping records",
+                    "Misrepresenting the value or type of goods",
+                    "Regular supplier payments",
+                    "Consistent export volumes"
+                ],
+                correct: 1,
+                explanation: "Misrepresenting the value or type of goods in import/export businesses is a common trade-based money laundering tactic to move illicit funds."
+            },
+            {
+                question: "What is the purpose of a compliance risk assessment?",
+                options: [
+                    "To increase transaction speed",
+                    "To identify and mitigate AML vulnerabilities",
+                    "To reduce banking fees",
+                    "To improve customer service"
+                ],
+                correct: 1,
+                explanation: "Compliance risk assessments identify vulnerabilities in AML programs and prioritize resources to mitigate money laundering risks."
+            },
+            {
+                question: "What is a common method of money laundering through online marketplaces?",
+                options: [
+                    "Transparent sales records",
+                    "Selling nonexistent goods with illicit funds",
+                    "Regular customer purchases",
+                    "Publicly reported transactions"
+                ],
+                correct: 1,
+                explanation: "Illicit funds are used to 'sell' nonexistent goods on online marketplaces, with payments received as 'clean' funds, a money laundering tactic."
+            },
+            {
+                question: "What is the purpose of a customer due diligence (CDD) process?",
+                options: [
+                    "To increase transaction speed",
+                    "To assess and manage customer risk",
+                    "To reduce banking fees",
+                    "To improve customer service"
+                ],
+                correct: 1,
+                explanation: "CDD processes verify customer identities and assess risks to prevent money laundering and comply with AML regulations."
+            },
+            {
+                question: "What is a common red flag for money laundering in gaming platforms?",
+                options: [
+                    "Transparent transaction records",
+                    "Large transfers for in-game purchases",
+                    "Regular subscription payments",
+                    "Publicly reported earnings"
+                ],
+                correct: 1,
+                explanation: "Large transfers for in-game purchases can indicate money laundering, as illicit funds are used to purchase virtual goods or currencies."
+            },
+            {
+                question: "What is the purpose of a sanctions compliance program?",
+                options: [
+                    "To limit customer spending",
+                    "To ensure adherence to sanctions regulations",
+                    "To reduce banking fees",
+                    "To streamline account opening"
+                ],
+                correct: 1,
+                explanation: "Sanctions compliance programs screen for transactions involving sanctioned entities or individuals to ensure compliance with legal restrictions."
+            },
+            {
+                question: "What is a common method of money laundering through law firms?",
+                options: [
+                    "Transparent billing records",
+                    "Using client accounts to move illicit funds",
+                    "Regular legal services",
+                    "Publicly reported fees"
+                ],
+                correct: 1,
+                explanation: "Illicit funds are moved through law firm client accounts under the guise of legal services, exploiting their perceived legitimacy."
+            },
+            {
+                question: "What is the purpose of a transaction screening system?",
+                options: [
+                    "To limit customer spending",
+                    "To identify transactions involving sanctioned parties",
+                    "To reduce banking fees",
+                    "To streamline account opening"
+                ],
+                correct: 1,
+                explanation: "Transaction screening systems check for involvement with sanctioned parties or high-risk activities to ensure compliance with AML and sanctions regulations."
+            },
+            {
+                question: "What is a common red flag for money laundering in real estate?",
+                options: [
+                    "Transparent purchase records",
+                    "Purchases with unverifiable funds",
+                    "Regular mortgage payments",
+                    "Publicly reported sales"
+                ],
+                correct: 1,
+                explanation: "Real estate purchases with unverifiable funds can indicate money laundering, as illicit funds are used to acquire assets in the integration stage."
+            },
+            {
+                question: "What is the purpose of a compliance monitoring program?",
+                options: [
+                    "To increase transaction speed",
+                    "To ensure ongoing adherence to AML regulations",
+                    "To reduce banking fees",
+                    "To improve customer service"
+                ],
+                correct: 1,
+                explanation: "Compliance monitoring programs continuously evaluate AML controls and processes to ensure ongoing regulatory adherence."
+            },
+            {
+                question: "What is a common method of money laundering through auctions?",
+                options: [
+                    "Transparent bidding records",
+                    "Purchasing items with illicit funds",
+                    "Regular auction attendance",
+                    "Publicly reported sales"
+                ],
+                correct: 1,
+                explanation: "Illicit funds are used to purchase items at auctions, which are later sold to integrate 'clean' funds into the financial system."
+            },
+            {
+                question: "What is the purpose of a regulatory compliance framework?",
+                options: [
+                    "To limit customer spending",
+                    "To ensure adherence to AML and sanctions laws",
+                    "To reduce banking fees",
+                    "To streamline account opening"
+                ],
+                correct: 1,
+                explanation: "A regulatory compliance framework establishes policies and procedures to ensure adherence to AML, sanctions, and other financial regulations."
+            },
+            {
+                question: "What is a common red flag for money laundering in cryptocurrency exchanges?",
+                options: [
+                    "Transparent wallet addresses",
+                    "Large transactions with no KYC",
+                    "Regular trading activity",
+                    "Publicly reported trades"
+                ],
+                correct: 1,
+                explanation: "Large cryptocurrency transactions without KYC verification can indicate money laundering due to the anonymity of such platforms."
+            },
+            {
+                question: "What is the purpose of a customer screening process?",
+                options: [
+                    "To increase transaction speed",
+                    "To identify sanctioned or high-risk customers",
+                    "To reduce banking fees",
+                    "To improve customer service"
+                ],
+                correct: 1,
+                explanation: "Customer screening checks for sanctioned individuals, PEPs, or high-risk profiles to prevent money laundering and ensure compliance."
+            },
+            {
+                question: "What is a common method of money laundering through remittances?",
+                options: [
+                    "Transparent transfer records",
+                    "Sending illicit funds as small remittances",
+                    "Regular family support payments",
+                    "Publicly reported transfers"
+                ],
+                correct: 1,
+                explanation: "Illicit funds are sent as small remittances to obscure their origin, often through multiple transactions to high-risk jurisdictions."
+            },
+            {
+                question: "What is the purpose of a compliance reporting system?",
+                options: [
+                    "To limit customer spending",
+                    "To generate reports for regulatory authorities",
+                    "To reduce banking fees",
+                    "To streamline account opening"
+                ],
+                correct: 1,
+                explanation: "Compliance reporting systems generate SARs, CTRs, and other reports required by regulators to combat financial crimes."
+            },
+            {
+                question: "What is a common red flag for money laundering in jewelry stores?",
+                options: [
+                    "Transparent sales records",
+                    "Large cash purchases of high-value items",
+                    "Regular credit card use",
+                    "Publicly reported transactions"
+                ],
+                correct: 1,
+                explanation: "Large cash purchases of high-value jewelry can indicate placement of illicit funds, a common money laundering technique."
+            },
+            {
+                question: "What is the purpose of a transaction review process?",
+                options: [
+                    "To increase transaction speed",
+                    "To investigate flagged suspicious transactions",
+                    "To reduce banking fees",
+                    "To improve customer service"
+                ],
+                correct: 1,
+                explanation: "Transaction review processes investigate flagged transactions to determine if they indicate money laundering or require reporting."
+            },
+            {
+                question: "What is a common method of money laundering through car dealerships?",
+                options: [
+                    "Transparent sales records",
+                    "Purchasing vehicles with illicit cash",
+                    "Regular lease payments",
+                    "Publicly reported sales"
+                ],
+                correct: 1,
+                explanation: "Illicit cash is used to purchase vehicles, which are later sold to integrate 'clean' funds into the financial system."
+            },
+            {
+                question: "What is the purpose of a sanctions screening system?",
+                options: [
+                    "To limit customer spending",
+                    "To identify transactions with sanctioned parties",
+                    "To reduce banking fees",
+                    "To streamline account opening"
+                ],
+                correct: 1,
+                explanation: "Sanctions screening systems check transactions and customers against sanctions lists to prevent illegal financial activities."
+            },
+            {
+                question: "What is a common red flag for money laundering in offshore accounts?",
+                options: [
+                    "Transparent account records",
+                    "Large transfers to accounts in secrecy jurisdictions",
+                    "Regular savings deposits",
+                    "Publicly reported balances"
+                ],
+                correct: 1,
+                explanation: "Large transfers to offshore accounts in secrecy jurisdictions can indicate money laundering, as these jurisdictions offer anonymity and limited oversight."
+            }
+        ];
+
+        const startQuiz = document.getElementById('start-quiz');
+        const questionsContainer = document.getElementById('questions-container');
+        const progressFill = document.getElementById('progress-fill');
+        const progressText = document.getElementById('progress-text');
+        const scoreText = document.getElementById('score-text');
+        const certificateSection = document.getElementById('certificate');
+        const downloadCertificate = document.getElementById('download-certificate');
+
+        startQuiz.addEventListener('click', () => {
+            startQuiz.style.display = 'none';
+            loadAllQuestions();
+        });
+
+        function updateProgress() {
+            const progress = (answeredQuestions / questions.length) * 100;
+            progressFill.style.width = `${progress}%`;
+            progressText.textContent = `Progress: ${Math.round(progress)}%`;
+            scoreText.textContent = `Score: ${score}`;
+            if (answeredQuestions === questions.length) {
+                certificateSection.style.display = 'block';
+            }
+        }
+
+        function loadAllQuestions() {
+            questionsContainer.innerHTML = '';
+            questions.forEach((q, qIndex) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-container';
+                questionDiv.id = `question-${qIndex}`;
+
+                const questionText = document.createElement('div');
+                questionText.className = 'question-text';
+                questionText.textContent = `${qIndex + 1}. ${q.question}`;
+                questionDiv.appendChild(questionText);
+
+                const optionsContainer = document.createElement('div');
+                optionsContainer.id = `options-${qIndex}`;
+                q.options.forEach((option, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'option';
+                    div.textContent = option;
+                    div.addEventListener('click', () => selectOption(qIndex, index));
+                    optionsContainer.appendChild(div);
+                });
+                questionDiv.appendChild(optionsContainer);
+
+                const feedback = document.createElement('div');
+                feedback.className = 'feedback';
+                feedback.id = `feedback-${qIndex}`;
+                questionDiv.appendChild(feedback);
+
+                questionsContainer.appendChild(questionDiv);
+            });
+            updateProgress();
+        }
+
+        function selectOption(qIndex, index) {
+            const q = questions[qIndex];
+            const options = document.getElementById(`options-${qIndex}`).children;
+            const feedback = document.getElementById(`feedback-${qIndex}`);
+
+            for (let i = 0; i < options.length; i++) {
+                options[i].classList.remove('selected');
+                options[i].style.pointerEvents = 'none';
+            }
+            options[index].classList.add('selected');
+            feedback.style.display = 'block';
+            if (index === q.correct) {
+                feedback.className = 'feedback correct';
+                feedback.textContent = `Correct! ${q.explanation}`;
+                score += 10;
+            } else {
+                feedback.className = 'feedback incorrect';
+                feedback.textContent = `Incorrect. The correct answer is: ${q.options[q.correct]}. ${q.explanation}`;
+            }
+            answeredQuestions++;
+            updateProgress();
+        }
+
+        downloadCertificate.addEventListener('click', () => {
+            const certificateContent = `
+                Certificate of Completion
+                Cyber Training 2050: AML Master
+                Awarded to: Agent
+                Score: ${score} points
+                Date: ${new Date().toLocaleDateString()}
+                Congratulations on securing the financial grid!
+            `;
+            const blob = new Blob([certificateContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'AML_Master_Certificate.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+    </script>
+</body>
+</html>
