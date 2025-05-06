@@ -1,0 +1,382 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Training 2050: AML Master</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            color: #00ffff;
+            font-size: 2.2em;
+            text-shadow: 0 0 10px #00ffff;
+        }
+        #progress-bar {
+            width: 100%;
+            background: #222;
+            height: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        #progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #00ff00, #ffff00);
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+        #progress-text, #score-text {
+            font-family: 'Orbitron', sans-serif;
+            color: #ffff00;
+            text-align: center;
+            margin: 5px 0;
+        }
+        #question-container {
+            background: #1a1a2e;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px #00ffff;
+            margin-bottom: 20px;
+        }
+        #question-text {
+            font-size: 1.2em;
+            color: #00ffff;
+            margin-bottom: 15px;
+        }
+        .option {
+            background: linear-gradient(45deg, #1a1a2e, #24243e);
+            color: #00ffff;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .option:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 15px #ff00ff;
+        }
+        .option.selected {
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            color: #000;
+        }
+        #feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        #feedback.correct {
+            background: #00ff00;
+            color: #000;
+        }
+        #feedback.incorrect {
+            background: #ff4444;
+            color: #fff;
+        }
+        #next-btn {
+            background: #00ff00;
+            color: #000;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            margin-top: 10px;
+            display: none;
+        }
+        #next-btn:hover {
+            background: #ffff00;
+        }
+        #mute-toggle, #start-game {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ff00ff;
+            color: #000;
+            padding: 7px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+        }
+        #start-game {
+            right: 120px;
+            background: #00ff00;
+        }
+        #mute-toggle:hover, #start-game:hover {
+            background: #00ffff;
+        }
+        #certificate {
+            background: #1a1a2e;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+        }
+        #certificate button {
+            background: #00ff00;
+            color: #000;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        @media (max-width: 600px) {
+            h1 { font-size: 1.5em; }
+            #question-text { font-size: 1em; }
+            .option { padding: 8px; font-size: 0.9em; }
+            #mute-toggle, #start-game { font-size: 0.8em; padding: 5px 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Cyber Training 2050: AML Master</h1>
+            <p>Agent, secure the financial grid by mastering 100 AML challenges!</p>
+            <div id="progress-bar"><div id="progress-fill"></div></div>
+            <p id="progress-text">Mission Progress: 0%</p>
+            <p id="score-text">Score: 0</p>
+        </header>
+        <main>
+            <div id="question-container">
+                <div id="question-text"></div>
+                <div id="options"></div>
+                <div id="feedback"></div>
+                <button id="next-btn">Next Question</button>
+            </div>
+            <section id="certificate">
+                <h3>Mission Complete!</h3>
+                <p>Congratulations, Agent! You've secured the financial grid.</p>
+                <button id="download-certificate">Download Certificate</button>
+            </section>
+        </main>
+        <div id="mute-toggle">Mute Sounds</div>
+        <div id="start-game">Start Mission</div>
+    </div>
+    <script>
+        // Placeholder base64 audio (replace with actual encoded audio)
+        const hoverSoundData = 'data:audio/mp3;base64,/+MYxAAAAANIAAAAAExBTUUzLjk4LjIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+        const clickSoundData = 'data:audio/mp3;base64,/+MYxAAAAANIAAAAAExBTUUzLjk4LjIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+        const correctSoundData = 'data:audio/mp3;base64,/+MYxAAAAANIAAAAAExBTUUzLjk4LjIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+        const incorrectSoundData = 'data:audio/mp3;base64,/+MYxAAAAANIAAAAAExBTUUzLjk4LjIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+
+        const hoverSound = new Audio(hoverSoundData);
+        const clickSound = new Audio(clickSoundData);
+        const correctSound = new Audio(correctSoundData);
+        const incorrectSound = new Audio(incorrectSoundData);
+        [hoverSound, clickSound, correctSound, incorrectSound].forEach(sound => {
+            sound.volume = 0.3;
+        });
+
+        let isMuted = false;
+        let score = 0;
+        let currentQuestion = 0;
+        let audioUnlocked = false;
+
+        const questions = [
+            {
+                question: "How do you differentiate legitimate activities from money laundering?",
+                options: [
+                    "By checking if the transaction amount is above $10,000.",
+                    "By verifying the customer's identity through KYC.",
+                    "By analyzing patterns, profiles, and context, looking for anomalies such as large cash deposits or transfers to risky jurisdictions.",
+                    "By monitoring only international transactions."
+                ],
+                correct: 2,
+                explanation: "Legitimate transactions match expected behavior (e.g., retail sales), while money laundering shows anomalies like large cash deposits or transfers to risky jurisdictions. Example: A café receiving $50,000 daily from unknown sources signals layering."
+            },
+            {
+                question: "What is the primary purpose of AML Transaction Monitoring?",
+                options: [
+                    "To increase customer satisfaction",
+                    "To identify and report suspicious activities related to financial crimes",
+                    "To maximize profits for the financial institution",
+                    "To comply with tax regulations"
+                ],
+                correct: 1,
+                explanation: "AML Transaction Monitoring is the process used by financial institutions to monitor and analyze customer transactions in real-time or on a daily basis to identify and report suspicious activities that could be related to money laundering, terrorist financing, or other financial crimes."
+            },
+            // Add remaining 98 questions here (omitted for brevity)
+        ];
+
+        const muteToggle = document.getElementById('mute-toggle');
+        const startGame = document.getElementById('start-game');
+        const progressFill = document.getElementById('progress-fill');
+        const progressText = document.getElementById('progress-text');
+        const scoreText = document.getElementById('score-text');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options');
+        const feedback = document.getElementById('feedback');
+        const nextBtn = document.getElementById('next-btn');
+        const certificateSection = document.getElementById('certificate');
+        const downloadCertificate = document.getElementById('download-certificate');
+
+        startGame.addEventListener('click', () => {
+            if (!audioUnlocked) {
+                [hoverSound, clickSound, correctSound, incorrectSound].forEach(sound => {
+                    sound.play().then(() => sound.pause()).catch(err => console.warn('Audio unlock failed:', err));
+                    sound.currentTime = 0;
+                });
+                audioUnlocked = true;
+                startGame.textContent = 'Mission Started';
+                setTimeout(() => startGame.style.display = 'none', 1000);
+                loadQuestion();
+            }
+            playSound(clickSound);
+        });
+
+        muteToggle.addEventListener('click', () => {
+            isMuted = !isMuted;
+            muteToggle.textContent = isMuted ? 'Unmute Sounds' : 'Mute Sounds';
+            if (!isMuted && audioUnlocked) playSound(clickSound);
+        });
+
+        function playSound(sound) {
+            if (!isMuted && audioUnlocked) {
+                sound.currentTime = 0;
+                sound.play().catch(err => console.warn('Audio playback failed:', err));
+            }
+        }
+
+        function updateProgress() {
+            const progress = (currentQuestion / questions.length) * 100;
+            progressFill.style.width = `${progress}%`;
+            progressText.textContent = `Mission Progress: ${Math.round(progress)}%`;
+            scoreText.textContent = `Score: ${score}`;
+            if (currentQuestion === questions.length) {
+                certificateSection.style.display = 'block';
+            }
+        }
+
+        function loadQuestion() {
+            if (currentQuestion >= questions.length) return;
+            const q = questions[currentQuestion];
+            questionText.textContent = q.question;
+            optionsContainer.innerHTML = '';
+            q.options.forEach((option, index) => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.textContent = option;
+                div.addEventListener('mouseenter', () => playSound(hoverSound));
+                div.addEventListener('click', () => selectOption(index));
+                optionsContainer.appendChild(div);
+            });
+            feedback.style.display = 'none';
+            nextBtn.style.display = 'none';
+        }
+
+        function selectOption(index) {
+            const q = questions[currentQuestion];
+            const options = optionsContainer.children;
+            for (let i = 0; i < options.length; i++) {
+                options[i].classList.remove('selected');
+                options[i].style.pointerEvents = 'none';
+            }
+            options[index].classList.add('selected');
+            feedback.style.display = 'block';
+            if (index === q.correct) {
+                feedback.className = 'correct';
+                feedback.textContent = `Correct! ${q.explanation}`;
+                score += 10;
+                playSound(correctSound);
+            } else {
+                feedback.className = 'incorrect';
+                feedback.textContent = `Incorrect. The correct answer is: ${q.options[q.correct]}. ${q.explanation}`;
+                playSound(incorrectSound);
+            }
+            nextBtn.style.display = 'block';
+            updateProgress();
+        }
+
+        nextBtn.addEventListener('click', () => {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                questionContainer.style.display = 'none';
+            }
+            playSound(clickSound);
+        });
+
+        downloadCertificate.addEventListener('click', () => {
+            const certificateContent = `
+                Certificate of Completion
+                Cyber Training 2050: AML Master
+                Awarded to: Agent
+                Score: ${score} points
+                Date: ${new Date().toLocaleDateString()}
+                Congratulations on securing the financial grid!
+            `;
+            const blob = new Blob([certificateContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'AML_Master_Certificate.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+            playSound(clickSound);
+        });
+    </script>
+</body>
+</html>
