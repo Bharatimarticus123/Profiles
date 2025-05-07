@@ -1,0 +1,628 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Solutions Analyst Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #1a1a2e; /* Dark futuristic background */
+            font-family: 'Orbitron', sans-serif;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+        }
+        header {
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf); /* Neon gradient */
+            color: #ffffff;
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+        #quiz {
+            display: grid;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+        .question-card {
+            background-color: #2a2a4e;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .question-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.6);
+        }
+        h2 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+        label {
+            display: block;
+            margin: 5px 0;
+            color: #e0e0e0;
+            cursor: pointer;
+        }
+        input[type="radio"] {
+            accent-color: #00d4ff;
+            margin-right: 10px;
+        }
+        .feedback {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .correct {
+            color: #00ff99; /* Neon green for correct answers */
+        }
+        .incorrect {
+            color: #ff4d6d; /* Neon red for incorrect answers */
+        }
+        .explanation {
+            margin-top: 10px;
+            color: #e0e0e0;
+            font-size: 0.9em;
+            background-color: #3a3a5e;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        #completion-message {
+            text-align: center;
+            font-size: 1.2em;
+            color: #00d4ff;
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Goldman Sachs Platform Solutions Analyst Quiz</h1>
+    </header>
+    <div id="quiz"></div>
+    <div id="completion-message">Congratulations! You have completed the quiz.</div>
+    <script>
+        // Array of 75 MCQs with detailed explanations
+        const questions = [
+            {
+                question: "What does a Platform Solutions Analyst do at Goldman Sachs?",
+                options: ["A) Managing customer relationships", "B) Developing new banking products", "C) Monitoring and investigating suspicious transactions", "D) Handling customer complaints"],
+                answer: "C",
+                explanation: "A Platform Solutions Analyst at Goldman Sachs acts as a 'traffic controller' for transaction systems, monitoring real-time alerts for suspicious activities, investigating potential fraud, escalating confirmed cases to Risk or Compliance teams, and improving fraud detection rules. Managing customer relationships, developing products, or handling complaints are not primary responsibilities of this role."
+            },
+            {
+                question: "How would you set up real-time monitoring for card transactions?",
+                options: ["A) Define risk rules", "B) Load data feeds", "C) Configure the engine", "D) All of the above"],
+                answer: "D",
+                explanation: "Setting up real-time monitoring involves defining risk rules (e.g., flagging transactions above ₹50,000), loading data feeds (e.g., cardholder profiles and merchant details), and configuring the engine to translate rules into logical conditions. All these steps are essential for effective monitoring."
+            },
+            {
+                question: "What is the primary factor used to prioritize which alerts to review first?",
+                options: ["A) The chronological order of the alerts", "B) The risk score of the alerts", "C) The merchant category code", "D) The customer's net worth"],
+                answer: "B",
+                explanation: "Alerts are prioritized based on their risk score, which combines factors like transaction amount, location, and customer context. A high score (e.g., 90/100) indicates immediate review, while lower scores can wait. Chronological order, MCC, or net worth are secondary considerations."
+            },
+            {
+                question: "Which of the following is NOT a KPI for a Platform Solutions Analyst?",
+                options: ["A) Alert volume vs. capacity", "B) Time-to-First-Review (TTFR)", "C) Number of transactions processed", "D) False-Positive Rate"],
+                answer: "C",
+                explanation: "KPIs for this role include alert volume vs. capacity, TTFR, False-Positive Rate, and Escalation Rate, as they measure efficiency and accuracy in fraud detection. The number of transactions processed is not a direct KPI, as it’s a system metric rather than an analyst performance indicator."
+            },
+            {
+                question: "What is a false positive in fraud detection?",
+                options: ["A) A fraudulent transaction that is not detected", "B) A legitimate transaction that is flagged as suspicious", "C) A transaction that is processed too slowly", "D) A transaction that exceeds the customer's credit limit"],
+                answer: "B",
+                explanation: "A false positive occurs when a legitimate transaction, like a valid airline ticket purchase, is flagged as suspicious due to high amount or travel-related MCC. This can annoy customers and waste analyst time, unlike undetected fraud (false negative) or other issues."
+            },
+            {
+                question: "What is PCI-DSS and why is it important?",
+                options: ["A) A standard for data security", "B) A type of fraud", "C) A banking product", "D) A risk scoring method"],
+                answer: "A",
+                explanation: "PCI-DSS (Payment Card Industry Data Security Standard) is a set of rules ensuring card data security through encryption, access controls, and logging. It’s critical to protect customer data, avoid fines, and maintain Goldman Sachs’ reputation, unlike fraud types, products, or scoring methods."
+            },
+            {
+                question: "What is an MCC in fraud detection?",
+                options: ["A) Merchant Credit Code", "B) Merchant Category Code", "C) Master Card Code", "D) Monetary Control Code"],
+                answer: "B",
+                explanation: "A Merchant Category Code (MCC) is a 4-digit number classifying merchant types (e.g., 5411 for grocery stores). Analysts use MCCs to identify unusual transactions, such as an ATM withdrawal (6011) on a card used only for groceries, flagging potential fraud."
+            },
+            {
+                question: "What does 'card-not-present' (CNP) fraud involve?",
+                options: ["A) Using a stolen physical card", "B) Transactions without the physical card", "C) ATM withdrawals", "D) In-store purchases"],
+                answer: "B",
+                explanation: "CNP fraud occurs in transactions where the physical card isn’t used, typically online or over the phone, using stolen card details. It’s detected by patterns like velocity or mismatched addresses, unlike physical card use in ATMs or stores."
+            },
+            {
+                question: "How can you reduce false positives without missing real fraud?",
+                options: ["A) Ignore low-value transactions", "B) Use behavioral profiles", "C) Disable monitoring", "D) Increase alert thresholds only"],
+                answer: "B",
+                explanation: "Using behavioral profiles (e.g., typical spending patterns) reduces false positives by adding context, like not flagging a known traveler’s purchase. Ignoring transactions or disabling monitoring risks missing fraud, and raising thresholds alone may overlook subtle patterns."
+            },
+            {
+                question: "Which tool is used to pull raw transaction data?",
+                options: ["A) Excel", "B) SQL", "C) PowerPoint", "D) Word"],
+                answer: "B",
+                explanation: "SQL is used to query databases and pull raw transaction data, such as filtering transactions over ₹50,000. Excel is for analysis, not data extraction, while PowerPoint and Word are irrelevant for this task."
+            },
+            {
+                question: "What is the goal for Time-to-First-Review (TTFR) for high-risk alerts?",
+                options: ["A) < 5 minutes", "B) < 10 minutes", "C) < 30 minutes", "D) < 1 hour"],
+                answer: "A",
+                explanation: "The goal for TTFR for high-risk alerts is under 5 minutes to ensure rapid response to potential fraud. Longer times (10 minutes or more) risk delays in addressing critical issues."
+            },
+            {
+                question: "What does a high false-positive rate indicate?",
+                options: ["A) Efficient system", "B) Annoyed customers", "C) Low fraud detection", "D) High compliance"],
+                answer: "B",
+                explanation: "A high false-positive rate means many legitimate transactions are flagged, frustrating customers and wasting analyst time. It doesn’t indicate efficiency, low detection, or compliance, but rather a need for rule tuning."
+            },
+            {
+                question: "What is a risk score based on?",
+                options: ["A) Transaction amount only", "B) Multiple weighted factors", "C) Customer age", "D) Merchant name"],
+                answer: "B",
+                explanation: "A risk score (0–100) is calculated from weighted factors like amount, velocity, location, and device risk. It’s not based solely on amount, age, or merchant name, ensuring a comprehensive fraud assessment."
+            },
+            {
+                question: "Which team collaborates on rule changes?",
+                options: ["A) Marketing", "B) Risk", "C) HR", "D) Sales"],
+                answer: "B",
+                explanation: "The Risk team collaborates with analysts to update monitoring rules, especially for new patterns like money laundering. Marketing, HR, and Sales are not involved in fraud detection rule changes."
+            },
+            {
+                question: "What is FATF?",
+                options: ["A) Financial Action Task Force", "B) Fraud Analysis Task Force", "C) Financial Audit Team", "D) Federal Anti-Fraud Team"],
+                answer: "A",
+                explanation: "The Financial Action Task Force (FATF) is a global body setting anti-money-laundering standards. Compliance with FATF ensures detection of suspicious flows, avoiding fines and reputational damage, unlike other listed teams."
+            },
+            {
+                question: "How do you document a fraud case?",
+                options: ["A) In a spreadsheet", "B) In a case-management tool", "C) Via email", "D) On paper"],
+                answer: "B",
+                explanation: "Fraud cases are documented in a case-management tool with details like transaction ID, investigation steps, and evidence. Spreadsheets, emails, or paper are less secure and not standard for this purpose."
+            },
+            {
+                question: "What does a Merchant Category Code (MCC) like 5411 represent?",
+                options: ["A) ATM Withdrawals", "B) Grocery Stores", "C) Airlines", "D) Hotels"],
+                answer: "B",
+                explanation: "MCC 5411 represents grocery stores. ATM withdrawals are 6011, airlines are 3000–3299, and hotels are 3501–3999. MCCs help analysts identify unusual transaction patterns."
+            },
+            {
+                question: "What is a common sign of CNP fraud?",
+                options: ["A) In-store purchase", "B) Mismatched shipping/billing addresses", "C) Physical card use", "D) Low transaction amounts"],
+                answer: "B",
+                explanation: "CNP fraud often involves mismatched shipping and billing addresses, indicating stolen card details used online. In-store purchases and physical card use are not CNP, and low amounts are less specific."
+            },
+            {
+                question: "How do you spot a surge in fraud using Excel?",
+                options: ["A) Create a pivot table", "B) Write a macro", "C) Use conditional formatting", "D) All of the above"],
+                answer: "D",
+                explanation: "In Excel, a pivot table analyzes MCC alert counts, conditional formatting highlights spikes, and macros automate data merging. All these techniques help identify fraud surges efficiently."
+            },
+            {
+                question: "What does a risk score of 90/100 indicate?",
+                options: ["A) Low priority", "B) Immediate review", "C) Legitimate transaction", "D) No action needed"],
+                answer: "B",
+                explanation: "A risk score of 90/100 indicates high fraud likelihood, requiring immediate review. Scores below 80 may be lower priority, and high scores don’t confirm legitimacy or inaction."
+            },
+            {
+                question: "What is a source for staying updated on fraud methods?",
+                options: ["A) FS-ISAC bulletins", "B) Marketing reports", "C) Customer feedback", "D) Sales data"],
+                answer: "A",
+                explanation: "FS-ISAC bulletins provide industry-shared insights on new fraud patterns. Marketing reports, customer feedback, and sales data are not primary sources for fraud method updates."
+            },
+            {
+                question: "What is friendly fraud?",
+                options: ["A) Fraud by employees", "B) Cardholder disputes legitimate purchases", "C) Online scams", "D) ATM skimming"],
+                answer: "B",
+                explanation: "Friendly fraud occurs when cardholders dispute valid purchases to get refunds, detected by dispute history or device consistency. It differs from employee fraud, online scams, or ATM skimming."
+            },
+            {
+                question: "What tool is used for weekly fraud-monitoring reports?",
+                options: ["A) Excel", "B) Tableau", "C) Word", "D) Notepad"],
+                answer: "B",
+                explanation: "Tableau or similar BI tools create visualizations for fraud-monitoring reports, showing metrics like alert trends and KPIs. Excel is for ad-hoc analysis, while Word and Notepad are unsuitable."
+            },
+            {
+                question: "What ensures compliance with PCI-DSS?",
+                options: ["A) Encryption", "B) Public data sharing", "C) No logging", "D) Open access"],
+                answer: "A",
+                explanation: "PCI-DSS requires encryption of card data in transit and at rest, along with access controls and logging. Public sharing, no logging, or open access violate security standards."
+            },
+            {
+                question: "What is a process improvement example?",
+                options: ["A) Ignore alerts", "B) Auto-batch low-value alerts", "C) Reduce staff", "D) Disable rules"],
+                answer: "B",
+                explanation: "Auto-batching low-value alerts for daily review frees analysts for high-risk cases, improving efficiency. Ignoring alerts, reducing staff, or disabling rules would compromise fraud detection."
+            },
+            {
+                question: "How do you test a new fraud-detection rule?",
+                options: ["A) Deploy immediately", "B) Back-test on historical data", "C) Ignore testing", "D) Ask customers"],
+                answer: "B",
+                explanation: "Back-testing a rule on historical data checks its effectiveness and false-positive rate. Immediate deployment, ignoring testing, or customer surveys risk system errors or inefficiencies."
+            },
+            {
+                question: "What is the SLA for high-risk alerts acknowledgment?",
+                options: ["A) < 5 minutes", "B) < 10 minutes", "C) < 30 minutes", "D) < 1 hour"],
+                answer: "A",
+                explanation: "High-risk alerts must be acknowledged within 5 minutes to meet SLAs, ensuring rapid fraud response. Longer times risk delays in addressing critical threats."
+            },
+            {
+                question: "What do you do during a system outage?",
+                options: ["A) Wait for recovery", "B) Use manual fallback", "C) Ignore alerts", "D) Reboot servers"],
+                answer: "B",
+                explanation: "During an outage, analysts switch to a manual fallback, like running SQL filters on raw feeds. Waiting, ignoring alerts, or rebooting servers (a Tech Ops task) are not appropriate."
+            },
+            {
+                question: "How do you ensure data quality?",
+                options: ["A) Nightly reconciliation", "B) Ignore errors", "C) Delete duplicates", "D) No checks"],
+                answer: "A",
+                explanation: "Nightly reconciliation compares transaction counts between systems to ensure data accuracy. Ignoring errors, deleting duplicates without checks, or no checks compromise data quality."
+            },
+            {
+                question: "What protects customer confidentiality?",
+                options: ["A) Public access", "B) Masked data", "C) No encryption", "D) Open sharing"],
+                answer: "B",
+                explanation: "Masking card numbers (e.g., showing last 4 digits) protects confidentiality, per PCI-DSS and GDPR. Public access, no encryption, or open sharing violate data privacy standards."
+            },
+            {
+                question: "How do you onboard a new analyst?",
+                options: ["A) Ignore training", "B) Provide shadowing", "C) Assign cases immediately", "D) No SOP review"],
+                answer: "B",
+                explanation: "Shadowing allows new analysts to learn workflows by observing live cases. Ignoring training, immediate case assignment, or skipping SOP review hinder effective onboarding."
+            },
+            {
+                question: "What is an example of automating a task?",
+                options: ["A) Manual data entry", "B) VBA macro for reports", "C) Handwritten notes", "D) No documentation"],
+                answer: "B",
+                explanation: "A VBA macro automating report generation (e.g., merging CSVs and emailing summaries) saves time. Manual entry, handwritten notes, or no documentation are inefficient."
+            },
+            {
+                question: "How do you balance speed and accuracy?",
+                options: ["A) Automate low-risk alerts", "B) Ignore SLAs", "C) Skip reviews", "D) Delay investigations"],
+                answer: "A",
+                explanation: "Automating low-risk alerts ensures speed, while manual reviews for high-risk alerts ensure accuracy. Ignoring SLAs, skipping reviews, or delaying investigations compromise both."
+            },
+            {
+                question: "What is machine-learning-based fraud detection?",
+                options: ["A) Fixed rules only", "B) Learning from past data", "C) Manual reviews", "D) No scoring"],
+                answer: "B",
+                explanation: "ML-based fraud detection learns from labeled data to identify subtle patterns, unlike fixed rules. It enhances scoring, unlike manual reviews or no-scoring approaches."
+            },
+            {
+                question: "How do you explain a metric to a non-technical manager?",
+                options: ["A) Use jargon", "B) Use analogies and visuals", "C) Provide raw data", "D) Avoid details"],
+                answer: "B",
+                explanation: "Analogies (e.g., alerts as cars at a toll) and visuals (e.g., bar charts) make metrics clear to non-technical managers. Jargon, raw data, or avoiding details reduce clarity."
+            },
+            {
+                question: "What is device fingerprinting?",
+                options: ["A) Collecting PII", "B) Gathering non-PII device details", "C) Tracking customer location", "D) Storing card numbers"],
+                answer: "B",
+                explanation: "Device fingerprinting collects non-PII like browser version and OS to identify mismatches, aiding fraud detection. It avoids PII, location tracking, or card storage."
+            },
+            {
+                question: "How do you handle a high-profile client’s false block?",
+                options: ["A) Ignore the complaint", "B) Fast-track review", "C) Delay response", "D) No follow-up"],
+                answer: "B",
+                explanation: "Fast-tracking a review, apologizing, and unblocking if legitimate addresses a high-profile client’s false block. Ignoring, delaying, or no follow-up risks client dissatisfaction."
+            },
+            {
+                question: "What happens if you miss an SLA?",
+                options: ["A) Notify manager", "B) Ignore it", "C) Delete the alert", "D) No action"],
+                answer: "A",
+                explanation: "Notifying the manager and addressing the backlog (e.g., with a workaround script) recovers a missed SLA. Ignoring, deleting alerts, or no action worsen the situation."
+            },
+            {
+                question: "How do you analyze a false-positive spike?",
+                options: ["A) Ignore it", "B) Categorize by rule", "C) Delete alerts", "D) No investigation"],
+                answer: "B",
+                explanation: "Categorizing alerts by triggering rule identifies the cause of a false-positive spike, enabling rule tuning. Ignoring, deleting, or no investigation fails to address the issue."
+            },
+            {
+                question: "What is internal fraud?",
+                options: ["A) Customer fraud", "B) Employee unauthorized actions", "C) Online scams", "D) ATM issues"],
+                answer: "B",
+                explanation: "Internal fraud involves employees making unauthorized changes, detected via access logs and exception reports. It differs from customer fraud, online scams, or ATM issues."
+            },
+            {
+                question: "How do you work with external vendors?",
+                options: ["A) No SLAs", "B) Define requirements", "C) Ignore quality", "D) No reviews"],
+                answer: "B",
+                explanation: "Defining requirements (e.g., file formats and SLAs) ensures reliable vendor data feeds. No SLAs, ignoring quality, or no reviews lead to inconsistent data."
+            },
+            {
+                question: "What is the change-control process?",
+                options: ["A) No documentation", "B) JIRA ticket and testing", "C) Immediate deployment", "D) No peer review"],
+                answer: "B",
+                explanation: "The change-control process involves a JIRA ticket, peer review, and UAT testing to ensure safe updates. No documentation, immediate deployment, or no review risk errors."
+            },
+            {
+                question: "How do you capture lessons learned?",
+                options: ["A) Post-mortem meeting", "B) No documentation", "C) Ignore incidents", "D) No action items"],
+                answer: "A",
+                explanation: "A post-mortem meeting documents incident timelines, root causes, and action items to prevent repeats. No documentation, ignoring incidents, or no action items hinder learning."
+            },
+            {
+                question: "Why is shift flexibility important?",
+                options: ["A) Fraud occurs 24/7", "B) Less workload", "C) Fixed hours", "D) No monitoring"],
+                answer: "A",
+                explanation: "Fraud occurs anytime, requiring 24/7 monitoring. Shift flexibility ensures timely alert reviews, unlike fixed hours or no monitoring, and workload varies."
+            },
+            {
+                question: "What motivates you in this role?",
+                options: ["A) Routine tasks", "B) Solving dynamic puzzles", "C) No collaboration", "D) Fixed processes"],
+                answer: "B",
+                explanation: "The role involves solving dynamic fraud puzzles through analysis and collaboration, not routine tasks, isolation, or fixed processes, making it engaging and challenging."
+            },
+            {
+                question: "How do you explain your role to a non-finance person?",
+                options: ["A) Use technical terms", "B) Use a home alarm analogy", "C) Avoid details", "D) Focus on coding"],
+                answer: "B",
+                explanation: "A home alarm analogy (e.g., tuning alarms and checking alerts) simplifies the role for non-finance audiences. Technical terms, vague details, or coding focus reduce clarity."
+            },
+            {
+                question: "Why Goldman Sachs’s Platform Solutions team?",
+                options: ["A) No ownership", "B) Proprietary platforms", "C) Basic tasks", "D) No risk management"],
+                answer: "B",
+                explanation: "Goldman Sachs’ proprietary platforms and strong risk management culture offer analysts ownership and impact, unlike basic tasks, no ownership, or no risk focus."
+            },
+            {
+                question: "What is your approach to continuous improvement?",
+                options: ["A) No goals", "B) Quarterly goals", "C) Ignore metrics", "D) No experiments"],
+                answer: "B",
+                explanation: "Setting quarterly goals (e.g., learning new tools) and experimenting in sandboxes drive improvement. No goals, ignoring metrics, or no experiments stifle progress."
+            },
+            {
+                question: "How do you improve team morale?",
+                options: ["A) Ignore team", "B) Organize a hackathon", "C) No collaboration", "D) Delay projects"],
+                answer: "B",
+                explanation: "A hackathon encourages innovation and ownership, boosting morale. Ignoring the team, avoiding collaboration, or delaying projects negatively impacts engagement."
+            },
+            {
+                question: "How do you ensure audit-ready analyses?",
+                options: ["A) No documentation", "B) Clear documentation", "C) Delete logs", "D) No timestamps"],
+                answer: "B",
+                explanation: "Clear documentation with screenshots, query logs, and timestamps ensures audit readiness. No documentation, deleting logs, or no timestamps risk non-compliance."
+            },
+            {
+                question: "What do you do if you spot a new fraud pattern?",
+                options: ["A) Ignore it", "B) Document and alert", "C) Delay action", "D) No collaboration"],
+                answer: "B",
+                explanation: "Documenting and alerting leadership about a new fraud pattern, then collaborating on rules or models, ensures proactive response. Ignoring, delaying, or no collaboration risks losses."
+            },
+            {
+                question: "How do you manage stress?",
+                options: ["A) No breaks", "B) Structured breaks", "C) Ignore tasks", "D) No prioritization"],
+                answer: "B",
+                explanation: "Structured breaks (e.g., walks) and prioritized task lists manage stress effectively. No breaks, ignoring tasks, or no prioritization exacerbate pressure."
+            },
+            {
+                question: "What is proactive fraud detection?",
+                options: ["A) Responding to alerts", "B) Tuning rules before alerts", "C) Ignoring patterns", "D) No analysis"],
+                answer: "B",
+                explanation: "Proactive fraud detection involves tuning rules or analyzing patterns to catch fraud before alerts, unlike reactive alert responses, ignoring patterns, or no analysis."
+            },
+            {
+                question: "How do you roll out a new payment channel?",
+                options: ["A) No testing", "B) Phased launch", "C) Ignore regions", "D) No training"],
+                answer: "B",
+                explanation: "A phased launch (starting with one region) with testing and training ensures a smooth rollout. No testing, ignoring regions, or no training risk errors and inefficiencies."
+            },
+            {
+                question: "What is a key skill for this role?",
+                options: ["A) Graphic design", "B) Analytical rigor", "C) Sales", "D) Cooking"],
+                answer: "B",
+                explanation: "Analytical rigor, using tools like SQL and Excel, is critical for fraud analysis. Graphic design, sales, or cooking are unrelated to the role’s responsibilities."
+            },
+            {
+                question: "What does a BIN indicate?",
+                options: ["A) Merchant type", "B) Issuing bank", "C) Transaction amount", "D) Customer age"],
+                answer: "B",
+                explanation: "The Bank Identification Number (BIN), the first six digits of a card, identifies the issuing bank, aiding fraud investigations. It doesn’t indicate merchant type, amount, or age."
+            },
+            {
+                question: "What is velocity in fraud detection?",
+                options: ["A) Transaction speed", "B) Many transactions in short time", "C) Customer movement", "D) Card type"],
+                answer: "B",
+                explanation: "Velocity refers to multiple transactions in a short time, a fraud indicator. It’s not about transaction speed, customer movement, or card type."
+            },
+            {
+                question: "What is a common fraud-detection tool?",
+                options: ["A) Photoshop", "B) In-house monitoring platform", "C) Social media", "D) Calculator"],
+                answer: "B",
+                explanation: "An in-house monitoring platform is the core tool for real-time fraud detection. Photoshop, social media, and calculators are not used for this purpose."
+            },
+            {
+                question: "What is the purpose of a case-management system?",
+                options: ["A) Marketing", "B) Document investigations", "C) Customer support", "D) Sales tracking"],
+                answer: "B",
+                explanation: "A case-management system documents investigation details and escalations for fraud cases. It’s not used for marketing, customer support, or sales tracking."
+            },
+            {
+                question: "What is a sign of friendly fraud?",
+                options: ["A) ATM use", "B) Frequent disputes", "C) In-store purchases", "D) Low amounts"],
+                answer: "B",
+                explanation: "Frequent disputes by a cardholder indicate friendly fraud, where legitimate purchases are challenged. ATM use, in-store purchases, or low amounts are less specific."
+            },
+            {
+                question: "What is a UAT environment?",
+                options: ["A) Live system", "B) Sandbox for testing", "C) Customer portal", "D) Marketing tool"],
+                answer: "B",
+                explanation: "A User Acceptance Testing (UAT) environment is a sandbox for testing rules with mirrored data, ensuring no impact on live systems. It’s not a live system, portal, or marketing tool."
+            },
+            {
+                question: "What is the role of access logs in internal fraud detection?",
+                options: ["A) Track customer purchases", "B) Monitor employee actions", "C) Store card numbers", "D) No purpose"],
+                answer: "B",
+                explanation: "Access logs track employee actions (e.g., data views or changes), detecting internal fraud. They don’t track customer purchases, store card numbers, or serve no purpose."
+            },
+            {
+                question: "What is a benefit of segregation of duties?",
+                options: ["A) Faster approvals", "B) Prevents internal fraud", "C) More alerts", "D) No documentation"],
+                answer: "B",
+                explanation: "Segregation of duties ensures no single person can both create and approve changes, preventing internal fraud. It doesn’t speed approvals, increase alerts, or eliminate documentation."
+            },
+            {
+                question: "What is a requirement for external vendor data feeds?",
+                options: ["A) No SLAs", "B) File format", "C) Ignore quality", "D) No reviews"],
+                answer: "B",
+                explanation: "Defining file formats ensures vendor data feeds are compatible with monitoring systems. No SLAs, ignoring quality, or no reviews compromise data reliability."
+            },
+            {
+                question: "What is a post-deployment check?",
+                options: ["A) Ignore traffic", "B) Monitor first 24 hours", "C) No verification", "D) Delete rules"],
+                answer: "B",
+                explanation: "Monitoring the first 24 hours post-deployment checks for unexpected alert spikes, ensuring rule stability. Ignoring traffic, no verification, or deleting rules are not valid checks."
+            },
+            {
+                question: "What is a key compliance standard?",
+                options: ["A) GDPR", "B) PCI-DSS", "C) ISO 9001", "D) All of the above"],
+                answer: "B",
+                explanation: "PCI-DSS is the primary compliance standard for card data security in this role. GDPR applies to broader data privacy, and ISO 9001 is for quality management, not fraud."
+            },
+            {
+                question: "What is the role of a pivot table in Excel?",
+                options: ["A) Write code", "B) Analyze trends", "C) Create charts", "D) Store data"],
+                answer: "B",
+                explanation: "Pivot tables in Excel summarize and analyze trends, like alert counts by MCC. They don’t write code, create charts directly, or store raw data."
+            },
+            {
+                question: "What is a common fraud pattern?",
+                options: ["A) Grocery purchases", "B) High-velocity online transactions", "C) In-store returns", "D) Low amounts"],
+                answer: "B",
+                explanation: "High-velocity online transactions are a common fraud pattern, indicating CNP fraud. Grocery purchases, in-store returns, or low amounts are less suspicious."
+            },
+            {
+                question: "What is the purpose of conditional formatting in Excel?",
+                options: ["A) Write macros", "B) Highlight odd values", "C) Store data", "D) Create reports"],
+                answer: "B",
+                explanation: "Conditional formatting highlights odd values (e.g., alert spikes) for quick identification. It doesn’t write macros, store data, or create full reports."
+            },
+            {
+                question: "What is a benefit of ML in fraud detection?",
+                options: ["A) Fixed rules", "B) Detects subtle patterns", "C) No scoring", "D) Manual reviews"],
+                answer: "B",
+                explanation: "Machine learning detects subtle fraud patterns (e.g., checkout timing) that fixed rules miss, enhancing scoring. It doesn’t rely on manual reviews or eliminate scoring."
+            },
+            {
+                question: "What is a key responsibility in this role?",
+                options: ["A) Product design", "B) Escalate fraud cases", "C) Customer service", "D) Marketing"],
+                answer: "B",
+                explanation: "Escalating confirmed fraud cases to Compliance is a key responsibility. Product design, customer service, and marketing are not part of the analyst’s role."
+            },
+            {
+                question: "What is the final step in investigating a suspicious transaction?",
+                options: ["A) Ignore it", "B) Decide to close or escalate", "C) Delay review", "D) No documentation"],
+                answer: "B",
+                explanation: "The final step is deciding to close the case as legitimate or escalate with evidence. Ignoring, delaying, or no documentation are not valid investigation steps."
+            },
+            {
+                question: "What is a key metric for fraud monitoring?",
+                options: ["A) Customer satisfaction", "B) Escalation Rate", "C) Sales volume", "D) Website traffic"],
+                answer: "B",
+                explanation: "Escalation Rate (% of alerts sent to Compliance) is a key metric, reflecting fraud detection accuracy. Customer satisfaction, sales, and traffic are unrelated to monitoring."
+            }
+        ];
+
+        // Function to render all questions
+        function renderQuestions() {
+            const quizContainer = document.getElementById("quiz");
+            questions.forEach((q, index) => {
+                const card = document.createElement("div");
+                card.className = "question-card";
+                card.innerHTML = `
+                    <h2>${index + 1}. ${q.question}</h2>
+                    ${q.options.map((option, i) => `
+                        <label>
+                            <input type="radio" name="answer-${index}" value="${String.fromCharCode(65 + i)}" onchange="checkAnswer(${index}, this.value)">
+                            ${option}
+                        </label>
+                    `).join("")}
+                    <div id="feedback-${index}" class="feedback"></div>
+                    <div id="explanation-${index}" class="explanation" style="display:none;"></div>
+                `;
+                quizContainer.appendChild(card);
+            });
+        }
+
+        // Function to check the selected answer
+        function checkAnswer(index, selected) {
+            const q = questions[index];
+            const feedback = document.getElementById(`feedback-${index}`);
+            const explanation = document.getElementById(`explanation-${index}`);
+            if (selected === q.answer) {
+                feedback.innerHTML = "Correct!";
+                feedback.classList.add("correct");
+                feedback.classList.remove("incorrect");
+            } else {
+                feedback.innerHTML = `Incorrect! The correct answer is ${q.answer}.`;
+                feedback.classList.add("incorrect");
+                feedback.classList.remove("correct");
+            }
+            explanation.innerHTML = q.explanation;
+            explanation.style.display = "block";
+            // Disable further selections for this question
+            document.querySelectorAll(`input[name="answer-${index}"]`).forEach(radio => radio.disabled = true);
+            // Check if all questions are answered
+            checkCompletion();
+        }
+
+        // Function to check if all questions are answered
+        function checkCompletion() {
+            const allAnswered = questions.every((_, index) => {
+                const feedback = document.getElementById(`feedback-${index}`);
+                return feedback.innerHTML !== "";
+            });
+            if (allAnswered) {
+                document.getElementById("completion-message").style.display = "block";
+            }
+        }
+
+        // Initialize quiz
+        renderQuestions();
+    </script>
+</body>
+</html>
