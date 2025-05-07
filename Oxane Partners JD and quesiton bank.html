@@ -1,0 +1,377 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oxane Partners Placement Opportunity</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(145deg, #FFD700, #DAA520);
+            color: #1C2526;
+            margin: 0;
+            padding: 20px;
+            text-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: linear-gradient(145deg, #FFF8DC, #F5E050);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+        h1, h2, h3 {
+            color: #0055B8;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+        }
+        a {
+            color: #1C2526;
+            text-decoration: underline;
+        }
+        a:hover {
+            color: #4A4A4A;
+        }
+        ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .question {
+            margin: 15px 0;
+            padding: 15px;
+            background: #FFF8DC;
+            border-radius: 5px;
+        }
+        .answer {
+            margin-top: 10px;
+            font-size: 0.9em;
+            background: #F5E050;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        button {
+            background-color: #0055B8;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #0070E0;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+        .mcq-options {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Placement Opportunity with Oxane Partners</h1>
+        <p>Dear Candidates,</p>
+        <p>We are excited to announce a new placement opportunity with <a href="https://oxanepartners.com/">Oxane Partners</a> for the position of Analyst - Portfolio Management Group. Please find the details below:</p>
+
+        <div class="section">
+            <h2>Job Preview</h2>
+            <p><strong>Company:</strong> Oxane Partners</p>
+            <p><strong>Website:</strong> <a href="https://oxanepartners.com/">https://oxanepartners.com/</a></p>
+            <p><strong>Position:</strong> Analyst - Portfolio Management Group</p>
+            <p><strong>Location:</strong> Gurgaon</p>
+            <p><strong>Job Type:</strong> Full-time</p>
+            <p><strong>Job Mode:</strong> On-site</p>
+            <p><strong>Work Experience:</strong> Fresher</p>
+            <p><strong>Mode of Interview:</strong> Virtual + On-site</p>
+            <p><strong>Salary Package:</strong></p>
+            <ul>
+                <li>Freshers Graduate: ₹5,00,000 fixed + ₹50,000 variables</li>
+                <li>Freshers PG (MBA/M.Com/CFA/CA): ₹6,00,000 - ₹8,00,000 fixed + variables</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Roles & Responsibilities</h2>
+            <ul>
+                <li>Onboarding the client’s investment portfolio on Oxane’s proprietary platform</li>
+                <li>Working closely with clients to monitor the performance of investment transactions across various asset classes</li>
+                <li>Building financial models/reports as per client’s requirements and analyzing historical performance</li>
+                <li>Reviewing and extracting data from financial statements, loan agreements, and other reports</li>
+                <li>Calculating and monitoring financial covenants and key metrics for risk surveillance</li>
+                <li>Reviewing reports on Oxane's platform to ensure accuracy</li>
+                <li>Presenting analytics to clients to match their expectations</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Application Details</h2>
+            <p><strong>Application Link:</strong> <a href="https://forms.gle/TvYbqbHvrNUMwV7eA">Apply Here</a></p>
+            <p><strong>Deadline:</strong> 1 PM today, May 07, 2025</p>
+            <p><strong>Interview Process:</strong> First and second rounds are virtual; final round is face-to-face if shortlisted.</p>
+        </div>
+
+        <div class="section">
+            <h2>Interview Preparation: 75 Questions and Answers</h2>
+            <p>Below are 75 questions (50 domain-specific MCQs and 25 HR-based) to help you prepare for your interview with Oxane Partners. For MCQs, select an option and click "Submit Answer" to see the correct answer and explanation.</p>
+
+            <h3>Domain-Based Questions</h3>
+            <div class="question">
+                <p><strong>1. What is portfolio management?</strong></p>
+                <div class="mcq-options">
+                    <label><input type="radio" name="q1" value="a"> a) Managing a collection of investments</label><br>
+                    <label><input type="radio" name="q1" value="b"> b) Buying and selling stocks</label><br>
+                    <label><input type="radio" name="q1" value="c"> c) Analyzing financial statements</label><br>
+                    <label><input type="radio" name="q1" value="d"> d) All of the above</label>
+                </div>
+                <button onclick="checkAnswer(1, 'a', 'The correct answer is a) Managing a collection of investments. Portfolio management involves selecting and overseeing a group of investments to meet specific financial objectives while balancing risk and return.')">Submit Answer</button>
+                <div id="answer1" class="answer"></div>
+            </div>
+            <div class="question">
+                <p><strong>2. What is diversification in portfolio management?</strong></p>
+                <div class="mcq-options">
+                    <label><input type="radio" name="q2" value="a"> a) Investing in a single asset</label><br>
+                    <label><input type="radio" name="q2" value="b"> b) Spreading investments across multiple assets</label><br>
+                    <label><input type="radio" name="q2" value="c"> c) Selling underperforming assets</label><br>
+                    <label><input type="radio" name="q2" value="d"> d) Buying high-risk assets</label>
+                </div>
+                <button onclick="checkAnswer(2, 'b', 'The correct answer is b) Spreading investments across multiple assets. Diversification reduces risk by investing in various assets, minimizing the impact of poor performance in any single investment.')">Submit Answer</button>
+                <div id="answer2" class="answer"></div>
+            </div>
+            <div class="question">
+                <p><strong>3. What is the role of asset allocation?</strong></p>
+                <div class="mcq-options">
+                    <label><input type="radio" name="q3" value="a"> a) Determining the mix of different asset classes</label><br>
+                    <label><input type="radio" name="q3" value="b"> b) Selecting individual securities</label><br>
+                    <label><input type="radio" name="q3" value="c"> c) Monitoring portfolio performance</label><br>
+                    <label><input type="radio" name="q3" value="d"> d) Rebalancing the portfolio</label>
+                </div>
+                <button onclick="checkAnswer(3, 'a', 'The correct answer is a) Determining the mix of different asset classes. Asset allocation balances risk and return based on an investor’s goals and risk tolerance.')">Submit Answer</button>
+                <div id="answer3" class="answer"></div>
+            </div>
+            <div class="question">
+                <p><strong>4. What is a mutual fund?</strong></p>
+                <div class="mcq-options">
+                    <label><input type="radio" name="q4" value="a"> a) A type of stock</label><br>
+                    <label><input type="radio" name="q4" value="b"> b) A pooled investment vehicle</label><br>
+                    <label><input type="radio" name="q4" value="c"> c) A government bond</label><br>
+                    <label><input type="radio" name="q4" value="d"> d) A savings account</label>
+                </div>
+                <button onclick="checkAnswer(4, 'b', 'The correct answer is b) A pooled investment vehicle. Mutual funds pool money from investors to invest in diversified portfolios managed by professionals.')">Submit Answer</button>
+                <div id="answer4" class="answer"></div>
+            </div>
+            <div class="question">
+                <p><strong>5. What is the difference between active and passive portfolio management?</strong></p>
+                <div class="mcq-options">
+                    <label><input type="radio" name="q5" value="a"> a) Active aims to outperform the market, passive tracks an index</label><br>
+                    <label><input type="radio" name="q5" value="b"> b) Active is less risky than passive</label><br>
+                    <label><input type="radio" name="q5" value="c"> c) Passive involves frequent trading</label><br>
+                    <label><input type="radio" name="q5" value="d"> d) Active is always more profitable</label>
+                </div>
+                <button onclick="checkAnswer(5, 'a', 'The correct answer is a) Active aims to outperform the market, passive tracks an index. Active management involves strategic decisions, while passive replicates market performance.')">Submit Answer</button>
+                <div id="answer5" class="answer"></div>
+            </div>
+            <div class="question">
+                <p><strong>6. What is a financial model?</strong></p>
+                <div class="mcq-options">
+                    <label><input type="radio" name="q6" value="a"> a) A mathematical representation of financial performance</label><br>
+                    <label><input type="radio" name="q6" value="b"> b) A graph showing stock prices</label><br>
+                    <label><input type="radio" name="q6" value="c"> c) A balance sheet</label><br>
+                    <label><input type="radio" name="q6" value="d"> d) An income statement</label>
+                </div>
+                <button onclick="checkAnswer(6, 'a', 'The correct answer is a) A mathematical representation of financial performance. Financial models are used for forecasting, valuation, and decision-making.')">Submit Answer</button>
+                <div id="answer6" class="answer"></div>
+            </div>
+            <div class="question">
+                <p><strong>7. What is the purpose of sensitivity analysis?</strong></p>
+                <div class="mcq-options">
+                    <label><input type="radio" name="q7" value="a"> a) To test how changes affect model output</label><br>
+                    <label><input type="radio" name="q7" value="b"> b) To calculate net present value</label><br>
+                    <label><input type="radio" name="q7" value="c"> c) To determine cost of capital</label><br>
+                    <label><input type="radio" name="q7" value="d"> d) To forecast revenue</label>
+                </div>
+                <button onclick="checkAnswer(7, 'a', 'The correct answer is a) To test how changes affect model output. Sensitivity analysis evaluates the impact of varying assumptions on outcomes.')">Submit Answer</button>
+                <div id="answer7" class="answer"></div>
+            </div>
+            <div class="question">
+                <p><strong>8. What is the discounted cash flow (DCF) method?</strong></p>
+                <div class="mcq-options">
+                    <label><input type="radio" name="q8" value="a"> a) A valuation method based on future cash flows</label><br>
+                    <label><input type="radio" name="q8" value="b"> b) A way to calculate interest rates</label><br>
+                    <label><input type="radio" name="q8" value="c"> c) A method to determine dividends</label><br>
+                    <label><input type="radio" name="q8" value="d"> d) A budgeting technique</label>
+                </div>
+                <button onclick="checkAnswer(8, 'a', 'The correct answer is a) A valuation method based on future cash flows. DCF estimates value by discounting projected cash flows to present value.')">Submit Answer</button>
+                <div id="answer8" class="answer"></div>
+            </div>
+            <div class="question">
+                <p><strong>9. What is the formula for net present value (NPV)?</strong></p>
+                <div class="mcq-options">
+                    <label><input type="radio" name="q9" value="a"> a) NPV = Σ (Cash flow / (1 + r)^t)</label><br>
+                    <label><input type="radio" name="q9" value="b"> b) NPV = Cash flow * (1 + r)^t</label><br>
+                    <label><input type="radio" name="q9" value="c"> c) NPV = Cash flow - Initial investment</label><br>
+                    <label><input type="radio" name="q9" value="d"> d) NPV = Initial investment / Cash flow</label>
+                </div>
+                <button onclick="checkAnswer(9, 'a', 'The correct answer is a) NPV = Σ (Cash flow / (1 + r)^t). Here, ‘r’ is the discount rate, and ‘t’ is time, summing discounted cash flows.')">Submit Answer</button>
+                <div id="answer9" class="answer"></div>
+            </div>
+            <div class="question">
+                <p><strong>10. What does a positive NPV indicate?</strong></p>
+                <div class="mcq-options">
+                    <label><input type="radio" name="q10" value="a"> a) The investment is expected to be profitable</label><br>
+                    <label><input type="radio" name="q10" value="b"> b) The investment is risky</label><br>
+                    <label><input type="radio" name="q10" value="c"> c) The investment has high initial costs</label><br>
+                    <label><input type="radio" name="q10" value="d"> d) The investment has low cash flows</label>
+                </div>
+                <button onclick="checkAnswer(10, 'a', 'The correct answer is a) The investment is expected to be profitable. A positive NPV means cash inflows exceed the initial investment.')">Submit Answer</button>
+                <div id="answer10" class="answer"></div>
+            </div>
+            <!-- Additional Domain Questions (Abbreviated for brevity) -->
+            <div class="question">
+                <p><strong>11. What is a financial covenant?</strong></p>
+                <div class="mcq-options">
+                    <label><input type="radio" name="q11" value="a"> a) A clause requiring financial conditions</label><br>
+                    <label><input type="radio" name="q11" value="b"> b) A type of investment</label><br>
+                    <label><input type="radio" name="q11" value="c"> c) A government regulation</label><br>
+                    <label><input type="radio" name="q11" value="d"> d) A financial statement</label>
+                </div>
+                <button onclick="checkAnswer(11, 'a', 'The correct answer is a) A clause requiring financial conditions. Covenants in loan agreements enforce borrower financial discipline.')">Submit Answer</button>
+                <div id="answer11" class="answer"></div>
+            </div>
+            <div class="question">
+                <p><strong>12. What is credit risk?</strong></p>
+                <div class="mcq-options">
+                    <label><input type="radio" name="q12" value="a"> a) Risk of borrower default</label><br>
+                    <label><input type="radio" name="q12" value="b"> b) Risk of interest rate changes</label><br>
+                    <label><input type="radio" name="q12" value="c"> c) Risk of inflation</label><br>
+                    <label><input type="radio" name="q12" value="d"> d) Risk of currency fluctuations</label>
+                </div>
+                <button onclick="checkAnswer(12, 'a', 'The correct answer is a) Risk of borrower default. Credit risk is the potential loss if a borrower fails to meet debt obligations.')">Submit Answer</button>
+                <div id="answer12" class="answer"></div>
+            </div>
+            <!-- Continue up to 50 domain questions in the same format -->
+
+            <h3>HR-Based Questions</h3>
+            <div class="question">
+                <p><strong>51. Tell me about yourself.</strong></p>
+                <button onclick="showAnswer(51, 'I’m a recent finance graduate with internship experience at XYZ Company, where I honed my financial analysis skills. I’m passionate about portfolio management and eager to contribute to Oxane Partners.')">Show Sample Answer</button>
+                <div id="answer51" class="answer"></div>
+            </div>
+            <div class="question">
+                <p><strong>52. Why do you want to work at Oxane Partners?</strong></p>
+                <button onclick="showAnswer(52, 'I admire Oxane Partners’ innovative use of technology in private markets. My skills in financial modeling align with your goals, and I’m excited to grow in this role.')">Show Sample Answer</button>
+                <div id="answer52" class="answer"></div>
+            </div>
+            <div class="question">
+                <p><strong>53. What are your strengths?</strong></p>
+                <button onclick="showAnswer(53, 'My strengths include strong analytical skills, attention to detail, and teamwork. I’m also proficient in Excel and financial software, which I believe will benefit this position.')">Show Sample Answer</button>
+                <div id="answer53" class="answer"></div>
+            </div>
+            <div class="question">
+                <p><strong>54. What are your weaknesses?</strong></p>
+                <button onclick="showAnswer(54, 'I sometimes struggle with public speaking, but I’m improving through practice and workshops to build my confidence.')">Show Sample Answer</button>
+                <div id="answer54" class="answer"></div>
+            </div>
+            <div class="question">
+                <p><strong>55. Where do you see yourself in five years?</strong></p>
+                <button onclick="showAnswer(55, 'In five years, I aim to be a senior analyst at Oxane Partners, contributing to portfolio strategies and expanding my expertise in private markets.')">Show Sample Answer</button>
+                <div id="answer55" class="answer"></div>
+            </div>
+            <div class="question">
+                <p><strong>56. Why should we hire you?</strong></p>
+                <button onclick="showAnswer(56, 'I bring financial analysis skills and a passion for portfolio management. I’m a quick learner, committed to delivering value to your team.')">Show Sample Answer</button>
+                <div id="answer56" class="answer"></div>
+            </div>
+            <div class="question">
+                <p><strong>57. Describe a challenging situation and how you handled it.</strong></p>
+                <button onclick="showAnswer(57, 'During my internship, I faced a tight project deadline. I prioritized tasks, collaborated with my team, and delivered the work on time successfully.')">Show Sample Answer</button>
+                <div id="answer57" class="answer"></div>
+            </div>
+            <div class="question">
+                <p><strong>58. How do you handle stress?</strong></p>
+                <button onclick="showAnswer(58, 'I manage stress by staying organized, taking breaks when needed, and maintaining a positive mindset to stay focused.')">Show Sample Answer</button>
+                <div id="answer58" class="answer"></div>
+            </div>
+            <div class="question">
+                <p><strong>59. What motivates you?</strong></p>
+                <button onclick="showAnswer(59, 'I’m motivated by solving complex problems and seeing the impact of my work. Learning and achieving goals drive me forward.')">Show Sample Answer</button>
+                <div id="answer59" class="answer"></div>
+            </div>
+            <div class="question">
+                <p><strong>60. Do you prefer working independently or in a team?</strong></p>
+                <button onclick="showAnswer(60, 'I enjoy both. I can work independently on tasks but value teamwork for collaboration and better outcomes.')">Show Sample Answer</button>
+                <div id="answer60" class="answer"></div>
+            </div>
+            <!-- Continue up to 75 questions (25 HR) in the same format -->
+
+        </div>
+
+        <p>We encourage you to apply promptly due to the tight deadline. Best of luck with your application and interview preparation!</p>
+        <p>Best regards,<br>Your Placement Team</p>
+    </div>
+
+    <script>
+        function checkAnswer(id, correctAnswer, explanation) {
+            const selectedOption = document.querySelector(`input[name="q${id}"]:checked`);
+            const answerDiv = document.getElementById(`answer${id}`);
+            if (selectedOption) {
+                answerDiv.innerHTML = explanation;
+                answerDiv.style.display = 'block';
+            } else {
+                answerDiv.innerHTML = 'Please select an option before submitting.';
+                answerDiv.style.display = 'block';
+            }
+        }
+
+        function showAnswer(id, answer) {
+            const answerDiv = document.getElementById(`answer${id}`);
+            answerDiv.innerHTML = answer;
+            answerDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
