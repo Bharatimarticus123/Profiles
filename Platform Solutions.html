@@ -3,826 +3,587 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oxane Partners Placement Opportunity</title>
+    <title>Platform Solutions Analyst Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(145deg, #FFD700, #DAA520);
-            color: #1C2526;
+            background-color: #1a1a2e; /* Dark futuristic background */
+            font-family: 'Orbitron', sans-serif;
+            color: #e0e0e0;
             margin: 0;
             padding: 20px;
-            text-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
         }
-        .container {
-            max-width: 900px;
-            margin: auto;
-            background: linear-gradient(145deg, #FFF8DC, #F5E050);
+        header {
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf); /* Neon gradient */
+            color: #ffffff;
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+        #quiz {
+            display: grid;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+        .question-card {
+            background-color: #2a2a4e;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        h1, h2, h3 {
-            color: #0055B8;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+        .question-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.6);
         }
-        a {
-            color: #1C2526;
-            text-decoration: underline;
+        h2 {
+            color: #00d4ff;
+            margin-bottom: 10px;
         }
-        a:hover {
-            color: #4A4A4A;
-        }
-        ul {
-            list-style-type: disc;
-            padding-left: 20px;
-        }
-        .section {
-            margin-bottom: 20px;
-        }
-        .question {
-            margin: 15px 0;
-            padding: 15px;
-            background: #FFF8DC;
-            border-radius: 5px;
-        }
-        .answer {
-            margin-top: 10px;
-            font-size: 0.9em;
-            background: #F5E050;
-            padding: 10px;
-            border-radius: 5px;
-            display: none;
-        }
-        button {
-            background-color: #0055B8;
-            color: #FFFFFF;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
+        label {
+            display: block;
+            margin: 5px 0;
+            color: #e0e0e0;
             cursor: pointer;
-            margin-top: 10px;
-        }
-        button:hover {
-            background-color: #0070E0;
         }
         input[type="radio"] {
+            accent-color: #00d4ff;
             margin-right: 10px;
         }
-        .mcq-options {
-            margin: 10px 0;
+        .feedback {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .correct {
+            color: #00ff99; /* Neon green for correct answers */
+        }
+        .incorrect {
+            color: #ff4d6d; /* Neon red for incorrect answers */
+        }
+        .explanation {
+            margin-top: 10px;
+            color: #e0e0e0;
+            font-size: 0.9em;
+            background-color: #3a3a5e;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        #completion-message {
+            text-align: center;
+            font-size: 1.2em;
+            color: #00d4ff;
+            display: none;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Placement Opportunity with Oxane Partners</h1>
-        <p>Dear Candidates,</p>
-        <p>We are excited to announce a new placement opportunity with <a href="https://oxanepartners.com/">Oxane Partners</a> for the position of Analyst - Portfolio Management Group. Please find the details below:</p>
-
-        <div class="section">
-            <h2>Job Preview</h2>
-            <p><strong>Company:</strong> Oxane Partners</p>
-            <p><strong>Website:</strong> <a href="https://oxanepartners.com/">https://oxanepartners.com/</a></p>
-            <p><strong>Position:</strong> Analyst - Portfolio Management Group</p>
-            <p><strong>Location:</strong> Gurgaon</p>
-            <p><strong>Job Type:</strong> Full-time</p>
-            <p><strong>Job Mode:</strong> On-site</p>
-            <p><strong>Work Experience:</strong> Fresher</p>
-            <p><strong>Mode of Interview:</strong> Virtual + On-site</p>
-            <p><strong>Salary Package:</strong></p>
-            <ul>
-                <li>Freshers Graduate: ₹5,00,000 fixed + ₹50,000 variables</li>
-                <li>Freshers PG (MBA/M.Com/CFA/CA): ₹6,00,000 - ₹8,00,000 fixed + variables</li>
-            </ul>
-        </div>
-
-        <div class="section">
-            <h2>Roles & Responsibilities</h2>
-            <ul>
-                <li>Onboarding the client’s investment portfolio on Oxane’s proprietary platform</li>
-                <li>Working closely with clients to monitor the performance of investment transactions across various asset classes</li>
-                <li>Building financial models/reports as per client’s requirements and analyzing historical performance</li>
-                <li>Reviewing and extracting data from financial statements, loan agreements, and other reports</li>
-                <li>Calculating and monitoring financial covenants and key metrics for risk surveillance</li>
-                <li>Reviewing reports on Oxane's platform to ensure accuracy</li>
-                <li>Presenting analytics to clients to match their expectations</li>
-            </ul>
-        </div>
-
-        <div class="section">
-            <h2>Application Details</h2>
-            <p><strong>Application Link:</strong> <a href="https://forms.gle/TvYbqbHvrNUMwV7eA">Apply Here</a></p>
-            <p><strong>Deadline:</strong> 1 PM today, May 07, 2025</p>
-            <p><strong>Interview Process:</strong> First and second rounds are virtual; final round is face-to-face if shortlisted.</p>
-            <p><strong>Preparation Resources:</strong> For more details and to prepare using MCQs, visit <a href="https://bharatimarticus123.github.io/Profiles/Oxane%20Partners%20JD%20and%20quesiton%20bank.html">this page</a>.</p>
-        </div>
-
-        <div class="section">
-            <h2>Interview Preparation: 75 Questions and Answers</h2>
-            <p>Below are 75 questions (50 domain-specific MCQs and 25 HR-based) to help you prepare for your interview with Oxane Partners. For MCQs, select an option and click "Submit Answer" to see the correct answer and explanation.</p>
-
-            <h3>Domain-Based Questions</h3>
-            <div class="question">
-                <p><strong>1. What is portfolio management?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q1" value="a"> a) Managing a collection of investments</label><br>
-                    <label><input type="radio" name="q1" value="b"> b) Buying and selling stocks</label><br>
-                    <label><input type="radio" name="q1" value="c"> c) Analyzing financial statements</label><br>
-                    <label><input type="radio" name="q1" value="d"> d) All of the above</label>
-                </div>
-                <button onclick="checkAnswer(1, 'a', 'The correct answer is a) Managing a collection of investments. Portfolio management involves selecting and overseeing a group of investments to meet specific financial objectives while balancing risk and return.')">Submit Answer</button>
-                <div id "answer1" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>2. What is diversification in portfolio management?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q2" value="a"> a) Investing in a single asset</label><br>
-                    <label><input type="radio" name="q2" value="b"> b) Spreading investments across multiple assets</label><br>
-                    <label><input type="radio" name="q2" value="c"> c) Selling underperforming assets</label><br>
-                    <label><input type="radio" name="q2" value="d"> d) Buying high-risk assets</label>
-                </div>
-                <button onclick="checkAnswer(2, 'b', 'The correct answer is b) Spreading investments across multiple assets. Diversification reduces risk by investing in various assets, minimizing the impact of poor performance in any single investment.')">Submit Answer</button>
-                <div id="answer2" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>3. What is the role of asset allocation?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q3" value="a"> a) Determining the mix of different asset classes</label><br>
-                    <label><input type="radio" name="q3" value="b"> b) Selecting individual securities</label><br>
-                    <label><input type="radio" name="q3" value="c"> c) Monitoring portfolio performance</label><br>
-                    <label><input type="radio" name="q3" value="d"> d) Rebalancing the portfolio</label>
-                </div>
-                <button onclick="checkAnswer(3, 'a', 'The correct answer is a) Determining the mix of different asset classes. Asset allocation balances risk and return based on an investor’s goals and risk tolerance.')">Submit Answer</button>
-                <div id="answer3" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>4. What is a mutual fund?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q4" value="a"> a) A type of stock</label><br>
-                    <label><input type="radio" name="q4" value="b"> b) A pooled investment vehicle</label><br>
-                    <label><input type="radio" name="q4" value="c"> c) A government bond</label><br>
-                    <label><input type="radio" name="q4" value="d"> d) A savings account</label>
-                </div>
-                <button onclick="checkAnswer(4, 'b', 'The correct answer is b) A pooled investment vehicle. Mutual funds pool money from investors to invest in diversified portfolios managed by professionals.')">Submit Answer</button>
-                <div id="answer4" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>5. What is the difference between active and passive portfolio management?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q5" value="a"> a) Active aims to outperform the market, passive tracks an index</label><br>
-                    <label><input type="radio" name="q5" value="b"> b) Active is less risky than passive</label><br>
-                    <label><input type="radio" name="q5" value="c"> c) Passive involves frequent trading</label><br>
-                    <label><input type="radio" name="q5" value="d"> d) Active is always more profitable</label>
-                </div>
-                <button onclick="checkAnswer(5, 'a', 'The correct answer is a) Active aims to outperform the market, passive tracks an index. Active management involves strategic decisions, while passive replicates market performance.')">Submit Answer</button>
-                <div id="answer5" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>6. What is a financial model?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q6" value="a"> a) A mathematical representation of financial performance</label><br>
-                    <label><input type="radio" name="q6" value="b"> b) A graph showing stock prices</label><br>
-                    <label><input type="radio" name="q6" value="c"> c) A balance sheet</label><br>
-                    <label><input type="radio" name="q6" value="d"> d) An income statement</label>
-                </div>
-                <button onclick="checkAnswer(6, 'a', 'The correct answer is a) A mathematical representation of financial performance. Financial models are used for forecasting, valuation, and decision-making.')">Submit Answer</button>
-                <div id="answer6" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>7. What is the purpose of sensitivity analysis?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q7" value="a"> a) To test how changes affect model output</label><br>
-                    <label><input type="radio" name="q7" value="b"> b) To calculate net present value</label><br>
-                    <label><input type="radio" name="q7" value="c"> c) To determine cost of capital</label><br>
-                    <label><input type="radio" name="q7" value="d"> d) To forecast revenue</label>
-                </div>
-                <button onclick="checkAnswer(7, 'a', 'The correct answer is a) To test how changes affect model output. Sensitivity analysis evaluates the impact of varying assumptions on outcomes.')">Submit Answer</button>
-                <div id="answer7" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>8. What is the discounted cash flow (DCF) method?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q8" value="a"> a) A valuation method based on future cash flows</label><br>
-                    <label><input type="radio" name="q8" value="b"> b) A way to calculate interest rates</label><br>
-                    <label><input type="radio" name="q8" value="c"> c) A method to determine dividends</label><br>
-                    <label><input type="radio" name="q8" value="d"> d) A budgeting technique</label>
-                </div>
-                <button onclick="checkAnswer(8, 'a', 'The correct answer is a) A valuation method based on future cash flows. DCF estimates value by discounting projected cash flows to present value.')">Submit Answer</button>
-                <div id="answer8" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>9. What is the formula for net present value (NPV)?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q9" value="a"> a) NPV = Σ (Cash flow / (1 + r)^t)</label><br>
-                    <label><input type="radio" name="q9" value="b"> b) NPV = Cash flow * (1 + r)^t</label><br>
-                    <label><input type="radio" name="q9" value="c"> c) NPV = Cash flow - Initial investment</label><br>
-                    <label><input type="radio" name="q9" value="d"> d) NPV = Initial investment / Cash flow</label>
-                </div>
-                <button onclick="checkAnswer(9, 'a', 'The correct answer is a) NPV = Σ (Cash flow / (1 + r)^t). Here, ‘r’ is the discount rate, and ‘t’ is time, summing discounted cash flows.')">Submit Answer</button>
-                <div id="answer9" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>10. What does a positive NPV indicate?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q10" value="a"> a) The investment is expected to be profitable</label><br>
-                    <label><input type="radio" name="q10" value="b"> b) The investment is risky</label><br>
-                    <label><input type="radio" name="q10" value="c"> c) The investment has high initial costs</label><br>
-                    <label><input type="radio" name="q10" value="d"> d) The investment has low cash flows</label>
-                </div>
-                <button onclick="checkAnswer(10, 'a', 'The correct answer is a) The investment is expected to be profitable. A positive NPV means cash inflows exceed the initial investment.')">Submit Answer</button>
-                <div id="answer10" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>11. What is a financial covenant?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q11" value="a"> a) A clause requiring financial conditions</label><br>
-                    <label><input type="radio" name="q11" value="b"> b) A type of investment</label><br>
-                    <label><input type="radio" name="q11" value="c"> c) A government regulation</label><br>
-                    <label><input type="radio" name="q11" value="d"> d) A financial statement</label>
-                </div>
-                <button onclick="checkAnswer(11, 'a', 'The correct answer is a) A clause requiring financial conditions. Covenants in loan agreements enforce borrower financial discipline.')">Submit Answer</button>
-                <div id="answer11" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>12. What is credit risk?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q12" value="a"> a) Risk of borrower default</label><br>
-                    <label><input type="radio" name="q12" value="b"> b) Risk of interest rate changes</label><br>
-                    <label><input type="radio" name="q12" value="c"> c) Risk of inflation</label><br>
-                    <label><input type="radio" name="q12" value="d"> d) Risk of currency fluctuations</label>
-                </div>
-                <button onclick="checkAnswer(12, 'a', 'The correct answer is a) Risk of borrower default. Credit risk is the potential loss if a borrower fails to meet debt obligations.')">Submit Answer</button>
-                <div id="answer12" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>13. What is the difference between equity and debt?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q13" value="a"> a) Equity is ownership, debt is a loan</label><br>
-                    <label><input type="radio" name="q13" value="b"> b) Debt is riskier than equity</label><br>
-                    <label><input type="radio" name="q13" value="c"> c) Equity has fixed returns</label><br>
-                    <label><input type="radio" name="q13" value="d"> d) Debt is traded on stock exchanges</label>
-                </div>
-                <button onclick="checkAnswer(13, 'a', 'The correct answer is a) Equity is ownership, debt is a loan. Equity represents company shares, while debt involves borrowed funds with repayment obligations.')">Submit Answer</button>
-                <div id="answer13" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>14. What is a private market?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q14" value="a"> a) A market for non-publicly traded securities</label><br>
-                    <label><input type="radio" name="q14" value="b"> b) A market for government bonds</label><br>
-                    <label><input type="radio" name="q14" value="c"> c) A market for derivatives</label><br>
-                    <label><input type="radio" name="q14" value="d"> d) A market for commodities</label>
-                </div>
-                <button onclick="checkAnswer(14, 'a', 'The correct answer is a) A market for non-publicly traded securities. Private markets include investments like private equity and debt.')">Submit Answer</button>
-                <div id="answer14" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>15. What is the role of technology in portfolio management?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q15" value="a"> a) To automate data collection and analysis</label><br>
-                    <label><input type="radio" name="q15" value="b"> b) To replace human decision-making</label><br>
-                    <label><input type="radio" name="q15" value="c"> c) To increase investment risk</label><br>
-                    <label><input type="radio" name="q15" value="d"> d) To reduce diversification</label>
-                </div>
-                <button onclick="checkAnswer(15, 'a', 'The correct answer is a) To automate data collection and analysis. Technology enhances efficiency and accuracy in portfolio management.')">Submit Answer</button>
-                <div id="answer15" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>16. What is the Efficient Market Hypothesis (EMH)?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q16" value="a"> a) Markets are always efficient</label><br>
-                    <label><input type="radio" name="q16" value="b"> b) Asset prices reflect all information</label><br>
-                    <label><input type="radio" name="q16" value="c"> c) Investors can always beat the market</label><br>
-                    <label><input type="radio" name="q16" value="d"> d) Markets are unpredictable</label>
-                </div>
-                <button onclick="checkAnswer(16, 'b', 'The correct answer is b) Asset prices reflect all information. EMH suggests it’s hard to outperform the market due to efficient pricing.')">Submit Answer</button>
-                <div id="answer16" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>17. What is beta in finance?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q17" value="a"> a) A measure of stock volatility</label><br>
-                    <label><input type="radio" name="q17" value="b"> b) A type of investment fund</label><br>
-                    <label><input type="radio" name="q17" value="c"> c) A financial ratio</label><br>
-                    <label><input type="radio" name="q17" value="d"> d) A valuation method</label>
-                </div>
-                <button onclick="checkAnswer(17, 'a', 'The correct answer is a) A measure of stock volatility. Beta measures a stock’s volatility relative to the market.')">Submit Answer</button>
-                <div id="answer17" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>18. How do you value a stock?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q18" value="a"> a) Using DCF or P/E ratio</label><br>
-                    <label><input type="radio" name="q18" value="b"> b) Based on historical prices</label><br>
-                    <label><input type="radio" name="q18" value="c"> c) By company assets</label><br>
-                    <label><input type="radio" name="q18" value="d"> d) All of the above</label>
-                </div>
-                <button onclick="checkAnswer(18, 'd', 'The correct answer is d) All of the above. Stock valuation can use DCF, P/E ratio, and asset-based approaches depending on context.')">Submit Answer</button>
-                <div id="answer18" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>19. What is a financial statement?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q19" value="a"> a) A report of financial performance</label><br>
-                    <label><input type="radio" name="q19" value="b"> b) A budget plan</label><br>
-                    <label><input type="radio" name="q19" value="c"> c) A tax document</label><br>
-                    <label><input type="radio" name="q19" value="d"> d) A loan agreement</label>
-                </div>
-                <button onclick="checkAnswer(19, 'a', 'The correct answer is a) A report of financial performance. Financial statements include balance sheets, income statements, and cash flow statements.')">Submit Answer</button>
-                <div id="answer19" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>20. What is leverage in finance?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q20" value="a"> a) Using borrowed funds to increase returns</label><br>
-                    <label><input type="radio" name="q20" value="b"> b) Reducing investment risk</label><br>
-                    <label><input type="radio" name="q20" value="c"> c) Diversifying a portfolio</label><br>
-                    <label><input type="radio" name="q20" value="d"> d) Selling assets</label>
-                </div>
-                <button onclick="checkAnswer(20, 'a', 'The correct answer is a) Using borrowed funds to increase returns. Leverage amplifies both potential gains and losses.')">Submit Answer</button>
-                <div id="answer20" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>21. What is a hedge fund?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q21" value="a"> a) A pooled investment using complex strategies</label><br>
-                    <label><input type="radio" name="q21" value="b"> b) A government-backed fund</label><br>
-                    <label><input type="radio" name="q21" value="c"> c) A type of bond</label><br>
-                    <label><input type="radio" name="q21" value="d"> d) A savings scheme</label>
-                </div>
-                <button onclick="checkAnswer(21, 'a', 'The correct answer is a) A pooled investment using complex strategies. Hedge funds aim for high returns using diverse, often aggressive tactics.')">Submit Answer</button>
-                <div id="answer21" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>22. What is risk-adjusted return?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q22" value="a"> a) Return adjusted for risk level</label><br>
-                    <label><input type="radio" name="q22" value="b"> b) Total portfolio return</label><br>
-                    <label><input type="radio" name="q22" value="c"> c) Return without taxes</label><br>
-                    <label><input type="radio" name="q22" value="d"> d) Return from stocks only</label>
-                </div>
-                <button onclick="checkAnswer(22, 'a', 'The correct answer is a) Return adjusted for risk level. It measures performance relative to the risk taken.')">Submit Answer</button>
-                <div id="answer22" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>23. What is the Sharpe Ratio?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q23" value="a"> a) A measure of risk-adjusted return</label><br>
-                    <label><input type="radio" name="q23" value="b"> b) A valuation metric</label><br>
-                    <label><input type="radio" name="q23" value="c"> c) A leverage ratio</label><br>
-                    <label><input type="radio" name="q23" value="d"> d) A liquidity measure</label>
-                </div>
-                <button onclick="checkAnswer(23, 'a', 'The correct answer is a) A measure of risk-adjusted return. The Sharpe Ratio calculates return per unit of risk, using standard deviation.')">Submit Answer</button>
-                <div id="answer23" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>24. What is a derivative?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q24" value="a"> a) A contract based on an underlying asset</label><br>
-                    <label><input type="radio" name="q24" value="b"> b) A type of stock</label><br>
-                    <label><input type="radio" name="q24" value="c"> c) A fixed-income security</label><br>
-                    <label><input type="radio" name="q24" value="d"> d) A mutual fund</label>
-                </div>
-                <button onclick="checkAnswer(24, 'a', 'The correct answer is a) A contract based on an underlying asset. Derivatives, like options and futures, derive value from assets like stocks or commodities.')">Submit Answer</button>
-                <div id="answer24" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>25. What is liquidity in finance?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q25" value="a"> a) Ease of converting assets to cash</label><br>
-                    <label><input type="radio" name="q25" value="b"> b) Total asset value</label><br>
-                    <label><input type="radio" name="q25" value="c"> c) Debt repayment ability</label><br>
-                    <label><input type="radio" name="q25" value="d"> d) Profit margin</label>
-                </div>
-                <button onclick="checkAnswer(25, 'a', 'The correct answer is a) Ease of converting assets to cash. Liquidity measures how quickly an asset can be sold without affecting its price.')">Submit Answer</button>
-                <div id="answer25" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>26. What is a balance sheet?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q26" value="a"> a) A snapshot of assets, liabilities, and equity</label><br>
-                    <label><input type="radio" name="q26" value="b"> b) A record of cash flows</label><br>
-                    <label><input type="radio" name="q26" value="c"> c) A profit and loss statement</label><br>
-                    <label><input type="radio" name="q26" value="d"> d) A budget forecast</label>
-                </div>
-                <button onclick="checkAnswer(26, 'a', 'The correct answer is a) A snapshot of assets, liabilities, and equity. A balance sheet shows a company’s financial position at a specific time.')">Submit Answer</button>
-                <div id="answer26" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>27. What is the purpose of a cash flow statement?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q27" value="a"> a) To show cash inflows and outflows</label><br>
-                    <label><input type="radio" name="q27" value="b"> b) To list company assets</label><br>
-                    <label><input type="radio" name="q27" value="c"> c) To calculate net income</label><br>
-                    <label><input type="radio" name="q27" value="d"> d) To forecast sales</label>
-                </div>
-                <button onclick="checkAnswer(27, 'a', 'The correct answer is a) To show cash inflows and outflows. It tracks cash from operating, investing, and financing activities.')">Submit Answer</button>
-                <div id="answer27" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>28. What is the P/E ratio?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q28" value="a"> a) Price per share divided by earnings per share</label><br>
-                    <label><input type="radio" name="q28" value="b"> b) Total profit divided by revenue</label><br>
-                    <label><input type="radio" name="q28" value="c"> c) Debt divided by equity</label><br>
-                    <label><input type="radio" name="q28" value="d"> d) Assets divided by liabilities</label>
-                </div>
-                <button onclick="checkAnswer(28, 'a', 'The correct answer is a) Price per share divided by earnings per share. The P/E ratio measures how much investors pay per dollar of earnings.')">Submit Answer</button>
-                <div id="answer28" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>29. What is working capital?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q29" value="a"> a) Current assets minus current liabilities</label><br>
-                    <label><input type="radio" name="q29" value="b"> b) Total revenue minus expenses</label><br>
-                    <label><input type="radio" name="q29" value="c"> c) Long-term debt</label><br>
-                    <label><input type="radio" name="q29" value="d"> d) Equity value</label>
-                </div>
-                <button onclick="checkAnswer(29, 'a', 'The correct answer is a) Current assets minus current liabilities. Working capital measures a company’s short-term financial health.')">Submit Answer</button>
-                <div id="answer29" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>30. What is a credit rating?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q30" value="a"> a) An assessment of borrower creditworthiness</label><br>
-                    <label><input type="radio" name="q30" value="b"> b) A stock valuation</label><br>
-                    <label><input type="radio" name="q30" value="c"> c) A profit margin</label><br>
-                    <label><input type="radio" name="q30" value="d"> d) A liquidity ratio</label>
-                </div>
-                <button onclick="checkAnswer(30, 'a', 'The correct answer is a) An assessment of borrower creditworthiness. Credit ratings by agencies like S&P evaluate default risk.')">Submit Answer</button>
-                <div id="answer30" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>31. What is the role of financial covenants in loan agreements?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q31" value="a"> a) To ensure borrower financial discipline</label><br>
-                    <label><input type="radio" name="q31" value="b"> b) To increase loan interest rates</label><br>
-                    <label><input type="radio" name="q31" value="c"> c) To reduce loan duration</label><br>
-                    <label><input type="radio" name="q31" value="d"> d) To eliminate repayment</label>
-                </div>
-                <button onclick="checkAnswer(31, 'a', 'The correct answer is a) To ensure borrower financial discipline. Covenants set financial thresholds to protect lenders.')">Submit Answer</button>
-                <div id="answer31" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>32. What is the yield curve?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q32" value="a"> a) A plot of bond yields across maturities</label><br>
-                    <label><input type="radio" name="q32" value="b"> b) A stock price trend</label><br>
-                    <label><input type="radio" name="q32" value="c"> c) A profit forecast</label><br>
-                    <label><input type="radio" name="q32" value="d"> d) A cash flow projection</label>
-                </div>
-                <button onclick="checkAnswer(32, 'a', 'The correct answer is a) A plot of bond yields across maturities. It shows the relationship between short- and long-term rates.')">Submit Answer</button>
-                <div id="answer32" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>33. What is an ETF?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q33" value="a"> a) A fund traded on stock exchanges</label><br>
-                    <label><input type="radio" name="q33" value="b"> b) A type of derivative</label><br>
-                    <label><input type="radio" name="q33" value="c"> c) A private equity fund</label><br>
-                    <label><input type="radio" name="q33" value="d"> d) A fixed-income security</label>
-                </div>
-                <button onclick="checkAnswer(33, 'a', 'The correct answer is a) A fund traded on stock exchanges. ETFs track indices or baskets of assets, offering liquidity.')">Submit Answer</button>
-                <div id="answer33" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>34. What is compounding?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q34" value="a"> a) Earning interest on interest</label><br>
-                    <label><input type="radio" name="q34" value="b"> b) Reducing investment risk</label><br>
-                    <label><input type="radio" name="q34" value="c"> c) Diversifying assets</label><br>
-                    <label><input type="radio" name="q34" value="d"> d) Selling stocks</label>
-                </div>
-                <button onclick="checkAnswer(34, 'a', 'The correct answer is a) Earning interest on interest. Compounding leads to exponential growth of investments over time.')">Submit Answer</button>
-                <div id="answer34" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>35. What is volatility?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q35" value="a"> a) Degree of price fluctuations</label><br>
-                    <label><input type="radio" name="q35" value="b"> b) Total investment return</label><br>
-                    <label><input type="radio" name="q35" value="c"> c) Fixed income yield</label><br>
-                    <label><input type="radio" name="q35" value="d"> d) Dividend payout</label>
-                </div>
-                <button onclick="checkAnswer(35, 'a', 'The correct answer is a) Degree of price fluctuations. Volatility measures the variability of an asset’s price, indicating risk.')">Submit Answer</button>
-                <div id="answer35" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>36. What is the difference between fundamental and technical analysis?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q36" value="a"> a) Fundamental uses financials, technical uses price data</label><br>
-                    <label><input type="radio" name="q36" value="b"> b) Technical is more accurate</label><br>
-                    <label><input type="radio" name="q36" value="c"> c) Fundamental is short-term focused</label><br>
-                    <label><input type="radio" name="q36" value="d"> d) Technical uses economic indicators</label>
-                </div>
-                <button onclick="checkAnswer(36, 'a', 'The correct answer is a) Fundamental uses financials, technical uses price data. Fundamental analysis evaluates intrinsic value, while technical focuses on market trends.')">Submit Answer</button>
-                <div id="answer36" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>37. What is a private equity fund?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q37" value="a"> a) A fund investing in private companies</label><br>
-                    <label><input type="radio" name="q37" value="b"> b) A publicly traded fund</label><br>
-                    <label><input type="radio" name="q37" value="c"> c) A government bond fund</label><br>
-                    <label><input type="radio" name="q37" value="d"> d) A mutual fund</label>
-                </div>
-                <button onclick="checkAnswer(37, 'a', 'The correct answer is a) A fund investing in private companies. Private equity funds acquire stakes in non-public firms to generate returns.')">Submit Answer</button>
-                <div id="answer37" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>38. What is the cost of capital?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q38" value="a"> a) The cost of financing a business</label><br>
-                    <label><input type="radio" name="q38" value="b"> b) The total revenue</label><br>
-                    <label><input type="radio" name="q38" value="c"> c) The operating expenses</label><br>
-                    <label><input type="radio" name="q38" value="d"> d) The dividend payout</label>
-                </div>
-                <button onclick="checkAnswer(38, 'a', 'The correct answer is a) The cost of financing a business. It includes the cost of debt and equity used to fund operations.')">Submit Answer</button>
-                <div id="answer38" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>39. What is a bond?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q39" value="a"> a) A debt instrument with interest payments</label><br>
-                    <label><input type="radio" name="q39" value="b"> b) A type of stock</label><br>
-                    <label><input type="radio" name="q39" value="c"> c) A derivative contract</label><br>
-                    <label><input type="radio" name="q39" value="d"> d) A mutual fund</label>
-                </div>
-                <button onclick="checkAnswer(39, 'a', 'The correct answer is a) A debt instrument with interest payments. Bonds are issued by borrowers to raise funds, paying interest to bondholders.')">Submit Answer</button>
-                <div id="answer39" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>40. What is the purpose of portfolio rebalancing?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q40" value="a"> a) To maintain desired asset allocation</label><br>
-                    <label><input type="radio" name="q40" value="b"> b) To increase portfolio risk</label><br>
-                    <label><input type="radio" name="q40" value="c"> c) To eliminate all investments</label><br>
-                    <label><input type="radio" name="q40" value="d"> d) To reduce returns</label>
-                </div>
-                <button onclick="checkAnswer(40, 'a', 'The correct answer is a) To maintain desired asset allocation. Rebalancing adjusts the portfolio to align with the original risk-return profile.')">Submit Answer</button>
-                <div id="answer40" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>41. What is an income statement?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q41" value="a"> a) A report of revenue and expenses</label><br>
-                    <label><input type="radio" name="q41" value="b"> b) A list of assets</label><br>
-                    <label><input type="radio" name="q41" value="c"> c) A cash flow summary</label><br>
-                    <label><input type="radio" name="q41" value="d"> d) A debt schedule</label>
-                </div>
-                <button onclick="checkAnswer(41, 'a', 'The correct answer is a) A report of revenue and expenses. It shows a company’s profitability over a period.')">Submit Answer</button>
-                <div id="answer41" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>42. What is the debt-to-equity ratio?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q42" value="a"> a) Total debt divided by total equity</label><br>
-                    <label><input type="radio" name="q42" value="b"> b) Revenue divided by expenses</label><br>
-                    <label><input type="radio" name="q42" value="c"> c) Assets divided by liabilities</label><br>
-                    <label><input type="radio" name="q42" value="d"> d) Cash flow divided by debt</label>
-                </div>
-                <button onclick="checkAnswer(42, 'a', 'The correct answer is a) Total debt divided by total equity. It measures a company’s financial leverage.')">Submit Answer</button>
-                <div id="answer42" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>43. What is a callable bond?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q43" value="a"> a) A bond that can be redeemed early</label><br>
-                    <label><input type="radio" name="q43" value="b"> b) A bond with no interest</label><br>
-                    <label><input type="radio" name="q43" value="c"> c) A bond traded on exchanges</label><br>
-                    <label><input type="radio" name="q43" value="d"> d) A bond with variable rates</label>
-                </div>
-                <button onclick="checkAnswer(43, 'a', 'The correct answer is a) A bond that can be redeemed early. Issuers can repay callable bonds before maturity, often when interest rates fall.')">Submit Answer</button>
-                <div id="answer43" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>44. What is the purpose of scenario analysis?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q44" value="a"> a) To evaluate outcomes under different conditions</label><br>
-                    <label><input type="radio" name="q44" value="b"> b) To calculate dividends</label><br>
-                    <label><input type="radio" name="q44" value="c"> c) To reduce leverage</label><br>
-                    <label><input type="radio" name="q44" value="d"> d) To increase liquidity</label>
-                </div>
-                <button onclick="checkAnswer(44, 'a', 'The correct answer is a) To evaluate outcomes under different conditions. Scenario analysis tests how variables impact financial models.')">Submit Answer</button>
-                <div id="answer44" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>45. What is a dividend yield?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q45" value="a"> a) Annual dividend divided by stock price</label><br>
-                    <label><input type="radio" name="q45" value="b"> b) Total revenue divided by shares</label><br>
-                    <label><input type="radio" name="q45" value="c"> c) Debt divided by equity</label><br>
-                    <label><input type="radio" name="q45" value="d"> d) Profit divided by assets</label>
-                </div>
-                <button onclick="checkAnswer(45, 'a', 'The correct answer is a) Annual dividend divided by stock price. Dividend yield measures the return from dividends relative to the stock price.')">Submit Answer</button>
-                <div id="answer45" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>46. What is a risk premium?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q46" value="a"> a) Extra return for taking risk</label><br>
-                    <label><input type="radio" name="q46" value="b"> b) Cost of borrowing</label><br>
-                    <label><input type="radio" name="q46" value="c"> c) Fixed income yield</label><br>
-                    <label><input type="radio" name="q46" value="d"> d) Dividend payout</label>
-                </div>
-                <button onclick="checkAnswer(46, 'a', 'The correct answer is a) Extra return for taking risk. Risk premium compensates investors for higher risk compared to risk-free assets.')">Submit Answer</button>
-                <div id="answer46" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>47. What is a futures contract?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q47" value="a"> a) An agreement to buy/sell at a future date</label><br>
-                    <label><input type="radio" name="q47" value="b"> b) A type of stock</label><br>
-                    <label><input type="radio" name="q47" value="c"> c) A bond with fixed interest</label><br>
-                    <label><input type="radio" name="q47" value="d"> d) A mutual fund</label>
-                </div>
-                <button onclick="checkAnswer(47, 'a', 'The correct answer is a) An agreement to buy/sell at a future date. Futures are standardized contracts for future delivery of assets.')">Submit Answer</button>
-                <div id="answer47" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>48. What is the purpose of a loan agreement?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q48" value="a"> a) To outline terms of borrowing</label><br>
-                    <label><input type="radio" name="q48" value="b"> b) To list company assets</label><br>
-                    <label><input type="radio" name="q48" value="c"> c) To forecast revenue</label><br>
-                    <label><input type="radio" name="q48" value="d"> d) To calculate dividends</label>
-                </div>
-                <button onclick="checkAnswer(48, 'a', 'The correct answer is a) To outline terms of borrowing. Loan agreements specify repayment terms, interest rates, and covenants.')">Submit Answer</button>
-                <div id="answer48" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>49. What is a capital market?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q49" value="a"> a) A market for long-term securities</label><br>
-                    <label><input type="radio" name="q49" value="b"> b) A market for short-term loans</label><br>
-                    <label><input type="radio" name="q49" value="c"> c) A market for commodities</label><br>
-                    <label><input type="radio" name="q49" value="d"> d) A market for currencies</label>
-                </div>
-                <button onclick="checkAnswer(49, 'a', 'The correct answer is a) A market for long-term securities. Capital markets facilitate trading of stocks and bonds for long-term financing.')">Submit Answer</button>
-                <div id="answer49" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>50. What is the role of a portfolio manager?</strong></p>
-                <div class="mcq-options">
-                    <label><input type="radio" name="q50" value="a"> a) To manage investments for clients</label><br>
-                    <label><input type="radio" name="q50" value="b"> b) To issue corporate bonds</label><br>
-                    <label><input type="radio" name="q50" value="c"> c) To regulate markets</label><br>
-                    <label><input type="radio" name="q50" value="d"> d) To audit financial statements</label>
-                </div>
-                <button onclick="checkAnswer(50, 'a', 'The correct answer is a) To manage investments for clients. Portfolio managers make investment decisions to meet client objectives.')">Submit Answer</button>
-                <div id="answer50" class="answer"></div>
-            </div>
-
-            <h3>HR-Based Questions</h3>
-            <div class="question">
-                <p><strong>51. Tell me about yourself.</strong></p>
-                <button onclick="showAnswer(51, 'I’m a recent finance graduate with internship experience at XYZ Company, where I honed my financial analysis skills. I’m passionate about portfolio management and eager to contribute to Oxane Partners.')">Show Sample Answer</button>
-                <div id="answer51" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>52. Why do you want to work at Oxane Partners?</strong></p>
-                <button onclick="showAnswer(52, 'I admire Oxane Partners’ innovative use of technology in private markets. My skills in financial modeling align with your goals, and I’m excited to grow in this role.')">Show Sample Answer</button>
-                <div id="answer52" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>53. What are your strengths?</strong></p>
-                <button onclick="showAnswer(53, 'My strengths include strong analytical skills, attention to detail, and teamwork. I’m also proficient in Excel and financial software, which I believe will benefit this position.')">Show Sample Answer</button>
-                <div id="answer53" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>54. What are your weaknesses?</strong></p>
-                <button onclick="showAnswer(54, 'I sometimes struggle with public speaking, but I’m improving through practice and workshops to build my confidence.')">Show Sample Answer</button>
-                <div id="answer54" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>55. Where do you see yourself in five years?</strong></p>
-                <button onclick="showAnswer(55, 'In five years, I aim to be a senior analyst at Oxane Partners, contributing to portfolio strategies and expanding my expertise in private markets.')">Show Sample Answer</button>
-                <div id="answer55" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>56. Why should we hire you?</strong></p>
-                <button onclick="showAnswer(56, 'I bring financial analysis skills and a passion for portfolio management. I’m a quick learner, committed to delivering value to your team.')">Show Sample Answer</button>
-                <div id="answer56" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>57. Describe a challenging situation and how you handled it.</strong></p>
-                <button onclick="showAnswer(57, 'During my internship, I faced a tight project deadline. I prioritized tasks, collaborated with my team, and delivered the work on time successfully.')">Show Sample Answer</button>
-                <div id="answer57" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>58. How do you handle stress?</strong></p>
-                <button onclick="showAnswer(58, 'I manage stress by staying organized, taking breaks when needed, and maintaining a positive mindset to stay focused.')">Show Sample Answer</button>
-                <div id="answer58" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>59. What motivates you?</strong></p>
-                <button onclick="showAnswer(59, 'I’m motivated by solving complex problems and seeing the impact of my work. Learning and achieving goals drive me forward.')">Show Sample Answer</button>
-                <div id="answer59" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>60. Do you prefer working independently or in a team?</strong></p>
-                <button onclick="showAnswer(60, 'I enjoy both. I can work independently on tasks but value teamwork for collaboration and better outcomes.')">Show Sample Answer</button>
-                <div id="answer60" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>61. What do you know about Oxane Partners?</strong></p>
-                <button onclick="showAnswer(61, 'Oxane Partners provides technology-driven solutions for private credit markets, serving top financial institutions. They specialize in portfolio management and analytics.')">Show Sample Answer</button>
-                <div id="answer61" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>62. How do you prioritize tasks?</strong></p>
-                <button onclick="showAnswer(62, 'I assess deadlines and importance, then tackle high-priority tasks first while keeping flexibility for urgent needs.')">Show Sample Answer</button>
-                <div id="answer62" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>63. Tell me about a time you made a mistake.</strong></p>
-                <button onclick="showAnswer(63, 'I once miscalculated a metric in a report. I informed my supervisor, corrected it, and implemented checks to prevent future errors.')">Show Sample Answer</button>
-                <div id="answer63" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>64. What are your career goals?</strong></p>
-                <button onclick="showAnswer(64, 'Short-term, I want to excel in portfolio management. Long-term, I aim to lead strategic initiatives at Oxane Partners.')">Show Sample Answer</button>
-                <div id="answer64" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>65. How do you stay updated with industry trends?</strong></p>
-                <button onclick="showAnswer(65, 'I read financial news, follow industry blogs, attend webinars, and take courses to stay informed about finance trends.')">Show Sample Answer</button>
-                <div id="answer65" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>66. Describe your experience with financial modeling.</strong></p>
-                <button onclick="showAnswer(66, 'I’ve built Excel models during internships, forecasting revenues and valuing investments, which sharpened my analytical skills.')">Show Sample Answer</button>
-                <div id="answer66" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>67. What software tools are you proficient in?</strong></p>
-                <button onclick="showAnswer(67, 'I’m skilled in Excel, VBA, Bloomberg Terminal, and Python for data analysis, enhancing my financial modeling capabilities.')">Show Sample Answer</button>
-                <div id="answer67" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>68. How do you ensure accuracy in your work?</strong></p>
-                <button onclick="showAnswer(68, 'I verify data, double-check calculations, use software for error-checking, and seek peer reviews to ensure accuracy.')">Show Sample Answer</button>
-                <div id="answer68" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>69. Tell me about a successful project you worked on.</strong></p>
-                <button onclick="showAnswer(69, 'I led a university project creating a portfolio with a 15% simulated return, exceeding targets through strategic asset allocation.')">Show Sample Answer</button>
-                <div id="answer69" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>70. How do you handle confidential information?</strong></p>
-                <button onclick="showAnswer(70, 'I adhere to ethical standards and company policies, ensuring sensitive data is securely stored and shared only with authorized personnel.')">Show Sample Answer</button>
-                <div id="answer70" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>71. What is the most important quality for this role?</strong></p>
-                <button onclick="showAnswer(71, 'Attention to detail is critical, as small errors can impact investment decisions and client trust in portfolio management.')">Show Sample Answer</button>
-                <div id="answer71" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>72. How do you approach learning new skills?</strong></p>
-                <button onclick="showAnswer(72, 'I seek courses, workshops, and on-the-job training, setting goals and practicing regularly to master new skills.')">Show Sample Answer</button>
-                <div id="answer72" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>73. Describe a time you worked with a difficult colleague.</strong></p>
-                <button onclick="showAnswer(73, 'I collaborated with a colleague with a different style by communicating openly, finding common ground, and achieving project goals.')">Show Sample Answer</button>
-                <div id="answer73" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>74. What interests you about portfolio management?</strong></p>
-                <button onclick="showAnswer(74, 'I’m drawn to the strategic balance of risk and return and the dynamic nature of financial markets, which make the role rewarding.')">Show Sample Answer</button>
-                <div id="answer74" class="answer"></div>
-            </div>
-            <div class="question">
-                <p><strong>75. Do you have any questions for us?</strong></p>
-                <button onclick="showAnswer(75, 'What training and development opportunities does Oxane Partners offer to support career growth in portfolio management?')">Show Sample Answer</button>
-                <div id="answer75" class="answer"></div>
-            </div>
-        </div>
-
-        <p>We encourage you to apply promptly due to the tight deadline. Best of luck with your application and interview preparation!</p>
-        <p>Best regards,<br>Your Placement Team</p>
-    </div>
-
+    <header>
+        <h1>Goldman Sachs Platform Solutions Analyst Quiz</h1>
+    </header>
+    <div id="quiz"></div>
+    <div id="completion-message">Congratulations! You have completed the quiz.</div>
     <script>
-        function checkAnswer(id, correctAnswer, explanation) {
-            const selectedOption = document.querySelector(`input[name="q${id}"]:checked`);
-            const answerDiv = document.getElementById(`answer${id}`);
-            if (selectedOption) {
-                answerDiv.innerHTML = explanation;
-                answerDiv.style.display = 'block';
+        // Array of 75 MCQs with detailed explanations
+        const questions = [
+            {
+                question: "What does a Platform Solutions Analyst do at Goldman Sachs?",
+                options: ["A) Managing customer relationships", "B) Developing new banking products", "C) Monitoring and investigating suspicious transactions", "D) Handling customer complaints"],
+                answer: "C",
+                explanation: "A Platform Solutions Analyst at Goldman Sachs acts as a 'traffic controller' for transaction systems, monitoring real-time alerts for suspicious activities, investigating potential fraud, escalating confirmed cases to Risk or Compliance teams, and improving fraud detection rules. Managing customer relationships, developing products, or handling complaints are not primary responsibilities of this role."
+            },
+            {
+                question: "How would you set up real-time monitoring for card transactions?",
+                options: ["A) Define risk rules", "B) Load data feeds", "C) Configure the engine", "D) All of the above"],
+                answer: "D",
+                explanation: "Setting up real-time monitoring involves defining risk rules (e.g., flagging transactions above ₹50,000), loading data feeds (e.g., cardholder profiles and merchant details), and configuring the engine to translate rules into logical conditions. All these steps are essential for effective monitoring."
+            },
+            {
+                question: "What is the primary factor used to prioritize which alerts to review first?",
+                options: ["A) The chronological order of the alerts", "B) The risk score of the alerts", "C) The merchant category code", "D) The customer's net worth"],
+                answer: "B",
+                explanation: "Alerts are prioritized based on their risk score, which combines factors like transaction amount, location, and customer context. A high score (e.g., 90/100) indicates immediate review, while lower scores can wait. Chronological order, MCC, or net worth are secondary considerations."
+            },
+            {
+                question: "Which of the following is NOT a KPI for a Platform Solutions Analyst?",
+                options: ["A) Alert volume vs. capacity", "B) Time-to-First-Review (TTFR)", "C) Number of transactions processed", "D) False-Positive Rate"],
+                answer: "C",
+                explanation: "KPIs for this role include alert volume vs. capacity, TTFR, False-Positive Rate, and Escalation Rate, as they measure efficiency and accuracy in fraud detection. The number of transactions processed is not a direct KPI, as it’s a system metric rather than an analyst performance indicator."
+            },
+            {
+                question: "What is a false positive in fraud detection?",
+                options: ["A) A fraudulent transaction that is not detected", "B) A legitimate transaction that is flagged as suspicious", "C) A transaction that is processed too slowly", "D) A transaction that exceeds the customer's credit limit"],
+                answer: "B",
+                explanation: "A false positive occurs when a legitimate transaction, like a valid airline ticket purchase, is flagged as suspicious due to high amount or travel-related MCC. This can annoy customers and waste analyst time, unlike undetected fraud (false negative) or other issues."
+            },
+            {
+                question: "What is PCI-DSS and why is it important?",
+                options: ["A) A standard for data security", "B) A type of fraud", "C) A banking product", "D) A risk scoring method"],
+                answer: "A",
+                explanation: "PCI-DSS (Payment Card Industry Data Security Standard) is a set of rules ensuring card data security through encryption, access controls, and logging. It’s critical to protect customer data, avoid fines, and maintain Goldman Sachs’ reputation, unlike fraud types, products, or scoring methods."
+            },
+            {
+                question: "What is an MCC in fraud detection?",
+                options: ["A) Merchant Credit Code", "B) Merchant Category Code", "C) Master Card Code", "D) Monetary Control Code"],
+                answer: "B",
+                explanation: "A Merchant Category Code (MCC) is a 4-digit number classifying merchant types (e.g., 5411 for grocery stores). Analysts use MCCs to identify unusual transactions, such as an ATM withdrawal (6011) on a card used only for groceries, flagging potential fraud."
+            },
+            {
+                question: "What does 'card-not-present' (CNP) fraud involve?",
+                options: ["A) Using a stolen physical card", "B) Transactions without the physical card", "C) ATM withdrawals", "D) In-store purchases"],
+                answer: "B",
+                explanation: "CNP fraud occurs in transactions where the physical card isn’t used, typically online or over the phone, using stolen card details. It’s detected by patterns like velocity or mismatched addresses, unlike physical card use in ATMs or stores."
+            },
+            {
+                question: "How can you reduce false positives without missing real fraud?",
+                options: ["A) Ignore low-value transactions", "B) Use behavioral profiles", "C) Disable monitoring", "D) Increase alert thresholds only"],
+                answer: "B",
+                explanation: "Using behavioral profiles (e.g., typical spending patterns) reduces false positives by adding context, like not flagging a known traveler’s purchase. Ignoring transactions or disabling monitoring risks missing fraud, and raising thresholds alone may overlook subtle patterns."
+            },
+            {
+                question: "Which tool is used to pull raw transaction data?",
+                options: ["A) Excel", "B) SQL", "C) PowerPoint", "D) Word"],
+                answer: "B",
+                explanation: "SQL is used to query databases and pull raw transaction data, such as filtering transactions over ₹50,000. Excel is for analysis, not data extraction, while PowerPoint and Word are irrelevant for this task."
+            },
+            {
+                question: "What is the goal for Time-to-First-Review (TTFR) for high-risk alerts?",
+                options: ["A) < 5 minutes", "B) < 10 minutes", "C) < 30 minutes", "D) < 1 hour"],
+                answer: "A",
+                explanation: "The goal for TTFR for high-risk alerts is under 5 minutes to ensure rapid response to potential fraud. Longer times (10 minutes or more) risk delays in addressing critical issues."
+            },
+            {
+                question: "What does a high false-positive rate indicate?",
+                options: ["A) Efficient system", "B) Annoyed customers", "C) Low fraud detection", "D) High compliance"],
+                answer: "B",
+                explanation: "A high false-positive rate means many legitimate transactions are flagged, frustrating customers and wasting analyst time. It doesn’t indicate efficiency, low detection, or compliance, but rather a need for rule tuning."
+            },
+            {
+                question: "What is a risk score based on?",
+                options: ["A) Transaction amount only", "B) Multiple weighted factors", "C) Customer age", "D) Merchant name"],
+                answer: "B",
+                explanation: "A risk score (0–100) is calculated from weighted factors like amount, velocity, location, and device risk. It’s not based solely on amount, age, or merchant name, ensuring a comprehensive fraud assessment."
+            },
+            {
+                question: "Which team collaborates on rule changes?",
+                options: ["A) Marketing", "B) Risk", "C) HR", "D) Sales"],
+                answer: "B",
+                explanation: "The Risk team collaborates with analysts to update monitoring rules, especially for new patterns like money laundering. Marketing, HR, and Sales are not involved in fraud detection rule changes."
+            },
+            {
+                question: "What is FATF?",
+                options: ["A) Financial Action Task Force", "B) Fraud Analysis Task Force", "C) Financial Audit Team", "D) Federal Anti-Fraud Team"],
+                answer: "A",
+                explanation: "The Financial Action Task Force (FATF) is a global body setting anti-money-laundering standards. Compliance with FATF ensures detection of suspicious flows, avoiding fines and reputational damage, unlike other listed teams."
+            },
+            {
+                question: "How do you document a fraud case?",
+                options: ["A) In a spreadsheet", "B) In a case-management tool", "C) Via email", "D) On paper"],
+                answer: "B",
+                explanation: "Fraud cases are documented in a case-management tool with details like transaction ID, investigation steps, and evidence. Spreadsheets, emails, or paper are less secure and not standard for this purpose."
+            },
+            {
+                question: "What does a Merchant Category Code (MCC) like 5411 represent?",
+                options: ["A) ATM Withdrawals", "B) Grocery Stores", "C) Airlines", "D) Hotels"],
+                answer: "B",
+                explanation: "MCC 5411 represents grocery stores. ATM withdrawals are 6011, airlines are 3000–3299, and hotels are 3501–3999. MCCs help analysts identify unusual transaction patterns."
+            },
+            {
+                question: "What is a common sign of CNP fraud?",
+                options: ["A) In-store purchase", "B) Mismatched shipping/billing addresses", "C) Physical card use", "D) Low transaction amounts"],
+                answer: "B",
+                explanation: "CNP fraud often involves mismatched shipping and billing addresses, indicating stolen card details used online. In-store purchases and physical card use are not CNP, and low amounts are less specific."
+            },
+            {
+                question: "How do you spot a surge in fraud using Excel?",
+                options: ["A) Create a pivot table", "B) Write a macro", "C) Use conditional formatting", "D) All of the above"],
+                answer: "D",
+                explanation: "In Excel, a pivot table analyzes MCC alert counts, conditional formatting highlights spikes, and macros automate data merging. All these techniques help identify fraud surges efficiently."
+            },
+            {
+                question: "What does a risk score of 90/100 indicate?",
+                options: ["A) Low priority", "B) Immediate review", "C) Legitimate transaction", "D) No action needed"],
+                answer: "B",
+                explanation: "A risk score of 90/100 indicates high fraud likelihood, requiring immediate review. Scores below 80 may be lower priority, and high scores don’t confirm legitimacy or inaction."
+            },
+            {
+                question: "What is a source for staying updated on fraud methods?",
+                options: ["A) FS-ISAC bulletins", "B) Marketing reports", "C) Customer feedback", "D) Sales data"],
+                answer: "A",
+                explanation: "FS-ISAC bulletins provide industry-shared insights on new fraud patterns. Marketing reports, customer feedback, and sales data are not primary sources for fraud method updates."
+            },
+            {
+                question: "What is friendly fraud?",
+                options: ["A) Fraud by employees", "B) Cardholder disputes legitimate purchases", "C) Online scams", "D) ATM skimming"],
+                answer: "B",
+                explanation: "Friendly fraud occurs when cardholders dispute valid purchases to get refunds, detected by dispute history or device consistency. It differs from employee fraud, online scams, or ATM skimming."
+            },
+            {
+                question: "What tool is used for weekly fraud-monitoring reports?",
+                options: ["A) Excel", "B) Tableau", "C) Word", "D) Notepad"],
+                answer: "B",
+                explanation: "Tableau or similar BI tools create visualizations for fraud-monitoring reports, showing metrics like alert trends and KPIs. Excel is for ad-hoc analysis, while Word and Notepad are unsuitable."
+            },
+            {
+                question: "What ensures compliance with PCI-DSS?",
+                options: ["A) Encryption", "B) Public data sharing", "C) No logging", "D) Open access"],
+                answer: "A",
+                explanation: "PCI-DSS requires encryption of card data in transit and at rest, along with access controls and logging. Public sharing, no logging, or open access violate security standards."
+            },
+            {
+                question: "What is a process improvement example?",
+                options: ["A) Ignore alerts", "B) Auto-batch low-value alerts", "C) Reduce staff", "D) Disable rules"],
+                answer: "B",
+                explanation: "Auto-batching low-value alerts for daily review frees analysts for high-risk cases, improving efficiency. Ignoring alerts, reducing staff, or disabling rules would compromise fraud detection."
+            },
+            {
+                question: "How do you test a new fraud-detection rule?",
+                options: ["A) Deploy immediately", "B) Back-test on historical data", "C) Ignore testing", "D) Ask customers"],
+                answer: "B",
+                explanation: "Back-testing a rule on historical data checks its effectiveness and false-positive rate. Immediate deployment, ignoring testing, or customer surveys risk system errors or inefficiencies."
+            },
+            {
+                question: "What is the SLA for high-risk alerts acknowledgment?",
+                options: ["A) < 5 minutes", "B) < 10 minutes", "C) < 30 minutes", "D) < 1 hour"],
+                answer: "A",
+                explanation: "High-risk alerts must be acknowledged within 5 minutes to meet SLAs, ensuring rapid fraud response. Longer times risk delays in addressing critical threats."
+            },
+            {
+                question: "What do you do during a system outage?",
+                options: ["A) Wait for recovery", "B) Use manual fallback", "C) Ignore alerts", "D) Reboot servers"],
+                answer: "B",
+                explanation: "During an outage, analysts switch to a manual fallback, like running SQL filters on raw feeds. Waiting, ignoring alerts, or rebooting servers (a Tech Ops task) are not appropriate."
+            },
+            {
+                question: "How do you ensure data quality?",
+                options: ["A) Nightly reconciliation", "B) Ignore errors", "C) Delete duplicates", "D) No checks"],
+                answer: "A",
+                explanation: "Nightly reconciliation compares transaction counts between systems to ensure data accuracy. Ignoring errors, deleting duplicates without checks, or no checks compromise data quality."
+            },
+            {
+                question: "What protects customer confidentiality?",
+                options: ["A) Public access", "B) Masked data", "C) No encryption", "D) Open sharing"],
+                answer: "B",
+                explanation: "Masking card numbers (e.g., showing last 4 digits) protects confidentiality, per PCI-DSS and GDPR. Public access, no encryption, or open sharing violate data privacy standards."
+            },
+            {
+                question: "How do you onboard a new analyst?",
+                options: ["A) Ignore training", "B) Provide shadowing", "C) Assign cases immediately", "D) No SOP review"],
+                answer: "B",
+                explanation: "Shadowing allows new analysts to learn workflows by observing live cases. Ignoring training, immediate case assignment, or skipping SOP review hinder effective onboarding."
+            },
+            {
+                question: "What is an example of automating a task?",
+                options: ["A) Manual data entry", "B) VBA macro for reports", "C) Handwritten notes", "D) No documentation"],
+                answer: "B",
+                explanation: "A VBA macro automating report generation (e.g., merging CSVs and emailing summaries) saves time. Manual entry, handwritten notes, or no documentation are inefficient."
+            },
+            {
+                question: "How do you balance speed and accuracy?",
+                options: ["A) Automate low-risk alerts", "B) Ignore SLAs", "C) Skip reviews", "D) Delay investigations"],
+                answer: "A",
+                explanation: "Automating low-risk alerts ensures speed, while manual reviews for high-risk alerts ensure accuracy. Ignoring SLAs, skipping reviews, or delaying investigations compromise both."
+            },
+            {
+                question: "What is machine-learning-based fraud detection?",
+                options: ["A) Fixed rules only", "B) Learning from past data", "C) Manual reviews", "D) No scoring"],
+                answer: "B",
+                explanation: "ML-based fraud detection learns from labeled data to identify subtle patterns, unlike fixed rules. It enhances scoring, unlike manual reviews or no-scoring approaches."
+            },
+            {
+                question: "How do you explain a metric to a non-technical manager?",
+                options: ["A) Use jargon", "B) Use analogies and visuals", "C) Provide raw data", "D) Avoid details"],
+                answer: "B",
+                explanation: "Analogies (e.g., alerts as cars at a toll) and visuals (e.g., bar charts) make metrics clear to non-technical managers. Jargon, raw data, or avoiding details reduce clarity."
+            },
+            {
+                question: "What is device fingerprinting?",
+                options: ["A) Collecting PII", "B) Gathering non-PII device details", "C) Tracking customer location", "D) Storing card numbers"],
+                answer: "B",
+                explanation: "Device fingerprinting collects non-PII like browser version and OS to identify mismatches, aiding fraud detection. It avoids PII, location tracking, or card storage."
+            },
+            {
+                question: "How do you handle a high-profile client’s false block?",
+                options: ["A) Ignore the complaint", "B) Fast-track review", "C) Delay response", "D) No follow-up"],
+                answer: "B",
+                explanation: "Fast-tracking a review, apologizing, and unblocking if legitimate addresses a high-profile client’s false block. Ignoring, delaying, or no follow-up risks client dissatisfaction."
+            },
+            {
+                question: "What happens if you miss an SLA?",
+                options: ["A) Notify manager", "B) Ignore it", "C) Delete the alert", "D) No action"],
+                answer: "A",
+                explanation: "Notifying the manager and addressing the backlog (e.g., with a workaround script) recovers a missed SLA. Ignoring, deleting alerts, or no action worsen the situation."
+            },
+            {
+                question: "How do you analyze a false-positive spike?",
+                options: ["A) Ignore it", "B) Categorize by rule", "C) Delete alerts", "D) No investigation"],
+                answer: "B",
+                explanation: "Categorizing alerts by triggering rule identifies the cause of a false-positive spike, enabling rule tuning. Ignoring, deleting, or no investigation fails to address the issue."
+            },
+            {
+                question: "What is internal fraud?",
+                options: ["A) Customer fraud", "B) Employee unauthorized actions", "C) Online scams", "D) ATM issues"],
+                answer: "B",
+                explanation: "Internal fraud involves employees making unauthorized changes, detected via access logs and exception reports. It differs from customer fraud, online scams, or ATM issues."
+            },
+            {
+                question: "How do you work with external vendors?",
+                options: ["A) No SLAs", "B) Define requirements", "C) Ignore quality", "D) No reviews"],
+                answer: "B",
+                explanation: "Defining requirements (e.g., file formats and SLAs) ensures reliable vendor data feeds. No SLAs, ignoring quality, or no reviews lead to inconsistent data."
+            },
+            {
+                question: "What is the change-control process?",
+                options: ["A) No documentation", "B) JIRA ticket and testing", "C) Immediate deployment", "D) No peer review"],
+                answer: "B",
+                explanation: "The change-control process involves a JIRA ticket, peer review, and UAT testing to ensure safe updates. No documentation, immediate deployment, or no review risk errors."
+            },
+            {
+                question: "How do you capture lessons learned?",
+                options: ["A) Post-mortem meeting", "B) No documentation", "C) Ignore incidents", "D) No action items"],
+                answer: "A",
+                explanation: "A post-mortem meeting documents incident timelines, root causes, and action items to prevent repeats. No documentation, ignoring incidents, or no action items hinder learning."
+            },
+            {
+                question: "Why is shift flexibility important?",
+                options: ["A) Fraud occurs 24/7", "B) Less workload", "C) Fixed hours", "D) No monitoring"],
+                answer: "A",
+                explanation: "Fraud occurs anytime, requiring 24/7 monitoring. Shift flexibility ensures timely alert reviews, unlike fixed hours or no monitoring, and workload varies."
+            },
+            {
+                question: "What motivates you in this role?",
+                options: ["A) Routine tasks", "B) Solving dynamic puzzles", "C) No collaboration", "D) Fixed processes"],
+                answer: "B",
+                explanation: "The role involves solving dynamic fraud puzzles through analysis and collaboration, not routine tasks, isolation, or fixed processes, making it engaging and challenging."
+            },
+            {
+                question: "How do you explain your role to a non-finance person?",
+                options: ["A) Use technical terms", "B) Use a home alarm analogy", "C) Avoid details", "D) Focus on coding"],
+                answer: "B",
+                explanation: "A home alarm analogy (e.g., tuning alarms and checking alerts) simplifies the role for non-finance audiences. Technical terms, vague details, or coding focus reduce clarity."
+            },
+            {
+                question: "Why Goldman Sachs’s Platform Solutions team?",
+                options: ["A) No ownership", "B) Proprietary platforms", "C) Basic tasks", "D) No risk management"],
+                answer: "B",
+                explanation: "Goldman Sachs’ proprietary platforms and strong risk management culture offer analysts ownership and impact, unlike basic tasks, no ownership, or no risk focus."
+            },
+            {
+                question: "What is your approach to continuous improvement?",
+                options: ["A) No goals", "B) Quarterly goals", "C) Ignore metrics", "D) No experiments"],
+                answer: "B",
+                explanation: "Setting quarterly goals (e.g., learning new tools) and experimenting in sandboxes drive improvement. No goals, ignoring metrics, or no experiments stifle progress."
+            },
+            {
+                question: "How do you improve team morale?",
+                options: ["A) Ignore team", "B) Organize a hackathon", "C) No collaboration", "D) Delay projects"],
+                answer: "B",
+                explanation: "A hackathon encourages innovation and ownership, boosting morale. Ignoring the team, avoiding collaboration, or delaying projects negatively impacts engagement."
+            },
+            {
+                question: "How do you ensure audit-ready analyses?",
+                options: ["A) No documentation", "B) Clear documentation", "C) Delete logs", "D) No timestamps"],
+                answer: "B",
+                explanation: "Clear documentation with screenshots, query logs, and timestamps ensures audit readiness. No documentation, deleting logs, or no timestamps risk non-compliance."
+            },
+            {
+                question: "What do you do if you spot a new fraud pattern?",
+                options: ["A) Ignore it", "B) Document and alert", "C) Delay action", "D) No collaboration"],
+                answer: "B",
+                explanation: "Documenting and alerting leadership about a new fraud pattern, then collaborating on rules or models, ensures proactive response. Ignoring, delaying, or no collaboration risks losses."
+            },
+            {
+                question: "How do you manage stress?",
+                options: ["A) No breaks", "B) Structured breaks", "C) Ignore tasks", "D) No prioritization"],
+                answer: "B",
+                explanation: "Structured breaks (e.g., walks) and prioritized task lists manage stress effectively. No breaks, ignoring tasks, or no prioritization exacerbate pressure."
+            },
+            {
+                question: "What is proactive fraud detection?",
+                options: ["A) Responding to alerts", "B) Tuning rules before alerts", "C) Ignoring patterns", "D) No analysis"],
+                answer: "B",
+                explanation: "Proactive fraud detection involves tuning rules or analyzing patterns to catch fraud before alerts, unlike reactive alert responses, ignoring patterns, or no analysis."
+            },
+            {
+                question: "How do you roll out a new payment channel?",
+                options: ["A) No testing", "B) Phased launch", "C) Ignore regions", "D) No training"],
+                answer: "B",
+                explanation: "A phased launch (starting with one region) with testing and training ensures a smooth rollout. No testing, ignoring regions, or no training risk errors and inefficiencies."
+            },
+            {
+                question: "What is a key skill for this role?",
+                options: ["A) Graphic design", "B) Analytical rigor", "C) Sales", "D) Cooking"],
+                answer: "B",
+                explanation: "Analytical rigor, using tools like SQL and Excel, is critical for fraud analysis. Graphic design, sales, or cooking are unrelated to the role’s responsibilities."
+            },
+            {
+                question: "What does a BIN indicate?",
+                options: ["A) Merchant type", "B) Issuing bank", "C) Transaction amount", "D) Customer age"],
+                answer: "B",
+                explanation: "The Bank Identification Number (BIN), the first six digits of a card, identifies the issuing bank, aiding fraud investigations. It doesn’t indicate merchant type, amount, or age."
+            },
+            {
+                question: "What is velocity in fraud detection?",
+                options: ["A) Transaction speed", "B) Many transactions in short time", "C) Customer movement", "D) Card type"],
+                answer: "B",
+                explanation: "Velocity refers to multiple transactions in a short time, a fraud indicator. It’s not about transaction speed, customer movement, or card type."
+            },
+            {
+                question: "What is a common fraud-detection tool?",
+                options: ["A) Photoshop", "B) In-house monitoring platform", "C) Social media", "D) Calculator"],
+                answer: "B",
+                explanation: "An in-house monitoring platform is the core tool for real-time fraud detection. Photoshop, social media, and calculators are not used for this purpose."
+            },
+            {
+                question: "What is the purpose of a case-management system?",
+                options: ["A) Marketing", "B) Document investigations", "C) Customer support", "D) Sales tracking"],
+                answer: "B",
+                explanation: "A case-management system documents investigation details and escalations for fraud cases. It’s not used for marketing, customer support, or sales tracking."
+            },
+            {
+                question: "What is a sign of friendly fraud?",
+                options: ["A) ATM use", "B) Frequent disputes", "C) In-store purchases", "D) Low amounts"],
+                answer: "B",
+                explanation: "Frequent disputes by a cardholder indicate friendly fraud, where legitimate purchases are challenged. ATM use, in-store purchases, or low amounts are less specific."
+            },
+            {
+                question: "What is a UAT environment?",
+                options: ["A) Live system", "B) Sandbox for testing", "C) Customer portal", "D) Marketing tool"],
+                answer: "B",
+                explanation: "A User Acceptance Testing (UAT) environment is a sandbox for testing rules with mirrored data, ensuring no impact on live systems. It’s not a live system, portal, or marketing tool."
+            },
+            {
+                question: "What is the role of access logs in internal fraud detection?",
+                options: ["A) Track customer purchases", "B) Monitor employee actions", "C) Store card numbers", "D) No purpose"],
+                answer: "B",
+                explanation: "Access logs track employee actions (e.g., data views or changes), detecting internal fraud. They don’t track customer purchases, store card numbers, or serve no purpose."
+            },
+            {
+                question: "What is a benefit of segregation of duties?",
+                options: ["A) Faster approvals", "B) Prevents internal fraud", "C) More alerts", "D) No documentation"],
+                answer: "B",
+                explanation: "Segregation of duties ensures no single person can both create and approve changes, preventing internal fraud. It doesn’t speed approvals, increase alerts, or eliminate documentation."
+            },
+            {
+                question: "What is a requirement for external vendor data feeds?",
+                options: ["A) No SLAs", "B) File format", "C) Ignore quality", "D) No reviews"],
+                answer: "B",
+                explanation: "Defining file formats ensures vendor data feeds are compatible with monitoring systems. No SLAs, ignoring quality, or no reviews compromise data reliability."
+            },
+            {
+                question: "What is a post-deployment check?",
+                options: ["A) Ignore traffic", "B) Monitor first 24 hours", "C) No verification", "D) Delete rules"],
+                answer: "B",
+                explanation: "Monitoring the first 24 hours post-deployment checks for unexpected alert spikes, ensuring rule stability. Ignoring traffic, no verification, or deleting rules are not valid checks."
+            },
+            {
+                question: "What is a key compliance standard?",
+                options: ["A) GDPR", "B) PCI-DSS", "C) ISO 9001", "D) All of the above"],
+                answer: "B",
+                explanation: "PCI-DSS is the primary compliance standard for card data security in this role. GDPR applies to broader data privacy, and ISO 9001 is for quality management, not fraud."
+            },
+            {
+                question: "What is the role of a pivot table in Excel?",
+                options: ["A) Write code", "B) Analyze trends", "C) Create charts", "D) Store data"],
+                answer: "B",
+                explanation: "Pivot tables in Excel summarize and analyze trends, like alert counts by MCC. They don’t write code, create charts directly, or store raw data."
+            },
+            {
+                question: "What is a common fraud pattern?",
+                options: ["A) Grocery purchases", "B) High-velocity online transactions", "C) In-store returns", "D) Low amounts"],
+                answer: "B",
+                explanation: "High-velocity online transactions are a common fraud pattern, indicating CNP fraud. Grocery purchases, in-store returns, or low amounts are less suspicious."
+            },
+            {
+                question: "What is the purpose of conditional formatting in Excel?",
+                options: ["A) Write macros", "B) Highlight odd values", "C) Store data", "D) Create reports"],
+                answer: "B",
+                explanation: "Conditional formatting highlights odd values (e.g., alert spikes) for quick identification. It doesn’t write macros, store data, or create full reports."
+            },
+            {
+                question: "What is a benefit of ML in fraud detection?",
+                options: ["A) Fixed rules", "B) Detects subtle patterns", "C) No scoring", "D) Manual reviews"],
+                answer: "B",
+                explanation: "Machine learning detects subtle fraud patterns (e.g., checkout timing) that fixed rules miss, enhancing scoring. It doesn’t rely on manual reviews or eliminate scoring."
+            },
+            {
+                question: "What is a key responsibility in this role?",
+                options: ["A) Product design", "B) Escalate fraud cases", "C) Customer service", "D) Marketing"],
+                answer: "B",
+                explanation: "Escalating confirmed fraud cases to Compliance is a key responsibility. Product design, customer service, and marketing are not part of the analyst’s role."
+            },
+            {
+                question: "What is the final step in investigating a suspicious transaction?",
+                options: ["A) Ignore it", "B) Decide to close or escalate", "C) Delay review", "D) No documentation"],
+                answer: "B",
+                explanation: "The final step is deciding to close the case as legitimate or escalate with evidence. Ignoring, delaying, or no documentation are not valid investigation steps."
+            },
+            {
+                question: "What is a key metric for fraud monitoring?",
+                options: ["A) Customer satisfaction", "B) Escalation Rate", "C) Sales volume", "D) Website traffic"],
+                answer: "B",
+                explanation: "Escalation Rate (% of alerts sent to Compliance) is a key metric, reflecting fraud detection accuracy. Customer satisfaction, sales, and traffic are unrelated to monitoring."
+            }
+        ];
+
+        // Function to render all questions
+        function renderQuestions() {
+            const quizContainer = document.getElementById("quiz");
+            questions.forEach((q, index) => {
+                const card = document.createElement("div");
+                card.className = "question-card";
+                card.innerHTML = `
+                    <h2>${index + 1}. ${q.question}</h2>
+                    ${q.options.map((option, i) => `
+                        <label>
+                            <input type="radio" name="answer-${index}" value="${String.fromCharCode(65 + i)}" onchange="checkAnswer(${index}, this.value)">
+                            ${option}
+                        </label>
+                    `).join("")}
+                    <div id="feedback-${index}" class="feedback"></div>
+                    <div id="explanation-${index}" class="explanation" style="display:none;"></div>
+                `;
+                quizContainer.appendChild(card);
+            });
+        }
+
+        // Function to check the selected answer
+        function checkAnswer(index, selected) {
+            const q = questions[index];
+            const feedback = document.getElementById(`feedback-${index}`);
+            const explanation = document.getElementById(`explanation-${index}`);
+            if (selected === q.answer) {
+                feedback.innerHTML = "Correct!";
+                feedback.classList.add("correct");
+                feedback.classList.remove("incorrect");
             } else {
-                answerDiv.innerHTML = 'Please select an option before submitting.';
-                answerDiv.style.display = 'block';
+                feedback.innerHTML = `Incorrect! The correct answer is ${q.answer}.`;
+                feedback.classList.add("incorrect");
+                feedback.classList.remove("correct");
+            }
+            explanation.innerHTML = q.explanation;
+            explanation.style.display = "block";
+            // Disable further selections for this question
+            document.querySelectorAll(`input[name="answer-${index}"]`).forEach(radio => radio.disabled = true);
+            // Check if all questions are answered
+            checkCompletion();
+        }
+
+        // Function to check if all questions are answered
+        function checkCompletion() {
+            const allAnswered = questions.every((_, index) => {
+                const feedback = document.getElementById(`feedback-${index}`);
+                return feedback.innerHTML !== "";
+            });
+            if (allAnswered) {
+                document.getElementById("completion-message").style.display = "block";
             }
         }
 
-        function showAnswer(id, answer) {
-            const answerDiv = document.getElementById(`answer${id}`);
-            answerDiv.innerHTML = answer;
-            answerDiv.style.display = 'block';
-        }
+        // Initialize quiz
+        renderQuestions();
     </script>
 </body>
 </html>
