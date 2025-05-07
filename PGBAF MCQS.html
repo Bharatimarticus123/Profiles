@@ -1,0 +1,1302 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Banking MCQs</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/framer-motion@10.16.4/dist/framer-motion.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(180deg, #0a0a1f, #1a0044);
+      color: #e5e7eb;
+      overflow-x: hidden;
+      position: relative;
+    }
+    .starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(34, 211, 238, 0.3);
+      border-radius: 16px;
+      box-shadow: 0 0 30px rgba(34, 211, 238, 0.5), inset 0 0 10px rgba(34, 211, 238, 0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .glass-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 40px rgba(34, 211, 238, 0.8);
+    }
+    .option-button {
+      background: linear-gradient(145deg, #1e293b, #111827);
+      border: 1px solid rgba(34, 211, 238, 0.5);
+      transition: all 0.2s ease;
+    }
+    .option-button:hover:not(:disabled) {
+      transform: scale(1.05);
+      background: linear-gradient(145deg, #374151, #1f2937);
+      box-shadow: 0 0 20px rgba(34, 211, 238, 0.9);
+      animation: pulse 1s infinite;
+    }
+    .correct {
+      background: linear-gradient(145deg, #10b981, #059669) !important;
+      border-color: #10b981;
+      color: #fff;
+    }
+    .incorrect {
+      background: linear-gradient(145deg, #ef4444, #dc2626) !important;
+      border-color: #ef4444;
+      color: #fff;
+    }
+    .progress-bar {
+      background: linear-gradient(to right, #22d3ee, #d946ef, #a855f7);
+      box-shadow: 0 0 15px rgba(34, 211, 238, 0.9);
+      animation: pulse 2s infinite;
+    }
+    .header-title {
+      font-family: 'Orbitron', sans-serif;
+      text-shadow: 0 0 20px rgba(34, 211, 238, 0.9), 0 0 10px rgba(217, 70, 239, 0.6);
+    }
+    .nav-button {
+      background: linear-gradient(145deg, #374151, #1f2937);
+      border: 1px solid rgba(34, 211, 238, 0.4);
+      transition: all 0.2s ease;
+    }
+    .nav-button:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 15px rgba(34, 211, 238, 0.8);
+    }
+    .modal {
+      background: rgba(17, 24, 39, 0.95);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(34, 211, 238, 0.5);
+      box-shadow: 0 0 40px rgba(34, 211, 238, 0.6);
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    @keyframes orbit {
+      0% { transform: rotate(0deg) translateX(10px); }
+      100% { transform: rotate(360deg) translateX(10px); }
+    }
+    .orbiting-particle {
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      background: #22d3ee;
+      border-radius: 50%;
+      animation: orbit 5s linear infinite;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="starfield" class="starfield"></canvas>
+  <div id="root"></div>
+  <script type="text/javascript">
+    // Ensure Framer Motion is loaded
+    if (typeof window.motion === 'undefined') {
+      console.warn('Framer Motion not loaded; animations disabled.');
+    }
+
+    // Starfield Animation
+    function initStarfield() {
+      const canvas = document.getElementById('starfield');
+      const ctx = canvas.getContext('2d');
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+      const stars = [];
+      for (let i = 0; i < 200; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          radius: Math.random() * 2,
+          speed: Math.random() * 0.5 + 0.1
+        });
+      }
+      function animateStars() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        stars.forEach(star => {
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+          ctx.fillStyle = '#ffffff';
+          ctx.fill();
+          star.y -= star.speed;
+          if (star.y < 0) star.y = canvas.height;
+        });
+        requestAnimationFrame(animateStars);
+      }
+      animateStars();
+      return () => window.removeEventListener('resize', resizeCanvas);
+    }
+    initStarfield();
+
+    // Sound Effects (Base64 placeholders for demo)
+    function playCorrectSound() {
+      const sound = new Audio('data:audio/mpeg;base64,/+MYxAAAAANIAAAAAExBTUUzLjEwMC4y/+MYxDsAAABFTEFNRVNTXzMuMTAwLjJVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxAwAAAANIAAAAAExBTUUzLjEwMC4y/+MYxDsAAABFTEFNRVNTXzMuMTAwLjJVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV');
+      sound.play().catch(e => console.log('Sound playback failed:', e));
+    }
+
+    function playIncorrectSound() {
+      const sound = new Audio('data:audio/mpeg;base64,/+MYxAAAAANIAAAAAExBTUUzLjEwMC4y/+MYxDsAAABFTEFNRVNTXzMuMTAwLjJVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxAwAAAANIAAAAAExBTUUzLjEwMC4y/+MYxDsAAABFTEFNRVNTXzMuMTAwLjJVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV');
+      sound.play().catch(e => console.log('Sound playback failed:', e));
+    }
+
+    // Questions Array (100 MCQs)
+    const questions = [
+      {
+        id: 1,
+        category: "Retail Banking",
+        question: "What is the full form of NEFT?",
+        options: ["National Electronic Finance Transaction", "National Electronic Funds Transfer", "Net Electronic Funds Transfer", "National Efficient Funds Transfer"],
+        correctAnswer: "National Electronic Funds Transfer",
+        explanation: "NEFT, regulated by RBI, enables electronic fund transfers between bank accounts in India, processed in hourly batches."
+      },
+      {
+        id: 2,
+        category: "Insurance",
+        question: "Which body regulates the insurance sector in India?",
+        options: ["RBI", "SEBI", "IRDAI", "NABARD"],
+        correctAnswer: "IRDAI",
+        explanation: "The Insurance Regulatory and Development Authority of India (IRDAI) oversees insurance regulation and policyholder protection."
+      },
+      {
+        id: 3,
+        category: "Mutual Funds",
+        question: "What is a mutual fund?",
+        options: ["A bank savings account", "A collective investment scheme", "A government bond", "A fixed deposit"],
+        correctAnswer: "A collective investment scheme",
+        explanation: "Mutual funds pool investor money to invest in securities, managed to diversify risk and generate returns."
+      },
+      {
+        id: 4,
+        category: "Stocks",
+        question: "What is the primary role of SEBI?",
+        options: ["Regulate banking", "Protect investors and regulate securities markets", "Control monetary policy", "Oversee insurance"],
+        correctAnswer: "Protect investors and regulate securities markets",
+        explanation: "SEBI ensures transparency and protects investors in India’s stock markets."
+      },
+      {
+        id: 5,
+        category: "Retail Banking",
+        question: "What does CASA ratio measure in banking?",
+        options: ["Loans to deposits", "Current and savings deposits to total deposits", "Fixed deposits to assets", "NPAs to loans"],
+        correctAnswer: "Current and savings deposits to total deposits",
+        explanation: "CASA ratio indicates the proportion of low-cost current and savings accounts in a bank’s deposits."
+      },
+      {
+        id: 6,
+        category: "Retail Banking",
+        question: "What is the minimum amount for an RTGS transaction?",
+        options: ["₹50,000", "₹1,00,000", "₹2,00,000", "₹5,00,000"],
+        correctAnswer: "₹2,00,000",
+        explanation: "RTGS (Real-Time Gross Settlement) requires a minimum of ₹2,00,000 for instant high-value transfers."
+      },
+      {
+        id: 7,
+        category: "Loans",
+        question: "What is a credit score used for?",
+        options: ["Track savings balance", "Assess loan repayment ability", "Calculate FD interest", "Monitor stock performance"],
+        correctAnswer: "Assess loan repayment ability",
+        explanation: "A credit score evaluates creditworthiness, influencing retail loan approvals and interest rates."
+      },
+      {
+        id: 8,
+        category: "Insurance",
+        question: "What is bancassurance?",
+        options: ["A savings account", "Banks selling insurance products", "A loan scheme", "A stock investment"],
+        correctAnswer: "Banks selling insurance products",
+        explanation: "Bancassurance allows banks to sell insurance products to retail customers."
+      },
+      {
+        id: 9,
+        category: "Retail Banking",
+        question: "What is the role of a loan officer?",
+        options: ["Manage tellers", "Process loan applications", "Handle stock trading", "Conduct audits"],
+        correctAnswer: "Process loan applications",
+        explanation: "Loan officers evaluate and process retail loan applications, ensuring compliance."
+      },
+      {
+        id: 10,
+        category: "Insurance",
+        question: "What is a no-claim bonus in insurance?",
+        options: ["Penalty for claims", "Discount for no claims", "Bonus for renewal", "Fee for late premiums"],
+        correctAnswer: "Discount for no claims",
+        explanation: "A no-claim bonus offers a premium discount for policyholders who don’t file claims."
+      },
+      {
+        id: 11,
+        category: "Retail Banking",
+        question: "What is the full form of KYC?",
+        options: ["Know Your Customer", "Know Your Credit", "Keep Your Cash", "Know Your Currency"],
+        correctAnswer: "Know Your Customer",
+        explanation: "KYC verifies customer identity, mandated by RBI to prevent fraud in retail banking."
+      },
+      {
+        id: 12,
+        category: "Retail Banking",
+        question: "What is a savings account?",
+        options: ["High-interest loan", "Account for small savings", "Trading account", "Insurance account"],
+        correctAnswer: "Account for small savings",
+        explanation: "Savings accounts encourage retail savings with modest interest rates, typically 3–4%."
+      },
+      {
+        id: 13,
+        category: "Retail Banking",
+        question: "What is a fixed deposit?",
+        options: ["Daily transaction account", "High-risk investment", "Time-bound deposit", "Stock trading account"],
+        correctAnswer: "Time-bound deposit",
+        explanation: "Fixed deposits lock retail funds for a specific period, offering higher interest."
+      },
+      {
+        id: 14,
+        category: "Retail Banking",
+        question: "What is the full form of ATM?",
+        options: ["Automated Teller Machine", "Automatic Transfer Mechanism", "All Time Money", "Account Transaction Method"],
+        correctAnswer: "Automated Teller Machine",
+        explanation: "ATMs enable retail customers to perform transactions like withdrawals and deposits."
+      },
+      {
+        id: 15,
+        category: "Retail Banking",
+        question: "What is a current account?",
+        options: ["Fixed deposit", "Active business account", "Savings account", "Loan account"],
+        correctAnswer: "Active business account",
+        explanation: "Current accounts support frequent retail transactions, offering no interest."
+      },
+      {
+        id: 16,
+        category: "Retail Banking",
+        question: "What is a DEMAT account?",
+        options: ["Savings account", "Electronic securities account", "Loan account", "Fixed deposit"],
+        correctAnswer: "Electronic securities account",
+        explanation: "A DEMAT account holds retail investors’ shares and securities electronically."
+      },
+      {
+        id: 17,
+        category: "Retail Banking",
+        question: "What is the Banking Ombudsman?",
+        options: ["Loan provider", "Customer grievance redressal", "Stock regulator", "Insurance agent"],
+        correctAnswer: "Customer grievance redressal",
+        explanation: "The Banking Ombudsman resolves retail customer complaints against banks."
+      },
+      {
+        id: 18,
+        category: "Retail Banking",
+        question: "What is a Non-Performing Asset (NPA)?",
+        options: ["High-yield bond", "Loan not repaid for 90 days", "Savings account", "Stock investment"],
+        correctAnswer: "Loan not repaid for 90 days",
+        explanation: "An NPA is a retail or other loan unpaid for 90 days, impacting bank profitability."
+      },
+      {
+        id: 19,
+        category: "Retail Banking",
+        question: "What is the minimum balance requirement for a savings account?",
+        options: ["Fixed for all banks", "Varies by bank", "Same as current account", "Not applicable"],
+        correctAnswer: "Varies by bank",
+        explanation: "Minimum balance requirements for savings accounts differ across banks."
+      },
+      {
+        id: 20,
+        category: "Retail Banking",
+        question: "What is a passbook in banking?",
+        options: ["Loan document", "Transaction record book", "Stock certificate", "Insurance policy"],
+        correctAnswer: "Transaction record book",
+        explanation: "A passbook records all transactions in a retail savings or current account."
+      },
+      {
+        id: 21,
+        category: "Retail Banking",
+        question: "What is a debit card?",
+        options: ["Credit facility", "Card linked to bank account", "Prepaid card", "Stock trading tool"],
+        correctAnswer: "Card linked to bank account",
+        explanation: "A debit card allows retail customers to spend funds directly from their bank account."
+      },
+      {
+        id: 22,
+        category: "Retail Banking",
+        question: "What is a credit card?",
+        options: ["Savings account", "Card with borrowed funds", "Fixed deposit", "Mutual fund"],
+        correctAnswer: "Card with borrowed funds",
+        explanation: "Credit cards allow retail customers to borrow funds up to a credit limit."
+      },
+      {
+        id: 23,
+        category: "Retail Banking",
+        question: "What is the role of RBI in retail banking?",
+        options: ["Issue loans", "Regulate banks", "Sell insurance", "Trade stocks"],
+        correctAnswer: "Regulate banks",
+        explanation: "RBI regulates retail banking operations, ensuring financial stability."
+      },
+      {
+        id: 24,
+        category: "Retail Banking",
+        question: "What is a locker facility in banks?",
+        options: ["Loan service", "Safe deposit for valuables", "Stock trading", "Insurance product"],
+        correctAnswer: "Safe deposit for valuables",
+        explanation: "Bank lockers provide retail customers secure storage for valuables."
+      },
+      {
+        id: 25,
+        category: "Retail Banking",
+        question: "What is a standing instruction?",
+        options: ["Loan repayment", "Automated payment order", "Stock purchase", "Insurance claim"],
+        correctAnswer: "Automated payment order",
+        explanation: "Standing instructions automate regular retail payments, like bills or SIPs."
+      },
+      {
+        id: 26,
+        category: "Retail Banking",
+        question: "What is a nomination in banking?",
+        options: ["Loan application", "Designating an account beneficiary", "Stock trading", "Insurance policy"],
+        correctAnswer: "Designating an account beneficiary",
+        explanation: "Nomination assigns a beneficiary to receive account funds after the account holder’s death."
+      },
+      {
+        id: 27,
+        category: "Retail Banking",
+        question: "What is a bank draft?",
+        options: ["Loan agreement", "Guaranteed payment instrument", "Stock certificate", "Insurance policy"],
+        correctAnswer: "Guaranteed payment instrument",
+        explanation: "A bank draft is a secure payment instrument issued by a bank for retail transactions."
+      },
+      {
+        id: 28,
+        category: "Retail Banking",
+        question: "What is a recurring deposit?",
+        options: ["One-time deposit", "Regular fixed deposits", "Loan repayment", "Stock investment"],
+        correctAnswer: "Regular fixed deposits",
+        explanation: "Recurring deposits allow retail customers to save fixed amounts regularly."
+      },
+      {
+        id: 29,
+        category: "Retail Banking",
+        question: "What is a safe deposit box?",
+        options: ["Savings account", "Secure storage for valuables", "Loan facility", "Stock trading tool"],
+        correctAnswer: "Secure storage for valuables",
+        explanation: "Safe deposit boxes offer retail customers secure storage for valuables."
+      },
+      {
+        id: 30,
+        category: "Retail Banking",
+        question: "What is the purpose of a cheque?",
+        options: ["Loan repayment", "Written payment order", "Stock trading", "Insurance claim"],
+        correctAnswer: "Written payment order",
+        explanation: "A cheque is a written order directing a bank to pay a specified amount to a recipient."
+      },
+      {
+        id: 31,
+        category: "Insurance",
+        question: "What is a term insurance plan?",
+        options: ["Investment plan", "Pure life cover", "Health insurance", "Mutual fund"],
+        correctAnswer: "Pure life cover",
+        explanation: "Term insurance provides life coverage for a specific period, paying benefits on death."
+      },
+      {
+        id: 32,
+        category: "Insurance",
+        question: "What is a Unit Linked Insurance Plan (ULIP)?",
+        options: ["Savings account", "Insurance with investment", "Fixed deposit", "Stock option"],
+        correctAnswer: "Insurance with investment",
+        explanation: "ULIPs combine life insurance with market-linked investment options."
+      },
+      {
+        id: 33,
+        category: "Insurance",
+        question: "What is a premium in insurance?",
+        options: ["Claim amount", "Payment for coverage", "Investment return", "Loan interest"],
+        correctAnswer: "Payment for coverage",
+        explanation: "A premium is the amount paid by the policyholder to maintain insurance coverage."
+      },
+      {
+        id: 34,
+        category: "Insurance",
+        question: "What is a rider in insurance?",
+        options: ["Policyholder", "Additional benefit", "Claim process", "Premium discount"],
+        correctAnswer: "Additional benefit",
+        explanation: "Riders are optional benefits added to an insurance policy for extra coverage."
+      },
+      {
+        id: 35,
+        category: "Insurance",
+        question: "What is general insurance?",
+        options: ["Life coverage", "Non-life coverage", "Mutual fund", "Stock investment"],
+        correctAnswer: "Non-life coverage",
+        explanation: "General insurance covers assets like vehicles, health, and property, excluding life."
+      },
+      {
+        id: 36,
+        category: "Insurance",
+        question: "What is a deductible in insurance?",
+        options: ["Premium amount", "Amount paid before claim", "Claim amount", "Investment return"],
+        correctAnswer: "Amount paid before claim",
+        explanation: "A deductible is the amount the policyholder pays before the insurer covers a claim."
+      },
+      {
+        id: 37,
+        category: "Insurance",
+        question: "What is reinsurance?",
+        options: ["Insurance for insurers", "Life insurance", "Health insurance", "Mutual fund"],
+        correctAnswer: "Insurance for insurers",
+        explanation: "Reinsurance allows insurers to transfer portions of risk to other insurers."
+      },
+      {
+        id: 38,
+        category: "Insurance",
+        question: "What is a claim in insurance?",
+        options: ["Premium payment", "Request for coverage payment", "Investment return", "Loan repayment"],
+        correctAnswer: "Request for coverage payment",
+        explanation: "A claim is a policyholder’s request for payment due to a covered loss."
+      },
+      {
+        id: 39,
+        category: "Insurance",
+        question: "What is a surrender value?",
+        options: ["Loan amount", "Value on policy termination", "Premium refund", "Claim amount"],
+        correctAnswer: "Value on policy termination",
+        explanation: "Surrender value is paid if a policyholder terminates a life insurance policy early."
+      },
+      {
+        id: 40,
+        category: "Insurance",
+        question: "What is a group insurance plan?",
+        options: ["Individual policy", "Policy for multiple people", "Investment fund", "Loan scheme"],
+        correctAnswer: "Policy for multiple people",
+        explanation: "Group insurance covers a group, like employees, under a single policy."
+      },
+      {
+        id: 41,
+        category: "Insurance",
+        question: "What is health insurance portability?",
+        options: ["Changing banks", "Switching insurers", "Investing in stocks", "Buying mutual funds"],
+        correctAnswer: "Switching insurers",
+        explanation: "Health insurance portability allows policyholders to switch insurers without losing benefits."
+      },
+      {
+        id: 42,
+        category: "Insurance",
+        question: "What is a co-payment in health insurance?",
+        options: ["Full claim payment", "Shared claim cost", "Premium refund", "Investment return"],
+        correctAnswer: "Shared claim cost",
+        explanation: "Co-payment is the portion of a claim the policyholder pays, with the insurer covering the rest."
+      },
+      {
+        id: 43,
+        category: "Insurance",
+        question: "What is a maturity benefit?",
+        options: ["Claim on death", "Payment on policy maturity", "Premium discount", "Loan repayment"],
+        correctAnswer: "Payment on policy maturity",
+        explanation: "Maturity benefit is the amount paid when an insurance policy reaches its term."
+      },
+      {
+        id: 44,
+        category: "Insurance",
+        question: "What is the purpose of insurance penetration?",
+        options: ["Measure premium growth", "Measure insurance coverage", "Measure claims", "Measure investments"],
+        correctAnswer: "Measure insurance coverage",
+        explanation: "Insurance penetration measures the ratio of premiums to GDP, indicating coverage extent."
+      },
+      {
+        id: 45,
+        category: "Insurance",
+        question: "What is a whole life insurance plan?",
+        options: ["Temporary coverage", "Lifelong coverage", "Health insurance", "Investment fund"],
+        correctAnswer: "Lifelong coverage",
+        explanation: "Whole life insurance provides coverage for the policyholder’s entire life."
+      },
+      {
+        id: 46,
+        category: "Insurance",
+        question: "What is a policy lapse?",
+        options: ["Policy renewal", "Non-payment of premiums", "Claim approval", "Investment return"],
+        correctAnswer: "Non-payment of premiums",
+        explanation: "A policy lapses when premiums are not paid, terminating coverage."
+      },
+      {
+        id: 47,
+        category: "Insurance",
+        question: "What is an endowment policy?",
+        options: ["Pure life cover", "Life cover with savings", "Health insurance", "Stock investment"],
+        correctAnswer: "Life cover with savings",
+        explanation: "Endowment policies combine life insurance with a savings component."
+      },
+      {
+        id: 48,
+        category: "Insurance",
+        question: "What is a third-party insurance?",
+        options: ["Covers policyholder", "Covers third-party damage", "Investment plan", "Loan repayment"],
+        correctAnswer: "Covers third-party damage",
+        explanation: "Third-party insurance covers damages caused to others by the policyholder."
+      },
+      {
+        id: 49,
+        category: "Insurance",
+        question: "What is a comprehensive insurance policy?",
+        options: ["Covers only theft", "Covers all damages", "Life insurance", "Mutual fund"],
+        correctAnswer: "Covers all damages",
+        explanation: "Comprehensive insurance covers damages to the insured asset and third parties."
+      },
+      {
+        id: 50,
+        category: "Insurance",
+        question: "What is a grace period in insurance?",
+        options: ["Claim processing time", "Premium payment extension", "Policy cancellation", "Investment period"],
+        correctAnswer: "Premium payment extension",
+        explanation: "A grace period allows late premium payments without lapsing the policy."
+      },
+      {
+        id: 51,
+        category: "Mutual Funds",
+        question: "Who regulates mutual funds in India?",
+        options: ["RBI", "SEBI", "IRDAI", "NABARD"],
+        correctAnswer: "SEBI",
+        explanation: "SEBI regulates mutual funds to protect investors and ensure transparency."
+      },
+      {
+        id: 52,
+        category: "Mutual Funds",
+        question: "What is a Systematic Investment Plan (SIP)?",
+        options: ["One-time investment", "Regular fixed investments", "Loan repayment", "Stock trading"],
+        correctAnswer: "Regular fixed investments",
+        explanation: "SIP allows retail investors to invest fixed amounts regularly in mutual funds."
+      },
+      {
+        id: 53,
+        category: "Mutual Funds",
+        question: "What is Net Asset Value (NAV)?",
+        options: ["Fund’s total assets", "Fund’s market value per unit", "Fund’s liabilities", "Fund’s expense ratio"],
+        correctAnswer: "Fund’s market value per unit",
+        explanation: "NAV is the per-unit market value of a mutual fund’s assets minus liabilities."
+      },
+      {
+        id: 54,
+        category: "Mutual Funds",
+        question: "What is an Equity Mutual Fund?",
+        options: ["Invests in bonds", "Invests in stocks", "Invests in real estate", "Invests in gold"],
+        correctAnswer: "Invests in stocks",
+        explanation: "Equity mutual funds invest in company stocks for capital appreciation."
+      },
+      {
+        id: 55,
+        category: "Mutual Funds",
+        question: "What is a Debt Mutual Fund?",
+        options: ["Invests in stocks", "Invests in bonds", "Invests in commodities", "Invests in real estate"],
+        correctAnswer: "Invests in bonds",
+        explanation: "Debt mutual funds invest in fixed-income securities like bonds for stable returns."
+      },
+      {
+        id: 56,
+        category: "Mutual Funds",
+        question: "What is a Hybrid Mutual Fund?",
+        options: ["Invests only in stocks", "Invests in stocks and bonds", "Invests only in bonds", "Invests in gold"],
+        correctAnswer: "Invests in stocks and bonds",
+        explanation: "Hybrid funds balance risk and return by investing in stocks and bonds."
+      },
+      {
+        id: 57,
+        category: "Mutual Funds",
+        question: "What is an Expense Ratio?",
+        options: ["Fund’s profit", "Fund’s management cost", "Fund’s NAV", "Fund’s tax"],
+        correctAnswer: "Fund’s management cost",
+        explanation: "The expense ratio is the annual fee charged to cover mutual fund operating costs."
+      },
+      {
+        id: 58,
+        category: "Mutual Funds",
+        question: "What is a Dividend Option in mutual funds?",
+        options: ["Regular payouts", "Capital gains", "Loan repayment", "Fixed deposit"],
+        correctAnswer: "Regular payouts",
+        explanation: "The dividend option distributes a fund’s profits to investors periodically."
+      },
+      {
+        id: 59,
+        category: "Mutual Funds",
+        question: "What is a Growth Option in mutual funds?",
+        options: ["Pays dividends", "Reinvests profits", "Fixed income", "Loan repayment"],
+        correctAnswer: "Reinvests profits",
+        explanation: "The growth option reinvests profits to increase the fund’s NAV."
+      },
+      {
+        id: 60,
+        category: "Mutual Funds",
+        question: "What is an ELSS fund?",
+        options: ["Debt fund", "Equity-linked savings scheme", "Gold fund", "Real estate fund"],
+        correctAnswer: "Equity-linked savings scheme",
+        explanation: "ELSS funds offer tax benefits under Section 80C with a 3-year lock-in."
+      },
+      {
+        id: 61,
+        category: "Mutual Funds",
+        question: "What is a Fund Manager?",
+        options: ["Bank employee", "Investment decision-maker", "Insurance agent", "Stock broker"],
+        correctAnswer: "Investment decision-maker",
+        explanation: "A fund manager makes investment decisions for a mutual fund’s portfolio."
+      },
+      {
+        id: 62,
+        category: "Mutual Funds",
+        question: "What is a Blue Chip Fund?",
+        options: ["Invests in startups", "Invests in large companies", "Invests in bonds", "Invests in gold"],
+        correctAnswer: "Invests in large companies",
+        explanation: "Blue Chip Funds invest in well-established, financially stable companies."
+      },
+      {
+        id: 63,
+        category: "Mutual Funds",
+        question: "What is a Sectoral Fund?",
+        options: ["Invests in all sectors", "Invests in one sector", "Invests in bonds", "Invests in gold"],
+        correctAnswer: "Invests in one sector",
+        explanation: "Sectoral funds focus investments in a specific sector, like technology."
+      },
+      {
+        id: 64,
+        category: "Mutual Funds",
+        question: "What is a Load in mutual funds?",
+        options: ["Investment return", "Fee for buying/selling", "Tax on profits", "Loan interest"],
+        correctAnswer: "Fee for buying/selling",
+        explanation: "A load is a fee charged when buying or selling mutual fund units."
+      },
+      {
+        id: 65,
+        category: "Mutual Funds",
+        question: "What is a Systematic Withdrawal Plan (SWP)?",
+        options: ["Regular investments", "Regular withdrawals", "Loan repayment", "Stock trading"],
+        correctAnswer: "Regular withdrawals",
+        explanation: "SWP allows investors to withdraw fixed amounts from a mutual fund periodically."
+      },
+      {
+        id: 66,
+        category: "Mutual Funds",
+        question: "What is a Folio Number in mutual funds?",
+        options: ["Bank account number", "Unique investor ID", "Stock ticker", "Insurance policy number"],
+        correctAnswer: "Unique investor ID",
+        explanation: "A folio number uniquely identifies an investor’s mutual fund holdings."
+      },
+      {
+        id: 67,
+        category: "Mutual Funds",
+        question: "What is a large-cap fund?",
+        options: ["Invests in small companies", "Invests in large companies", "Invests in bonds", "Invests in gold"],
+        correctAnswer: "Invests in large companies",
+        explanation: "Large-cap funds invest in companies with high market capitalization."
+      },
+      {
+        id: 68,
+        category: "Mutual Funds",
+        question: "What is a mid-cap fund?",
+        options: ["Invests in large companies", "Invests in medium companies", "Invests in bonds", "Invests in small companies"],
+        correctAnswer: "Invests in medium companies",
+        explanation: "Mid-cap funds invest in companies with medium market capitalization."
+      },
+      {
+        id: 69,
+        category: "Mutual Funds",
+        question: "What is a small-cap fund?",
+        options: ["Invests in large companies", "Invests in small companies", "Invests in bonds", "Invests in gold"],
+        correctAnswer: "Invests in small companies",
+        explanation: "Small-cap funds invest in companies with low market capitalization."
+      },
+      {
+        id: 70,
+        category: "Mutual Funds",
+        question: "What is a balanced advantage fund?",
+        options: ["Invests only in stocks", "Dynamically allocates stocks and bonds", "Invests only in bonds", "Invests in gold"],
+        correctAnswer: "Dynamically allocates stocks and bonds",
+        explanation: "Balanced advantage funds adjust allocations between stocks and bonds based on market conditions."
+      },
+      {
+        id: 71,
+        category: "Stocks",
+        question: "What is a stock exchange?",
+        options: ["Bank branch", "Platform for trading securities", "Insurance market", "Loan agency"],
+        correctAnswer: "Platform for trading securities",
+        explanation: "Stock exchanges like BSE and NSE facilitate buying and selling of stocks."
+      },
+      {
+        id: 72,
+        category: "Stocks",
+        question: "What is an Initial Public Offering (IPO)?",
+        options: ["Loan offering", "Company’s first stock sale", "Bond issuance", "Mutual fund launch"],
+        correctAnswer: "Company’s first stock sale",
+        explanation: "An IPO is when a company offers its shares to the public for the first time."
+      },
+      {
+        id: 73,
+        category: "Stocks",
+        question: "What is market capitalization?",
+        options: ["Company’s revenue", "Total value of shares", "Annual profit", "Loan amount"],
+        correctAnswer: "Total value of shares",
+        explanation: "Market capitalization is the total value of a company’s outstanding shares."
+      },
+      {
+        id: 74,
+        category: "Stocks",
+        question: "What is a dividend in stocks?",
+        options: ["Loan interest", "Profit shared with shareholders", "Stock price", "Insurance premium"],
+        correctAnswer: "Profit shared with shareholders",
+        explanation: "Dividends are portions of a company’s profits distributed to shareholders."
+      },
+      {
+        id: 75,
+        category: "Stocks",
+        question: "What is a stock broker?",
+        options: ["Bank employee", "Facilitates stock trading", "Insurance agent", "Mutual fund manager"],
+        correctAnswer: "Facilitates stock trading",
+        explanation: "Stock brokers execute buy and sell orders for retail clients in the stock market."
+      },
+      {
+        id: 76,
+        category: "Stocks",
+        question: "What is dematerialization?",
+        options: ["Physical to electronic securities", "Loan repayment", "Stock splitting", "Insurance claim"],
+        correctAnswer: "Physical to electronic securities",
+        explanation: "Dematerialization converts physical share certificates into electronic form."
+      },
+      {
+        id: 77,
+        category: "Stocks",
+        question: "What is the National Stock Exchange (NSE)?",
+        options: ["Banking regulator", "Stock trading platform", "Insurance company", "Mutual fund"],
+        correctAnswer: "Stock trading platform",
+        explanation: "NSE is a leading stock exchange in India, offering electronic trading."
+      },
+      {
+        id: 78,
+        category: "Stocks",
+        question: "What is Nifty 50?",
+        options: ["50 banks", "50 company index", "50 mutual funds", "50 insurance firms"],
+        correctAnswer: "50 company index",
+        explanation: "Nifty 50 is an NSE index tracking 50 large, actively traded companies."
+      },
+      {
+        id: 79,
+        category: "Stocks",
+        question: "What is a blue-chip stock?",
+        options: ["Small company stock", "Large, stable company stock", "Government bond", "Mutual fund"],
+        correctAnswer: "Large, stable company stock",
+        explanation: "Blue-chip stocks belong to well-established, financially stable companies."
+      },
+      {
+        id: 80,
+        category: "Stocks",
+        question: "What is a stock split?",
+        options: ["Dividing company profits", "Increasing number of shares", "Selling stocks", "Buying bonds"],
+        correctAnswer: "Increasing number of shares",
+        explanation: "A stock split increases the number of shares, reducing the price per share."
+      },
+      {
+        id: 81,
+        category: "Stocks",
+        question: "What is a trading account?",
+        options: ["Savings account", "Account for stock trading", "Loan account", "Fixed deposit"],
+        correctAnswer: "Account for stock trading",
+        explanation: "A trading account facilitates buying and selling stocks through a broker."
+      },
+      {
+        id: 82,
+        category: "Stocks",
+        question: "What is a bull market?",
+        options: ["Falling stock prices", "Rising stock prices", "Stable prices", "High inflation"],
+        correctAnswer: "Rising stock prices",
+        explanation: "A bull market is characterized by rising stock prices and investor optimism."
+      },
+      {
+        id: 83,
+        category: "Stocks",
+        question: "What is a bear market?",
+        options: ["Rising stock prices", "Falling stock prices", "Stable prices", "Low inflation"],
+        correctAnswer: "Falling stock prices",
+        explanation: "A bear market occurs when stock prices decline, reflecting pessimism."
+      },
+      {
+        id: 84,
+        category: "Stocks",
+        question: "What is a portfolio in stock investing?",
+        options: ["Single stock", "Collection of investments", "Loan account", "Insurance policy"],
+        correctAnswer: "Collection of investments",
+        explanation: "A portfolio includes various investments like stocks and bonds."
+      },
+      {
+        id: 85,
+        category: "Stocks",
+        question: "What is a share in stock market?",
+        options: ["Loan amount", "Ownership unit in a company", "Fixed deposit", "Insurance premium"],
+        correctAnswer: "Ownership unit in a company",
+        explanation: "A share represents a unit of ownership in a company, entitling dividends."
+      },
+      {
+        id: 86,
+        category: "Bonds",
+        question: "What is a government bond?",
+        options: ["Stock share", "Debt issued by the government", "Mutual fund", "Loan repayment"],
+        correctAnswer: "Debt issued by the government",
+        explanation: "Government bonds are debt securities issued to finance government expenditure."
+      },
+      {
+        id: 87,
+        category: "Bonds",
+        question: "What is a corporate bond?",
+        options: ["Government debt", "Company-issued debt", "Stock share", "Mutual fund"],
+        correctAnswer: "Company-issued debt",
+        explanation: "Corporate bonds are debt securities issued by companies to raise funds."
+      },
+      {
+        id: 88,
+        category: "Bonds",
+        question: "What is a convertible bond?",
+        options: ["Fixed deposit", "Bond convertible to shares", "Government bond", "Loan repayment"],
+        correctAnswer: "Bond convertible to shares",
+        explanation: "Convertible bonds can be converted into a company’s equity shares."
+      },
+      {
+        id: 89,
+        category: "Bonds",
+        question: "What is a zero-coupon bond?",
+        options: ["Pays regular interest", "No interest, discounted bond", "Stock share", "Mutual fund"],
+        correctAnswer: "No interest, discounted bond",
+        explanation: "Zero-coupon bonds are sold at a discount and redeemed at maturity without periodic interest."
+      },
+      {
+        id: 90,
+        category: "Bonds",
+        question: "What is a bond’s maturity?",
+        options: ["Interest payment date", "Bond repayment date", "Stock issuance", "Loan approval"],
+        correctAnswer: "Bond repayment date",
+        explanation: "Maturity is the date when a bond’s principal is repaid to the bondholder."
+      },
+      {
+        id: 91,
+        category: "Debentures",
+        question: "What is a debenture?",
+        options: ["Stock share", "Unsecured debt instrument", "Savings account", "Mutual fund"],
+        correctAnswer: "Unsecured debt instrument",
+        explanation: "Debentures are unsecured debt instruments issued by companies, backed by creditworthiness."
+      },
+      {
+        id: 92,
+        category: "Debentures",
+        question: "What is a convertible debenture?",
+        options: ["Fixed deposit", "Debenture convertible to equity", "Government bond", "Loan repayment"],
+        correctAnswer: "Debenture convertible to equity",
+        explanation: "Convertible debentures can be converted into company shares."
+      },
+      {
+        id: 93,
+        category: "Debentures",
+        question: "What is a non-convertible debenture?",
+        options: ["Convertible to shares", "Cannot be converted to shares", "Stock share", "Mutual fund"],
+        correctAnswer: "Cannot be converted to shares",
+        explanation: "Non-convertible debentures cannot be converted into equity and are redeemed at maturity."
+      },
+      {
+        id: 94,
+        category: "Debentures",
+        question: "What is a secured debenture?",
+        options: ["Unsecured debt", "Backed by company assets", "Stock share", "Loan repayment"],
+        correctAnswer: "Backed by company assets",
+        explanation: "Secured debentures are backed by specific company assets for repayment."
+      },
+      {
+        id: 95,
+        category: "Debentures",
+        question: "What is the interest rate on a debenture called?",
+        options: ["Dividend rate", "Coupon rate", "Stock yield", "Loan interest"],
+        correctAnswer: "Coupon rate",
+        explanation: "The coupon rate is the interest rate paid on a debenture’s face value."
+      },
+      {
+        id: 96,
+        category: "Loans",
+        question: "What is an EMI in a loan?",
+        options: ["Extra Monthly Income", "Equated Monthly Installment", "Emergency Money Investment", "Equity Market Index"],
+        correctAnswer: "Equated Monthly Installment",
+        explanation: "EMI is a fixed monthly payment for repaying a loan, covering principal and interest."
+      },
+      {
+        id: 97,
+        category: "Loans",
+        question: "What is a secured loan?",
+        options: ["Loan without collateral", "Loan backed by collateral", "Stock investment", "Mutual fund"],
+        correctAnswer: "Loan backed by collateral",
+        explanation: "Secured loans, like home loans, are backed by assets as collateral."
+      },
+      {
+        id: 98,
+        category: "Loans",
+        question: "What is an unsecured loan?",
+        options: ["Loan with collateral", "Loan without collateral", "Stock investment", "Fixed deposit"],
+        correctAnswer: "Loan without collateral",
+        explanation: "Unsecured loans, like personal loans, are granted based on creditworthiness."
+      },
+      {
+        id: 99,
+        category: "Loans",
+        question: "What is a home loan?",
+        options: ["Loan for stock trading", "Loan for purchasing property", "Loan for mutual funds", "Loan for insurance"],
+        correctAnswer: "Loan for purchasing property",
+        explanation: "Home loans are secured loans provided to retail customers for buying property."
+      },
+      {
+        id: 100,
+        category: "Loans",
+        question: "What is a personal loan?",
+        options: ["Loan for business", "Loan for personal use", "Loan for stocks", "Loan for bonds"],
+        correctAnswer: "Loan for personal use",
+        explanation: "Personal loans are unsecured loans for retail customers’ personal expenses."
+      }
+    ];
+
+    const QuestionCard = React.memo(({ question, onAnswer, index }) => {
+      const [selectedOption, setSelectedOption] = React.useState(null);
+      const MotionDiv = window.motion?.div || 'div';
+      const MotionButton = window.motion?.button || 'button';
+
+      function handleOptionClick(option) {
+        setSelectedOption(option);
+        onAnswer(option === question.correctAnswer, question.id);
+        if (option === question.correctAnswer) {
+          playCorrectSound();
+          triggerConfetti();
+        } else {
+          playIncorrectSound();
+        }
+      }
+
+      return React.createElement(
+        MotionDiv,
+        {
+          ...(window.motion ? {
+            initial: { opacity: 0, y: 50 },
+            animate: { opacity: 1, y: 0 },
+            transition: { duration: 0.5 }
+          } : {}),
+          id: `question-${question.id}`,
+          className: 'glass-card p-6 mb-8 max-w-4xl mx-auto',
+          role: 'region',
+          'aria-label': `Question ${question.id}`
+        },
+        React.createElement('h2', { className: 'text-2xl font-semibold mb-4 text-cyan-300' }, `${index + 1}. ${question.question}`),
+        React.createElement(
+          'div',
+          { className: 'grid gap-4' },
+          question.options.map((option, idx) =>
+            React.createElement(
+              MotionButton,
+              {
+                key: idx,
+                className: `option-button p-4 rounded-xl text-left text-xl ${selectedOption ? option === question.correctAnswer ? 'correct' : option === selectedOption ? 'incorrect' : 'bg-gray-900 text-gray-300' : 'bg-gray-900 text-gray-300 hover:bg-gray-800'} disabled:cursor-not-allowed disabled:opacity-50`,
+                onClick: () => handleOptionClick(option),
+                disabled: selectedOption !== null,
+                'aria-label': `Option ${idx + 1}: ${option}`,
+                ...(window.motion ? {
+                  whileHover: { scale: selectedOption ? 1 : 1.05 },
+                  whileTap: { scale: selectedOption ? 1 : 0.95 }
+                } : {})
+              },
+              option
+            )
+          )
+        ),
+        selectedOption && React.createElement(
+          'div',
+          { className: 'mt-4 p-4 bg-gray-900 rounded-xl' },
+          React.createElement('p', { className: 'font-semibold text-cyan-300' }, 'Explanation:'),
+          React.createElement('p', { className: 'text-gray-200' }, question.explanation)
+        )
+      );
+    });
+
+    function triggerConfetti() {
+      const canvas = document.createElement('canvas');
+      canvas.style.position = 'fixed';
+      canvas.style.top = '0';
+      canvas.style.left = '0';
+      canvas.style.pointerEvents = 'none';
+      canvas.style.zIndex = '9999';
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      document.body.appendChild(canvas);
+      const ctx = canvas.getContext('2d');
+      const particles = [];
+      for (let i = 0; i < 100; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          size: Math.random() * 5 + 2,
+          speedX: Math.random() * 3 - 1.5,
+          speedY: Math.random() * 3 - 1.5,
+          color: ['#22d3ee', '#d946ef', '#a855f7'][Math.floor(Math.random() * 3)]
+        });
+      }
+      let animationFrame;
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          ctx.fillStyle = p.color;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+          p.x += p.speedX;
+          p.y += p.speedY;
+          p.size *= 0.95;
+        });
+        if (particles.some(p => p.size > 0.2)) {
+          animationFrame = requestAnimationFrame(animate);
+        } else {
+          cancelAnimationFrame(animationFrame);
+          document.body.removeChild(canvas);
+        }
+      }
+      animationFrame = requestAnimationFrame(animate);
+    }
+
+    function App() {
+      const [score, setScore] = React.useState(0);
+      const [answeredQuestions, setAnsweredQuestions] = React.useState(new Set());
+      const [darkMode, setDarkMode] = React.useState(true);
+      const [showModal, setShowModal] = React.useState(false);
+      const [visibleQuestions, setVisibleQuestions] = React.useState(questions);
+      const [timeLeft, setTimeLeft] = React.useState(3600);
+      const [filterCategory, setFilterCategory] = React.useState('All');
+      const [randomized, setRandomized] = React.useState(false);
+
+      React.useEffect(() => {
+        try {
+          const saved = JSON.parse(localStorage.getItem('quizProgress'));
+          if (saved) {
+            setScore(saved.score || 0);
+            setAnsweredQuestions(new Set(saved.answered || []));
+            setTimeLeft(saved.timeLeft || 3600);
+            setVisibleQuestions(saved.visibleQuestions || questions);
+            setRandomized(saved.randomized || false);
+          }
+        } catch (e) {
+          console.log('Failed to load quiz progress:', e);
+          localStorage.removeItem('quizProgress');
+        }
+      }, []);
+
+      React.useEffect(() => {
+        localStorage.setItem('quizProgress', JSON.stringify({
+          score,
+          answered: Array.from(answeredQuestions),
+          timeLeft,
+          visibleQuestions,
+          randomized
+        }));
+      }, [score, answeredQuestions, timeLeft, visibleQuestions, randomized]);
+
+      React.useEffect(() => {
+        const timer = setInterval(() => {
+          setTimeLeft(prev => {
+            if (prev <= 0) {
+              clearInterval(timer);
+              if (answeredQuestions.size < questions.length) setShowModal(true);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+        return () => clearInterval(timer);
+      }, [answeredQuestions.size]);
+
+      function shuffleQuestions() {
+        const shuffled = [...questions].sort(() => Math.random() - 0.5);
+        setVisibleQuestions(shuffled);
+        setRandomized(true);
+      }
+
+      const filteredQuestions = filterCategory === 'All' ? visibleQuestions : visibleQuestions.filter(q => q.category === filterCategory);
+
+      function handleAnswer(isCorrect, questionId) {
+        if (!answeredQuestions.has(questionId)) {
+          setAnsweredQuestions(prev => new Set(prev).add(questionId));
+          if (isCorrect) setScore(prev => prev + 1);
+          if (answeredQuestions.size + 1 === questions.length) setShowModal(true);
+        }
+      }
+
+      function handleReset() {
+        setScore(0);
+        setAnsweredQuestions(new Set());
+        setTimeLeft(3600);
+        setVisibleQuestions(questions);
+        setRandomized(false);
+        setFilterCategory('All');
+        localStorage.removeItem('quizProgress');
+        setShowModal(false);
+      }
+
+      function jumpToQuestion(id) {
+        const element = document.getElementById(`question-${id}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+          element.focus();
+        }
+      }
+
+      const categories = ['All', ...new Set(questions.map(q => q.category))];
+      const completionPercentage = Math.min((answeredQuestions.size / questions.length) * 100, 100);
+
+      return React.createElement(
+        'div',
+        { className: `min-h-screen py-12 px-4 ${darkMode ? '' : 'bg-gray-800 text-gray-200'}` },
+        React.createElement(
+          'div',
+          { className: 'sticky top-0 z-20 bg-gray-900/90 backdrop-blur-md py-6 mb-8' },
+          React.createElement(
+            'div',
+            { className: 'max-w-4xl mx-auto' },
+            React.createElement(
+              'h1',
+              { className: 'text-4xl font-bold text-center header-title' },
+              'Banking MCQs'
+            ),
+            React.createElement(
+              'div',
+              { className: 'flex justify-center gap-4 mb-4' },
+              React.createElement('p', null, `Score: ${score}/${questions.length}`),
+              React.createElement('p', null, `Time: ${Math.floor(timeLeft / 60)}:${(timeLeft % 60).toString().padStart(2, '0')}`),
+              React.createElement(
+                'button',
+                { className: 'p-2 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-xl text-white', onClick: handleReset, 'aria-label': 'Reset Quiz' },
+                'Reset Quiz'
+              ),
+              React.createElement(
+                'button',
+                { className: 'p-2 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-xl text-white', onClick: () => setDarkMode(!darkMode), 'aria-label': darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode' },
+                darkMode ? 'Light Mode' : 'Dark Mode'
+              ),
+              React.createElement(
+                'button',
+                { className: 'p-2 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-xl text-white', onClick: shuffleQuestions, 'aria-label': 'Randomize Questions' },
+                'Randomize'
+              )
+            ),
+            React.createElement(
+              'select',
+              {
+                className: 'p-2 rounded-xl bg-gray-900 text-white',
+                value: filterCategory,
+                onChange: e => setFilterCategory(e.target.value),
+                'aria-label': 'Filter by Category'
+              },
+              categories.map(cat => React.createElement('option', { key: cat, value: cat }, cat))
+            ),
+            React.createElement(
+              'div',
+              { className: 'w-full bg-gray-900 rounded-full h-3 mt-2' },
+              React.createElement('div', { className: 'progress-bar h-3 rounded-full', style: { width: `${completionPercentage}%` } })
+            )
+          )
+        ),
+        React.createElement(
+          'div',
+          { className: 'max-w-4xl mx-auto relative' },
+          React.createElement(
+            'div',
+            { className: 'fixed bottom-4 right-4 md:top-24 md:right-8 md:w-64 bg-gray-900 p-4 rounded-xl' },
+            React.createElement('p', { className: 'text-center text-cyan-300' }, `Question ${answeredQuestions.size + 1}/${questions.length}`),
+            React.createElement(
+              'div',
+              { className: 'grid grid-cols-5 md:grid-cols-10 gap-2', role: 'navigation', 'aria-label': 'Question Navigation' },
+              questions.map(q => React.createElement(
+                'button',
+                {
+                  key: q.id,
+                  className: 'nav-button p-2 rounded-xl text-sm',
+                  onClick: () => jumpToQuestion(q.id),
+                  'aria-label': `Jump to Question ${q.id}`
+                },
+                q.id
+              ))
+            )
+          ),
+          filteredQuestions.length > 0 ? filteredQuestions.map((question, index) => React.createElement(QuestionCard, { key: question.id, question, onAnswer: handleAnswer, index })) : React.createElement('p', { className: 'text-center text-gray-300' }, 'No questions available for this category.')
+        ),
+        showModal && React.createElement(
+          'div',
+          { className: 'fixed inset-0 flex items-center justify-center z-30 modal p-6' },
+          React.createElement(
+            'div',
+            { className: 'glass-card p-6 max-w-lg' },
+            React.createElement('h2', { className: 'text-2xl font-bold mb-4' }, 'Quiz Completed'),
+            React.createElement('p', null, `Score: ${score}/${questions.length} (${completionPercentage.toFixed(1)}%)`),
+            React.createElement(
+              'div',
+              { className: 'flex gap-4 mt-4' },
+              React.createElement(
+                'button',
+                { className: 'p-2 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-xl text-white', onClick: handleReset, 'aria-label': 'Restart Quiz' },
+                'Restart'
+              ),
+              React.createElement(
+                'button',
+                { className: 'p-2 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-xl text-white', onClick: () => setShowModal(false), 'aria-label': 'Close Modal' },
+                'Close'
+              )
+            )
+          )
+        )
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(React.createElement(App));
+  </script>
+</body>
+</html>
