@@ -1,0 +1,221 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Imarticus City Union Bank Profiles</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body class="bg-gray-900 text-white font-sans">
+    <div class="min-h-screen p-6">
+        <!-- Heading -->
+        <h1 class="text-4xl font-bold text-center mb-8" style="color: #ff4081; text-shadow: 0 0 10px #ff4081, 0 0 20px #ff4081;">
+            Imarticus City Union Bank Profiles
+        </h1>
+
+        <!-- Button Section -->
+        <div class="flex flex-wrap justify-center gap-4 mb-8">
+            <a href="https://docs.google.com/spreadsheets/d/1BVVwY64pr_D271bKMdwesVtNbPVZQP1338kBYOniZDg/edit?usp=sharing" 
+               target="_blank"
+               class="px-6 py-3 rounded-lg text-lg font-semibold transition-all duration-300"
+               style="background-color: #ff4081; color: #1e3a8a; box-shadow: 0 0 15px #ff4081; hover:box-shadow: 0 0 25px #ff4081;">
+               View Google Sheet
+            </a>
+            <a href="https://drive.google.com/drive/folders/1l9O1aSQQBAqX69Fs5ETRpV35WmGLMbJ7?usp=drive_link" 
+               target="_blank"
+               class="px-6 py-3 rounded-lg text-lg font-semibold transition-all duration-300"
+               style="background-color: #1e3a8a; color: #ff4081; box-shadow: 0 0 15px #1e3a8a; hover:box-shadow: 0 0 25px #1e3a8a;">
+               View Resume Folder
+            </a>
+            <button id="exportExcel" 
+                    class="px-6 py-3 rounded-lg text-lg font-semibold transition-all duration-300"
+                    style="background-color: #6b7280; color: #ff4081; box-shadow: 0 0 15px #6b7280; hover:box-shadow: 0 0 25px #6b7280;">
+                    Export to Excel
+            </button>
+        </div>
+
+        <!-- Filter and Sort Section -->
+        <div class="flex flex-wrap justify-center gap-4 mb-8">
+            <div>
+                <label for="locationFilter" class="mr-2 text-lg" style="color: #ff4081; text-shadow: 0 0 5px #ff4081;">Filter by Location:</label>
+                <select id="locationFilter" class="p-2 rounded-lg bg-gray-800 text-white border" style="border-color: #ff4081; box-shadow: 0 0 10px #ff4081;">
+                    <option value="">All</option>
+                </select>
+            </div>
+            <div>
+                <label for="sortLocation" class="mr-2 text-lg" style="color: #ff4081; text-shadow: 0 0 5px #ff4081;">Sort by Location:</label>
+                <select id="sortLocation" class="p-2 rounded-lg bg-gray-800 text-white border" style="border-color: #ff4081; box-shadow: 0 0 10px #ff4081;">
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto">
+            <table id="profilesTable" class="w-full border-collapse text-left">
+                <thead>
+                    <tr style="background-color: #1e3a8a; color: #ff4081; text-shadow: 0 0 5px #ff4081;">
+                        <th class="p-3 border" style="border-color: #ff4081;">Name</th>
+                        <th class="p-3 border" style="border-color: #ff4081;">Email ID</th>
+                        <th class="p-3 border" style="border-color: #ff4081;">Mobile No</th>
+                        <th class="p-3 border" style="border-color: #ff4081;">Location</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody" style="background-color: #2d3748; color: #ffffff;">
+                    <!-- Table rows will be populated dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Data from CSV
+        const profiles = [
+            { Name: "Vignesh C", Email: "vickywikki6@gmail.com", Mobile: "9345769122", Location: "Chennai" },
+            { Name: "Veeraraghavan V", Email: "Veeraraghavan2002@gmail.com", Mobile: "8072367950", Location: "Chennai" },
+            { Name: "Kumaravel S", Email: "kumaravel23080@gmail.cok", Mobile: "9841878231", Location: "Chennai" },
+            { Name: "Akilraj S", Email: "akilrajsam0@gmail.com", Mobile: "7708802442", Location: "Chennai" },
+            { Name: "Balaji.M", Email: "balajimagesh901@gmail.com", Mobile: "9080138847", Location: "Chennai" },
+            { Name: "Vigneshwaran K", Email: "vickymay1000@gmail.com", Mobile: "9360200728", Location: "Chennai" },
+            { Name: "Vasanth D", Email: "vasanthshuttler@gmail.com", Mobile: "9176816318", Location: "Chennai" },
+            { Name: "Gopalan M", Email: "gopalanofficial6082@gmail.com", Mobile: "8870278432", Location: "Sivakasi" },
+            { Name: "Sarath", Email: "srpepe143@gmail.com", Mobile: "8939225016", Location: "Chennai" },
+            { Name: "Sricharan mukundan", Email: "sricharanmukundan@gmail.com", Mobile: "9962025948", Location: "Chennai" },
+            { Name: "Gowtham R", Email: "gowthamar19@gmail.com", Mobile: "7338968949", Location: "Chennai" },
+            { Name: "Aswin Nandakumar", Email: "nandaaswin45@gmail.com", Mobile: "9790870495", Location: "Chennai" },
+            { Name: "Vishal Egambaram", Email: "vishalabishek1@gmail.com", Mobile: "9940103089", Location: "Chennai" },
+            { Name: "S.MADHAV", Email: "madhavsundar2407@gmail.com", Mobile: "7010407664", Location: "Chennai" },
+            { Name: "Shahul Irfan", Email: "shahulirfan124@gmail.com", Mobile: "7904419066", Location: "Chennai" },
+            { Name: "Karthik gm", Email: "karthikgm532@gmail.com", Mobile: "9342598001", Location: "Chennai" },
+            { Name: "Thangadurai D", Email: "dthangadurai2486@gmail.com", Mobile: "9626233314", Location: "Ariyalur" },
+            { Name: "Yukesh s", Email: "yukeshpapa@gmail.com", Mobile: "6374843009", Location: "Chennai" },
+            { Name: "S Gautham Raj", Email: "sgauthamsuresh@gmail.com", Mobile: "9952080316", Location: "Chennai" },
+            { Name: "Ajaykumar S", Email: "ajaysubramaniam1998@gmail.com", Mobile: "9790794744", Location: "Tiruvallur" },
+            { Name: "Yeswanth Baskar", Email: "yeswanths13081@gmail.com", Mobile: "7299727089", Location: "Chennai" },
+            { Name: "Kotha sudalai", Email: "sudalai031998@gmail.com", Mobile: "9629983727", Location: "Chennai" },
+            { Name: "PADMANABAN M", Email: "mpadmanaban96@gmail.com", Mobile: "8946041079", Location: "Chennai" },
+            { Name: "Shriram", Email: "shri.jr19@gmail.com", Mobile: "9360406194", Location: "Chennai" },
+            { Name: "Ankit Kumar Tiwari", Email: "Kankit17472@gmail.com", Mobile: "9663705194", Location: "Bihar" },
+            { Name: "Abhinav Rai", Email: "abhinavraiuk@gmail.com", Mobile: "7870465476", Location: "Patna" },
+            { Name: "Anil yadav", Email: "anilyadav975424@gmail.com", Mobile: "9754248372", Location: "Indore" },
+            { Name: "Shubham Ganesh Waydande", Email: "shubhamwaydande01@gmail.com", Mobile: "9172396397", Location: "Karmala, Solapur" },
+            { Name: "Harendra Singh Shekhawat", Email: "himmatkanwar29@gmail.com", Mobile: "9983389332", Location: "Jaipur" },
+            { Name: "Kundan kumar", Email: "kundanroxxz@gmail.com", Mobile: "7979774550", Location: "Patna" },
+            { Name: "Gunjan jain", Email: "jaingunjan2010@gmail.com", Mobile: "8560908773", Location: "Jaipur" },
+            { Name: "Abhay Pratap Singh", Email: "abhaypratap656500@gmail.com", Mobile: "7311174465", Location: "Mumbai" },
+            { Name: "ABHISHEK KUMAR", Email: "abhishekkumarici880@gmail.com", Mobile: "9334706398", Location: "Bhagalpur, Bihar" },
+            { Name: "Aniruddh Ranaware", Email: "aniruddh.ranaware09@gmail.com", Mobile: "7506642649", Location: "Thane" },
+            { Name: "Shyam Karthik M", Email: "shyamkarthikm@gmail.com", Mobile: "9047524593", Location: "Coimbatore" },
+            { Name: "Jeeva", Email: "jeevasekar121@gmail.com", Mobile: "6369822990", Location: "Tamil Nadu" },
+            { Name: "Manoj Kumar R", Email: "manuk8479@gmail.com", Mobile: "8105967042", Location: "Bangalore" },
+            { Name: "Muzammil Badami", Email: "mujjubadami12141@gmail.com", Mobile: "8296929288", Location: "Bangalore" },
+            { Name: "NIHAL PRASAD", Email: "nihalprasad55@gmail.com", Mobile: "7360095526", Location: "Jamshedpur" },
+            { Name: "Abhishek Jaiswal", Email: "abhishekjaiswalg380@gmail.com", Mobile: "7272030011", Location: "Delhi" },
+            { Name: "Swapnil Jain", Email: "swapniljain955@gmail.com", Mobile: "9982478794", Location: "Jaipur" },
+            { Name: "Vaibhav", Email: "vaibhavkhode2000@gmail.com", Mobile: "7972427301", Location: "Pune Maharashtra" },
+        ];
+
+        // Populate table with data
+        function populateTable(data) {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+            data.forEach(profile => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-700 transition-all duration-200';
+                row.innerHTML = `
+                    <td class="p-3 border" style="border-color: #ff4081;">${profile.Name}</td>
+                    <td class="p-3 border" style="border-color: #ff4081;">${profile.Email}</td>
+                    <td class="p-3 border" style="border-color: #ff4081;">${profile.Mobile}</td>
+                    <td class="p-3 border" style="border-color: #ff4081;">${profile.Location}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Populate location filter dropdown
+        function populateLocationFilter() {
+            const locations = [...new Set(profiles.map(p => p.Location))];
+            const locationFilter = document.getElementById('locationFilter');
+            locations.forEach(location => {
+                const option = document.createElement('option');
+                option.value = location;
+                option.textContent = location;
+                locationFilter.appendChild(option);
+            });
+        }
+
+        // Filter by location
+        document.getElementById('locationFilter').addEventListener('change', function() {
+            const selectedLocation = this.value;
+            const filteredData = selectedLocation
+                ? profiles.filter(profile => profile.Location === selectedLocation)
+                : profiles;
+            populateTable(filteredData);
+        });
+
+        // Sort by location
+        document.getElementById('sortLocation').addEventListener('change', function() {
+            const sortOrder = this.value;
+            const sortedData = [...profiles].sort((a, b) => {
+                return sortOrder === 'asc'
+                    ? a.Location.localeCompare(b.Location)
+                    : b.Location.localeCompare(a.Location);
+            });
+            populateTable(sortedData);
+        });
+
+        // Export to Excel
+        document.getElementById('exportExcel').addEventListener('click', function() {
+            const worksheet = XLSX.utils.json_to_sheet(profiles);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Profiles');
+            XLSX.writeFile(workbook, 'Imarticus_City_Union_Bank_Profiles.xlsx');
+        });
+
+        // Initialize table and filter
+        populateTable(profiles);
+        populateLocationFilter();
+    </script>
+</body>
+</html>
