@@ -1,43 +1,4 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -139,21 +100,34 @@
             { Name: "Ankit Kumar Tiwari", Email: "Kankit17472@gmail.com", Mobile: "9663705194", Location: "Bihar" },
             { Name: "Abhinav Rai", Email: "abhinavraiuk@gmail.com", Mobile: "7870465476", Location: "Patna" },
             { Name: "Anil yadav", Email: "anilyadav975424@gmail.com", Mobile: "9754248372", Location: "Indore" },
-            { Name: "Shubham Ganesh Waydande", Email: "shubhamwaydande01@gmail.com", Mobile: "9172396397", Location: "Karmala, Solapur" },
+            { Name: "Shubham Ganesh Waydande", Email: "shubhamwaydande01@gmail.com", Mobile: "9172396397", Location: "Karmala Solapur" },
             { Name: "Harendra Singh Shekhawat", Email: "himmatkanwar29@gmail.com", Mobile: "9983389332", Location: "Jaipur" },
             { Name: "Kundan kumar", Email: "kundanroxxz@gmail.com", Mobile: "7979774550", Location: "Patna" },
             { Name: "Gunjan jain", Email: "jaingunjan2010@gmail.com", Mobile: "8560908773", Location: "Jaipur" },
             { Name: "Abhay Pratap Singh", Email: "abhaypratap656500@gmail.com", Mobile: "7311174465", Location: "Mumbai" },
-            { Name: "ABHISHEK KUMAR", Email: "abhishekkumarici880@gmail.com", Mobile: "9334706398", Location: "Bhagalpur, Bihar" },
+            { Name: "ABHISHEK KUMAR", Email: "abhishekkumarici880@gmail.com", Mobile: "9334706398", Location: "BHAGALPUR BIHAR" },
             { Name: "Aniruddh Ranaware", Email: "aniruddh.ranaware09@gmail.com", Mobile: "7506642649", Location: "Thane" },
             { Name: "Shyam Karthik M", Email: "shyamkarthikm@gmail.com", Mobile: "9047524593", Location: "Coimbatore" },
             { Name: "Jeeva", Email: "jeevasekar121@gmail.com", Mobile: "6369822990", Location: "Tamil Nadu" },
             { Name: "Manoj Kumar R", Email: "manuk8479@gmail.com", Mobile: "8105967042", Location: "Bangalore" },
             { Name: "Muzammil Badami", Email: "mujjubadami12141@gmail.com", Mobile: "8296929288", Location: "Bangalore" },
-            { Name: "NIHAL PRASAD", Email: "nihalprasad55@gmail.com", Mobile: "7360095526", Location: "Jamshedpur" },
+            { Name: "NIHAL PRASAD", Email: "nihalprasad55@gmail.com", Mobile: "7360095526", Location: "jamshedpur" },
             { Name: "Abhishek Jaiswal", Email: "abhishekjaiswalg380@gmail.com", Mobile: "7272030011", Location: "Delhi" },
             { Name: "Swapnil Jain", Email: "swapniljain955@gmail.com", Mobile: "9982478794", Location: "Jaipur" },
             { Name: "Vaibhav", Email: "vaibhavkhode2000@gmail.com", Mobile: "7972427301", Location: "Pune Maharashtra" },
+            { Name: "Archi Mahadik", Email: "mahadikarchi18@gmail.com", Mobile: "7021453862", Location: "Goregaon" },
+            { Name: "Rutuja kishor Bari", Email: "rutujabari01@gmail.com", Mobile: "9270058139", Location: "Virar" },
+            { Name: "Omkar Gosavi", Email: "omkargosavi2506@gmail.com", Mobile: "9372673442", Location: "Mumbai" },
+            { Name: "Manish Omprakash Pawar", Email: " Pawarmanishabcd@gmail.com", Mobile: "9326222017", Location: "Mumbai,Malad (E)" },
+            { Name: "Aastha Vikas Bari", Email: "aasthabari7@gmail.com", Mobile: "9923726683", Location: "Virar" },
+            { Name: "pratham gala", Email: "galapratham18@gmail.com", Mobile: "8169219319", Location: "mumbai" },
+            { Name: "Shubham Varma", Email: "shubhamvarma2905@gmail.com", Mobile: "8888326924", Location: "Nalasopara" },
+            { Name: "Rinky Khatri", Email: "khatririnky999@gmail.com", Mobile: "9769621076", Location: "Mumbai" },
+            { Name: "Sinchana Gowda", Email: "gowdasinchana807@gmail.com", Mobile: "8104023013", Location: "Vile Parle" },
+            { Name: "Prachi Shah", Email: "prachishah1208@gmail.com", Mobile: "7900151043", Location: "Andheri west" },
+            { Name: "Ankit Choudhary", Email: "ankitchoudhary0705@gmail.com", Mobile: "9766375788", Location: "Borivali" },
+            { Name: "G.sai lakshmi madhuri", Email: "govindarajumadhuri@gmail.com", Mobile: "9390578433", Location: "Hyderabad" },
+            { Name: "Suresh Vemu", Email: "sureshvemu96@gmail.com", Mobile: "7673917896", Location: "Hyderabad" },
         ];
 
         // Populate table with data
