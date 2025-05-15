@@ -1,0 +1,558 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Genpact Process Associate | Forge Your Future</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #002087; /* Genpact Navy */
+      --secondary: #F5C116; /* Genpact Yellow */
+      --accent: #d4d4d8; /* Metallic Silver */
+      --background: #1c2526; /* Dark Steel */
+      --card-bg: rgba(40, 44, 52, 0.95);
+      --text: #ffffff;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: var(--background);
+      color: var(--text);
+      font-family: 'Roboto', sans-serif;
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+      position: relative;
+    }
+    /* Metallic Gradient Background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(0, 32, 135, 0.4), rgba(212, 212, 216, 0.2));
+      z-index: -1;
+      animation: metalShine 10s ease infinite;
+    }
+    @keyframes metalShine {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(28, 37, 38, 0.95);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 60px;
+      animation: slideInDown 1s ease-out;
+    }
+    @keyframes slideInDown {
+      from { transform: translateY(-100%); }
+      to { transform: translateY(0); }
+    }
+    .logo {
+      font-family: 'Poppins', sans-serif;
+      font-size: 30px;
+      font-weight: 900;
+      color: var(--accent);
+      text-shadow: 0 0 10px var(--accent);
+      transition: transform 0.3s, text-shadow 0.3s;
+    }
+    .logo:hover {
+      transform: scale(1.1);
+      text-shadow: 0 0 20px var(--accent);
+    }
+    nav a {
+      margin: 0 20px;
+      text-decoration: none;
+      color: var(--secondary);
+      font-family: 'Poppins', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      position: relative;
+      transition: all 0.3s;
+    }
+    nav a:hover {
+      color: var(--accent);
+      text-shadow: 0 0 15px var(--accent);
+      transform: translateY(-3px);
+    }
+    nav a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      background: var(--accent);
+      bottom: -5px;
+      left: 0;
+      transition: width 0.3s;
+    }
+    nav a:hover::after {
+      width: 100%;
+    }
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 120px 20px;
+      background: linear-gradient(45deg, var(--primary), #0033a0);
+      box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.8);
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(212, 212, 216, 0.3), transparent);
+      animation: shimmer 3s infinite linear;
+    }
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    .hero h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 52px;
+      color: var(--accent);
+      text-shadow: 0 0 15px var(--accent), 0 0 30px var(--secondary);
+      margin: 0 0 20px;
+      animation: metallicGlow 2.5s infinite;
+    }
+    @keyframes metallicGlow {
+      0%, 100% { text-shadow: 0 0 15px var(--accent), 0 0 30px var(--secondary); }
+      50% { text-shadow: 0 0 25px var(--accent), 0 0 50px var(--secondary); }
+    }
+    .hero p {
+      font-size: 24px;
+      color: var(--text);
+      margin-bottom: 30px;
+      animation: fadeInUp 1.5s ease-out;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .apply-button {
+      background: var(--secondary);
+      color: var(--primary);
+      padding: 20px 40px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      text-decoration: none;
+      border-radius: 50px;
+      box-shadow: 0 0 25px var(--secondary);
+      transition: all 0.3s;
+      animation: pulseButton 2s infinite;
+    }
+    @keyframes pulseButton {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    .apply-button:hover {
+      background: var(--accent);
+      box-shadow: 0 0 50px var(--accent);
+      transform: scale(1.15);
+    }
+    section {
+      background: var(--card-bg);
+      margin: 60px auto;
+      padding: 60px;
+      border-radius: 16px;
+      max-width: 1200px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+      position: relative;
+      backdrop-filter: blur(6px);
+    }
+    section h2 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 34px;
+      color: var(--secondary);
+      text-shadow: 0 0 10px var(--secondary);
+      margin-bottom: 30px;
+      animation: slideInLeft 1s ease-out;
+    }
+    @keyframes slideInLeft {
+      from { transform: translateX(-50px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .job-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .job-details p {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 8px;
+      transition: all 0.3s;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .job-details p:hover {
+      transform: translateY(-5px);
+      background: var(--accent);
+      color: var(--primary);
+      box-shadow: 0 0 20px var(--accent);
+    }
+    .job-details p::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(212, 212, 216, 0.4), transparent);
+      transition: all 0.3s;
+    }
+    .job-details p:hover::before {
+      left: 100%;
+    }
+    .benefit-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      transition: all 0.3s;
+      transform-style: preserve-3d;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+      perspective: 1000px;
+      cursor: pointer;
+    }
+    .card:hover {
+      transform: rotateX(10deg) rotateY(10deg);
+      box-shadow: 0 8px 24px var(--secondary);
+    }
+    .card h3 {
+      color: var(--accent);
+      font-family: 'Poppins', sans-serif;
+      margin-bottom: 10px;
+    }
+    .application-process ol li {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+      transition: all 0.3s;
+      animation: fadeInUp 1s ease-out;
+    }
+    .application-process ol li:hover {
+      background: var(--secondary);
+      color: var(--primary);
+      transform: scale(1.05);
+      box-shadow: 0 0 15px var(--secondary);
+    }
+    .testimonial-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    blockquote {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-left: 5px solid var(--accent);
+      border-radius: 8px;
+      transition: all 0.3s;
+      animation: slideInRight 1s ease-out;
+    }
+    @keyframes slideInRight {
+      from { transform: translateX(50px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    blockquote:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px var(--accent);
+    }
+    details {
+      margin: 15px 0;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 10px;
+    }
+    summary {
+      cursor: pointer;
+      padding: 15px;
+      font-family: 'Poppins', sans-serif;
+      color: var(--secondary);
+      transition: all 0.3s;
+    }
+    summary:hover {
+      color: var(--accent);
+      text-shadow: 0 0 10px var(--accent);
+      transform: translateY(-2px);
+    }
+    footer {
+      background: var(--primary);
+      padding: 40px;
+      text-align: center;
+      color: var(--text);
+      box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.7);
+    }
+    footer a {
+      color: var(--accent);
+      margin: 0 15px;
+      text-decoration: none;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.3s;
+    }
+    footer a:hover {
+      transform: scale(1.2);
+      text-shadow: 0 0 10px var(--accent);
+    }
+    #back-to-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--accent);
+      color: var(--primary);
+      border: none;
+      padding: 15px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      font-family: 'Poppins', sans-serif;
+      font-size: 18px;
+      box-shadow: 0 0 20px var(--accent);
+      transition: all 0.3s;
+      animation: shimmerButton 2s infinite;
+    }
+    @keyframes shimmerButton {
+      0% { box-shadow: 0 0 20px var(--accent); }
+      50% { box-shadow: 0 0 40px var(--accent); }
+      100% { box-shadow: 0 0 20px var(--accent); }
+    }
+    #back-to-top:hover {
+      background: var(--secondary);
+      transform: scale(1.3);
+      box-shadow: 0 0 30px var(--secondary);
+    }
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 36px; }
+      .hero p { font-size: 18px; }
+      nav { flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+      .benefit-cards, .testimonial-grid, .job-details { grid-template-columns: 1fr; }
+      section { padding: 30px; margin: 20px; }
+      header { padding: 10px 20px; }
+      .apply-button { padding: 15px 30px; font-size: 16px; }
+      .logo { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">GENPACT</div>
+    <nav>
+      <a href="#hero">Home</a>
+      <a href="#job-details">Details</a>
+      <a href="#benefits">Benefits</a>
+      <a href="#application-process">Apply</a>
+      <a href="#testimonials">Testimonials</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+  </header>
+  <section id="hero" class="hero">
+    <h1>Process Associate – Banking & Financial Crime Prevention</h1>
+    <p>Forge Your Future with Genpact’s Global Excellence</p>
+    <a href="https://forms.gle/zTeohZRGAWcABUU18" target="_blank" class="apply-button">Apply Now</a>
+  </section>
+  <section id="job-details" class="job-details">
+    <h2>Job Details</h2>
+    <p><strong>Title:</strong> Process Associate – Banking – Financial Crime & Fraud Prevention</p>
+    <p><strong>Company:</strong> Genpact</p>
+    <p><strong>Location:</strong> Gurgaon</p>
+    <p><strong>Salary:</strong> ₹2.47L–₹6.5L/year</p>
+    <p><strong>Bonus:</strong> ₹70,000/year (performance-based)</p>
+    <p><strong>Type:</strong> Full-time, On-site</p>
+    <p><strong>Experience:</strong> Freshers or up to 1 year</p>
+    <p><strong>Eligibility:</strong> Any degree except B.Tech (e.g., B.Com, BBA, BVoc, BA, BSc, BPharm)</p>
+    <p><strong>Skills:</strong> Strong communication skills</p>
+    <p><strong>Joining:</strong> Immediate joiners preferred</p>
+  </section>
+  <section id="benefits" class="benefits">
+    <h2>Why Join Genpact?</h2>
+    <div class="benefit-cards">
+      <div class="card">
+        <h3>Competitive Pay</h3>
+        <p>₹2.47L–₹6.5L + ₹70,000 bonus</p>
+      </div>
+      <div class="card">
+        <h3>Health Insurance</h3>
+        <p>Medical, dental, vision, mental health</p>
+      </div>
+      <div class="card">
+        <h3>Education Support</h3>
+        <p>Funded AML/KYC certifications</p>
+      </div>
+      <div class="card">
+        <h3>Global Mobility</h3>
+        <p>Work in 30+ countries</p>
+      </div>
+    </div>
+  </section>
+  <section id="application-process" class="application-process">
+    <h2>Application Process</h2>
+    <ol>
+      <li>Click "Apply Now" to submit your application</li>
+      <li>Upload your resume and details</li>
+      <li>Await contact from our recruitment team</li>
+    </ol>
+    <a href="https://forms.gle/zTeohZRGAWcABUU18" target="_blank" class="apply-button">Apply Now</a>
+  </section>
+  <section id="testimonials" class="testimonials">
+    <h2>Team Testimonials</h2>
+    <div class="testimonial-grid">
+      <blockquote>
+        <p>"Genpact’s training forged my career path!" — Priya, Associate</p>
+      </blockquote>
+      <blockquote>
+        <p>"The global opportunities are unmatched!" — Rohan, Associate</p>
+      </blockquote>
+    </div>
+  </section>
+  <section id="faq" class="faq">
+    <h2>Frequently Asked Questions</h2>
+    <details>
+      <summary>Who is eligible to apply?</summary>
+      <p>Graduates with any degree except B.Tech (e.g., B.Com, BBA, BA, BSc).</p>
+    </details>
+    <details>
+      <summary>What is the salary range?</summary>
+      <p>₹2.47L to ₹6.5L per year, plus a ₹70,000 performance-based bonus.</p>
+    </details>
+    <details>
+      <summary>What benefits are included?</summary>
+      <p>Health insurance, education support, global mobility, and more.</p>
+    </details>
+  </section>
+  <footer>
+    <p>Genpact – Shaping Global Careers</p>
+    <p><a href="https://www.genpact.com/careers">www.genpact.com/careers</a></p>
+    <div class="social-media">
+      <a href="#">Facebook</a>
+      <a href="#">Twitter</a>
+      <a href="#">LinkedIn</a>
+    </div>
+  </footer>
+  <button id="back-to-top">↑</button>
+  <script>
+    // Back to Top Button
+    window.addEventListener('scroll', () => {
+      const backToTop = document.getElementById('back-to-top');
+      if (window.scrollY > 300) {
+        backToTop.style.display = 'block';
+      } else {
+        backToTop.style.display = 'none';
+      }
+    });
+    document.getElementById('back-to-top').addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Scroll Animations
+    const sections = document.querySelectorAll('section');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    sections.forEach(section => {
+      section.classList.add('animate-section');
+      observer.observe(section);
+    });
+
+    // Card 3D Rotation
+    const cards = document.querySelectorAll('.card');
+    cards.forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        const rotateX = y / 10;
+        const rotateY = -x / 10;
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.1)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+      });
+    });
+  </script>
+  <style>
+    .animate-section {
+      opacity: 0;
+      transform: translateY(50px);
+      transition: all 1s ease-out;
+    }
+    .animate-section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</body>
+</html>
