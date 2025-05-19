@@ -1,0 +1,530 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Opportunity: Sr. Associate - Investment Banking at WNS Global</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700&family=Inter&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #121212;
+            color: #E0E0E0;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            scroll-behavior: smooth;
+            position: relative;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        #webgl-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .overlay-top, .overlay-bottom {
+            position: fixed;
+            left: 0;
+            right: 0;
+            height: 20vh;
+            background: linear-gradient(to bottom, rgba(28, 37, 38, 0.8), rgba(28, 37, 38, 0.4));
+            z-index: 2;
+        }
+        .overlay-top {
+            top: 0;
+        }
+        .overlay-bottom {
+            bottom: 0;
+            background: linear-gradient(to top, rgba(28, 37, 38, 0.8), rgba(28, 37, 38, 0.4));
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(28, 37, 38, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+        }
+
+        .deadline-banner {
+            background: linear-gradient(45deg, #D4AF37, #FFD78A);
+            color: #FFFFFF;
+            padding: 1rem;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            animation: pulse 1.5s infinite;
+            display: inline-block;
+        }
+
+        #countdown {
+            font-size: 1.2rem;
+            color: #00FFEA;
+            margin-top: 0.5rem;
+        }
+
+        .button {
+            display: inline-block;
+            margin: 0.75rem;
+            text-decoration: none;
+            color: #FFFFFF;
+            border-radius: 0.6rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            transition: all 0.4s ease;
+            font-family: 'Exo 2', sans-serif;
+            perspective: 1000px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.4s ease;
+        }
+
+        .button:hover::after {
+            left: 100%;
+        }
+
+        .apply-button {
+            background: linear-gradient(to bottom, #FFD78A, #D4AF37);
+            padding: 1.3rem 3rem;
+            font-size: 1.5rem;
+        }
+
+        .quiz-button {
+            background: linear-gradient(to bottom, #00FFEA, #00B7B3);
+            padding: 1.1rem 2.5rem;
+            font-size: 1.4rem;
+        }
+
+        .button:hover {
+            transform: rotateX(360deg) scale(1.1);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.7);
+            filter: brightness(1.2);
+        }
+
+        .apply-button:hover {
+            background: linear-gradient(to bottom, #FFC15A, #B8860B);
+        }
+
+        .quiz-button:hover {
+            background: linear-gradient(to bottom, #00D4C7, #008F8C);
+        }
+
+        .main-content {
+            max-width: 64rem;
+            margin: 10rem auto 3rem;
+            padding: 2rem;
+            position: relative;
+            z-index: 3;
+        }
+
+        section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 0.8rem;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            opacity: 0;
+            transform: translateY(100px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            will-change: opacity, transform;
+        }
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        section[data-parallax] {
+            transition: transform 0.4s ease;
+        }
+
+        section:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Exo 2', sans-serif;
+            color: #D4AF37;
+            text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.8);
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        ul {
+            list-style-type: none;
+            margin-left: 1rem;
+        }
+
+        ul li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        ul li::before {
+            content: '>';
+            color: #D4AF37;
+            position: absolute;
+            left: 0;
+        }
+
+        a {
+            color: #D4AF37;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #FFD78A;
+            text-decoration: underline;
+        }
+
+        footer {
+            background: linear-gradient(to top, #1F1B24, #121212);
+            color: #E0E0E0;
+            text-align: center;
+            padding: 2rem;
+            font-size: 1rem;
+            position: relative;
+            z-index: 3;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
+            50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(212, 175, 55, 0.8); }
+            100% { transform: scale(1); box-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(100px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.8rem;
+            }
+            .apply-button {
+                padding: 1rem 2rem;
+                font-size: 1.3rem;
+            }
+            .quiz-button {
+                padding: 0.8rem 1.8rem;
+                font-size: 1.2rem;
+            }
+            .main-content {
+                margin-top: 12rem;
+                padding: 1.5rem;
+            }
+            section {
+                padding: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            nav {
+                padding: 1rem;
+            }
+            .deadline-banner {
+                font-size: 1rem;
+            }
+            .button {
+                display: block;
+                margin: 0.5rem auto;
+                width: fit-content;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="webgl-canvas"></canvas>
+    <div id="particles-js"></div>
+    <div class="overlay-top"></div>
+    <div class="overlay-bottom"></div>
+
+    <nav>
+        <div class="deadline-banner">Application Deadline: <span id="countdown"></span></div>
+        <a href="https://forms.gle/hSt8czNdCDAf5E4T6" class="button apply-button">Apply Now</a>
+        <a href="https://bharatimarticus123.github.io/Profiles/Interactive_AML_Quiz.html" class="button quiz-button">Interactive AML Quiz</a>
+    </nav>
+
+    <main class="main-content">
+        <h1>Job Opportunity: Sr. Associate - Investment Banking at WNS Global</h1>
+        <section id="introduction" data-parallax="0.2">
+            <p>Dear Students,</p>
+            <p>We are thrilled to announce an exceptional opportunity at WNS Global Services for the role of Sr. Associate in Investment Banking. This position is your gateway to a dynamic career in finance with a global leader in Business Process Management (BPM).</p>
+        </section>
+
+        <section id="job-details" data-parallax="0.3">
+            <h2>Job Details</h2>
+            <ul>
+                <li><strong>Position:</strong> Sr. Associate - Investment Banking</li>
+                <li><strong>Company:</strong> WNS Global Services</li>
+                <li><strong>Location:</strong> Gurgaon</li>
+                <li><strong>Salary:</strong> ₹6 LPA (₹5 LPA Fixed + Variable)</li>
+                <li><strong>Domain:</strong> Banking & Financial Services (BFS)</li>
+                <li><strong>Job Type:</strong> Full-time</li>
+                <li><strong>Job Mode:</strong> Work from Office</li>
+                <li><strong>Work Experience:</strong> Fresher to 3 Years</li>
+                <li><strong>Mode of Interview:</strong> Virtual</li>
+            </ul>
+        </section>
+
+        <section id="roles" data-parallax="0.4">
+            <h2>Roles & Responsibilities</h2>
+            <p>Take charge of gathering, analyzing, and reporting critical financial and industry insights.</p>
+            <h3>Key Responsibility Indicators</h3>
+            <h4>Process Related</h4>
+            <ul>
+                <li>Support US-based Investment Bankers with cutting-edge financial and business research:</li>
+                <ul>
+                    <li>Crafting detailed Company Profiles and Industry Reports</li>
+                    <li>Performing Comparable Company and Transaction Analysis</li>
+                    <li>Delivering Business Information Services</li>
+                </ul>
+                <li>Leverage advanced databases like Capital IQ, Bloomberg, Thomson Research, Thomson One, Factiva, etc.</li>
+                <li>Demonstrate expertise in financial instruments and terminologies</li>
+                <li>Excel in MS Office – proficiency in Excel, Word, and PowerPoint is a plus</li>
+                <li>Ensure flawless task completion under tight deadlines</li>
+                <li>Thrive in high-pressure environments with extended hours</li>
+            </ul>
+            <h4>People Related</h4>
+            <ul>
+                <li>Prioritize and multitask effectively under strict timelines</li>
+                <li>Communicate with clarity and impact</li>
+                <li>Be a collaborative and adaptable team player</li>
+            </ul>
+        </section>
+
+        <section id="additional-info" data-parallax="0.5">
+            <h2>Additional Information</h2>
+            <ul>
+                <li><strong>Qualification:</strong> MBA (Finance), CFA, CA, or FRM</li>
+                <li><strong>Joining:</strong> Immediate</li>
+                <li><strong>Designation:</strong> Sr. Associate</li>
+                <li><strong>Gross CTC:</strong> ₹6 LPA (₹5 LPA Fixed + Variable)</li>
+                <li><strong>Job Location:</strong> Gurgaon</li>
+                <li><strong>Work Mode:</strong> Work from Office</li>
+                <li><strong>Shift Timings:</strong> 8:00 AM – 5:00 PM (flexible for extended shifts)</li>
+                <li><strong>Interview Process:</strong>
+                    <ul>
+                        <li>Cocubes/Online Aptitude Test</li>
+                        <li>Ops Round 1 – Virtual</li>
+                        <li>Ops Round 2 – Virtual</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section id="about-wns" data-parallax="0.6">
+            <h2>About WNS</h2>
+            <p>WNS (Holdings) Limited is a global powerhouse in Business Process Management (BPM), blending deep industry expertise with cutting-edge technology and analytics to deliver innovative, digital-led solutions. Operating across 10 industries, including Banking and Financial Services, WNS boasts a global presence in 16 countries with over 57,000 employees, driving operational excellence in finance, procurement, customer interaction, and human resources.</p>
+            <p>Discover more at <a href="https://www.wns.com">wns.com</a>.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Best regards,<br>Imarticus Learning Career Services</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // WebGL 3D Metallic Sphere
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('webgl-canvas'), alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        const geometry = new THREE.SphereGeometry(5, 64, 64);
+        const material = new THREE.MeshStandardMaterial({
+            color: 0xD4AF37,
+            metalness: 0.9,
+            roughness: 0.2,
+            envMap: new THREE.CubeTextureLoader().load([
+                'https://i.imgur.com/pxY5eZ9.jpg',
+                'https://i.imgur.com/pxY5eZ9.jpg',
+                'https://i.imgur.com/pxY5eZ9.jpg',
+                'https://i.imgur.com/pxY5eZ9.jpg',
+                'https://i.imgur.com/pxY5eZ9.jpg',
+                'https://i.imgur.com/pxY5eZ9.jpg'
+            ])
+        });
+        const sphere = new THREE.Mesh(geometry, material);
+        scene.add(sphere);
+
+        const pointLight = new THREE.PointLight(0xFFFFFF, 1, 100);
+        pointLight.position.set(10, 10, 10);
+        scene.add(pointLight);
+        scene.add(new THREE.AmbientLight(0x404040));
+
+        camera.position.z = 15;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            sphere.rotation.y += 0.005;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('mousemove', (event) => {
+            const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            const mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+            sphere.rotation.x = mouseY * 0.3;
+            sphere.rotation.y = mouseX * 0.3;
+        });
+
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        });
+
+        // Particle.js Configuration
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: window.innerWidth > 768 ? 150 : 75 },
+                color: { value: ['#D4AF37', '#00FFEA', '#FFFFFF'] },
+                shape: { type: 'circle' },
+                opacity: { value: 0.6, random: true },
+                size: { value: 4, random: true },
+                line_linked: { enable: true, distance: 120, color: '#D4AF37', opacity: 0.5, width: 1.5 },
+                move: { enable: true, speed: 3, direction: 'none', random: true }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: { onhover: { enable: true, mode: 'grab' }, onclick: { enable: true, mode: 'push' } },
+                modes: { grab: { distance: 200 }, push: { particles_nb: 6 } }
+            },
+            retina_detect: true
+        });
+
+        // Intersection Observer for Animations
+        const sections = document.querySelectorAll('section');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    new Audio('https://freesound.org/data/previews/316/316847_4939433-lq.mp3').play(); // Metallic clank sound
+                }
+            });
+        }, { threshold: 0.2 });
+
+        sections.forEach(section => observer.observe(section));
+
+        // Parallax Scrolling
+        window.addEventListener('scroll', () => {
+            const scrolled = window.scrollY;
+            document.querySelectorAll('[data-parallax]').forEach(section => {
+                const speed = parseFloat(section.getAttribute('data-parallax'));
+                section.style.transform = `translateY(${scrolled * speed}px)`;
+            });
+        });
+
+        // Countdown Timer
+        const deadline = new Date('2025-05-20T10:00:00+05:30').getTime();
+        const countdownElement = document.getElementById('countdown');
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = deadline - now;
+            if (distance < 0) {
+                countdownElement.textContent = 'Expired';
+                return;
+            }
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            countdownElement.textContent = `${hours}h ${minutes}m ${seconds}s`;
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+    </script>
+</body>
+</html>
