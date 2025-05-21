@@ -1,0 +1,1228 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Banking Ops MCQ Arcade</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        body {
+            background: #000;
+            font-family: 'Press Start 2P', cursive;
+            color: #0ff;
+        }
+        .retro-container {
+            background: #111;
+            border: 4px solid #0ff;
+            box-shadow: 0 0 10px #0ff;
+            padding: 20px;
+        }
+        .question-card {
+            background: #222;
+            border: 2px solid #f0f;
+            margin-bottom: 10px;
+            padding: 15px;
+        }
+        .option {
+            background: #333;
+            border: 2px solid #0f0;
+            color: #0ff;
+            transition: all 0.2s;
+        }
+        .option:hover {
+            background: #0f0;
+            color: #000;
+            transform: scale(1.05);
+        }
+        .correct {
+            background: #0f0 !important;
+            color: #000 !important;
+        }
+        .incorrect {
+            background: #f00 !important;
+            color: #fff !important;
+        }
+        .feedback {
+            color: #ff0;
+            font-size: 12px;
+        }
+        #score {
+            text-shadow: 0 0 5px #0ff;
+        }
+        #game-over {
+            display: none;
+            text-align: center;
+            color: #f0f;
+            text-shadow: 0 0 10px #f0f;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="retro-container max-w-4xl w-full">
+        <h1 class="text-2xl text-center text-pink-400 mb-4">Retro Banking Ops MCQ Arcade</h1>
+        <p class="text-lg text-green-400 mb-4">Score: <span id="score">0</span>/100</p>
+        <div id="questions" class="space-y-4 max-h-[70vh] overflow-y-auto"></div>
+        <div id="game-over" class="mt-6">
+            <h2 class="text-3xl">Game Over!</h2>
+            <p class="text-xl">Final Score: <span id="final-score"></span>/100</p>
+            <button onclick="location.reload()" class="mt-4 bg-pink-500 text-black py-2 px-4 border-2 border-pink-400 hover:bg-pink-600">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "What is a loan?",
+                options: [
+                    "Money given as a gift",
+                    "Money borrowed with an agreement to repay",
+                    "Money saved in a bank account",
+                    "Money invested in stocks"
+                ],
+                correct: 1,
+                explanation: "A loan is money borrowed from a bank or financial institution with a legal agreement to repay it over time, including the principal amount and interest. It helps meet financial needs like buying a house or funding a business."
+            },
+            {
+                question: "Which type of loan requires collateral?",
+                options: ["Personal Loan", "Secured Loan", "Unsecured Loan", "Credit Card"],
+                correct: 1,
+                explanation: "A secured loan requires collateral, such as a car or property, which the bank can seize if the borrower defaults. This reduces the bank's risk, often leading to lower interest rates."
+            },
+            {
+                question: "What is a CIBIL score?",
+                options: [
+                    "A score for academic performance",
+                    "A 3-digit number reflecting creditworthiness",
+                    "A bank account balance indicator",
+                    "A loan interest rate calculator"
+                ],
+                correct: 1,
+                explanation: "A CIBIL score is a 3-digit number (300–900) that reflects a person’s creditworthiness based on their loan repayment history, credit usage, and financial discipline. A score above 750 is considered good."
+            },
+            {
+                question: "What happens if a loan isn’t repaid?",
+                options: [
+                    "Nothing happens",
+                    "The bank congratulates you",
+                    "Late penalties and credit score drop",
+                    "The loan is automatically forgiven"
+                ],
+                correct: 2,
+                explanation: "If a loan isn’t repaid, consequences include late payment penalties, a drop in credit score, legal notices, collection efforts, and, for secured loans, seizure of collateral."
+            },
+            {
+                question: "What is EMI?",
+                options: [
+                    "Extra Money Interest",
+                    "Equated Monthly Installment",
+                    "Emergency Medical Insurance",
+                    "Electronic Money Interface"
+                ],
+                correct: 1,
+                explanation: "EMI stands for Equated Monthly Installment, a fixed monthly payment that includes both the principal loan amount and interest, used to repay the loan over time."
+            },
+            {
+                question: "What is Notice Tagging?",
+                options: [
+                    "Labeling loan documents with key details",
+                    "Sending payment reminders",
+                    "Creating loan agreements",
+                    "Filing tax returns"
+                ],
+                correct: 0,
+                explanation: "Notice Tagging involves reading loan-related notices and labeling them with key details like loan name, amount, date, or transaction type to organize and track documents efficiently."
+            },
+            {
+                question: "Why is trade confirmation important?",
+                options: [
+                    "It finalizes the payment",
+                    "It ensures both parties agree on trade details",
+                    "It calculates taxes",
+                    "It archives the trade"
+                ],
+                correct: 1,
+                explanation: "Trade confirmation ensures both parties agree on trade details like price, quantity, and date, preventing disputes or failed trades."
+            },
+            {
+                question: "What is clearing in the trade life cycle?",
+                options: [
+                    "Exchanging money and assets",
+                    "Validating trade and calculating obligations",
+                    "Reporting trades to regulators",
+                    "Placing the trade order"
+                ],
+                correct: 1,
+                explanation: "Clearing involves validating the trade, calculating obligations (who pays/receives what), and ensuring funds or securities are available for settlement."
+            },
+            {
+                question: "What is a derivative?",
+                options: [
+                    "A type of bank account",
+                    "A financial contract based on an underlying asset",
+                    "A loan agreement",
+                    "A savings plan"
+                ],
+                correct: 1,
+                explanation: "Derivatives are financial contracts whose value is derived from an underlying asset like stocks or commodities. Examples include futures, options, and swaps."
+            },
+            {
+                question: "Why is attention to detail important in operations?",
+                options: [
+                    "It increases work speed",
+                    "It prevents errors that could lead to losses",
+                    "It reduces the need for teamwork",
+                    "It eliminates the need for SLAs"
+                ],
+                correct: 1,
+                explanation: "Attention to detail is critical in operations to prevent small mistakes (e.g., incorrect tagging) that can lead to failed settlements, client complaints, or financial losses."
+            },
+            {
+                question: "What is collateral?",
+                options: [
+                    "A type of loan interest",
+                    "An asset pledged for a loan",
+                    "A credit score",
+                    "A loan repayment plan"
+                ],
+                correct: 1,
+                explanation: "Collateral is a valuable asset (e.g., home, vehicle) pledged to secure a loan. If the borrower defaults, the bank can sell the collateral to recover the loan amount."
+            },
+            {
+                question: "Why do banks ask for collateral?",
+                options: [
+                    "To increase loan amount",
+                    "To reduce their risk",
+                    "To simplify loan processing",
+                    "To waive interest rates"
+                ],
+                correct: 1,
+                explanation: "Collateral reduces the bank’s risk by providing an asset to sell if the borrower defaults, ensuring recovery of the loan amount."
+            },
+            {
+                question: "How can you improve your CIBIL score?",
+                options: [
+                    "Apply for multiple loans",
+                    "Pay EMIs on time",
+                    "Close old credit cards",
+                    "Increase credit card balances"
+                ],
+                correct: 1,
+                explanation: "Paying EMIs and credit card dues on time, keeping credit balances low, and maintaining older credit accounts can improve your CIBIL score."
+            },
+            {
+                question: "Why is a loan agreement important?",
+                options: [
+                    "It sets loan terms and protects both parties",
+                    "It guarantees loan approval",
+                    "It reduces interest rates",
+                    "It eliminates collateral"
+                ],
+                correct: 0,
+                explanation: "A loan agreement outlines terms like repayment period, interest rate, and penalties, protecting both borrower and lender by ensuring clarity and legal enforceability."
+            },
+            {
+                question: "What is Past Due/Exception reporting?",
+                options: [
+                    "Reporting successful trades",
+                    "Identifying delayed or discrepant transactions",
+                    "Creating loan agreements",
+                    "Processing client payments"
+                ],
+                correct: 1,
+                explanation: "Past Due/Exception reporting identifies delayed, missed, or discrepant transactions (e.g., failed settlements) that need resolution to ensure accuracy and compliance."
+            },
+            {
+                question: "What is an SLA in operations?",
+                options: [
+                    "A type of loan",
+                    "A deadline for task completion",
+                    "A financial report",
+                    "A client query"
+                ],
+                correct: 1,
+                explanation: "A Service Level Agreement (SLA) is a predefined deadline to complete a task or resolve an issue, ensuring timely and efficient service delivery."
+            },
+            {
+                question: "What is settlement in the trade life cycle?",
+                options: [
+                    "Placing a trade order",
+                    "Exchanging money and assets",
+                    "Validating trade details",
+                    "Archiving trade records"
+                ],
+                correct: 1,
+                explanation: "Settlement is the stage where the buyer receives the asset (e.g., shares) and the seller receives payment, completing the trade."
+            },
+            {
+                question: "What is investment banking?",
+                options: [
+                    "Providing personal loans",
+                    "Helping companies raise capital",
+                    "Managing retail accounts",
+                    "Offering savings plans"
+                ],
+                correct: 1,
+                explanation: "Investment banking involves helping organizations raise capital, manage mergers and acquisitions, and handle complex financial transactions."
+            },
+            {
+                question: "What is a swap?",
+                options: [
+                    "A type of loan",
+                    "An exchange of financial cash flows",
+                    "A savings account",
+                    "A corporate action"
+                ],
+                correct: 1,
+                explanation: "A swap is a derivative contract where two parties exchange financial cash flows, such as fixed for floating interest rates."
+            },
+            {
+                question: "Why is communication important in operations?",
+                options: [
+                    "It reduces loan amounts",
+                    "It prevents misunderstandings and errors",
+                    "It eliminates SLAs",
+                    "It increases trade volume"
+                ],
+                correct: 1,
+                explanation: "Effective communication avoids misunderstandings, ensures smooth collaboration across global teams, and supports accurate task execution."
+            },
+            {
+                question: "What is a fixed income security?",
+                options: [
+                    "A stock with fixed dividends",
+                    "A financial instrument with regular interest payments",
+                    "A type of mutual fund",
+                    "A loan without collateral"
+                ],
+                correct: 1,
+                explanation: "Fixed income securities, like bonds, provide regular interest payments and return the principal at maturity, offering predictable income."
+            },
+            {
+                question: "What is a corporate action?",
+                options: [
+                    "A loan repayment",
+                    "An event initiated by a company affecting shareholders",
+                    "A trade settlement",
+                    "A client query"
+                ],
+                correct: 1,
+                explanation: "Corporate actions, like dividends or stock splits, are events initiated by a company that impact its shareholders or securities."
+            },
+            {
+                question: "What is a money market fund?",
+                options: [
+                    "A long-term equity fund",
+                    "A fund investing in short-term debt securities",
+                    "A type of personal loan",
+                    "A derivative contract"
+                ],
+                correct: 1,
+                explanation: "Money market funds invest in short-term, low-risk debt securities like treasury bills, providing liquidity and stable returns."
+            },
+            {
+                question: "What is the role of a clearinghouse?",
+                options: [
+                    "To issue loans",
+                    "To ensure trade settlement",
+                    "To manage client accounts",
+                    "To create financial reports"
+                ],
+                correct: 1,
+                explanation: "A clearinghouse acts as an intermediary, validating trades and ensuring funds/securities are available for settlement."
+            },
+            {
+                question: "What is a credit default swap (CDS)?",
+                options: [
+                    "A loan for credit card users",
+                    "A contract to transfer credit risk",
+                    "A savings account",
+                    "A type of bond"
+                ],
+                correct: 1,
+                explanation: "A credit default swap (CDS) is a derivative where one party pays another to transfer the risk of a credit event, like a default."
+            },
+            {
+                question: "What is a bond?",
+                options: [
+                    "A type of equity",
+                    "A debt instrument issued by a borrower",
+                    "A savings account",
+                    "A derivative contract"
+                ],
+                correct: 1,
+                explanation: "A bond is a debt instrument where the issuer borrows money and agrees to pay interest and return the principal at maturity."
+            },
+            {
+                question: "What is the purpose of a loan covenant?",
+                options: [
+                    "To increase loan interest",
+                    "To set conditions for the borrower",
+                    "To waive repayments",
+                    "To reduce collateral"
+                ],
+                correct: 1,
+                explanation: "Loan covenants are conditions in a loan agreement that the borrower must follow, like maintaining financial ratios, to protect the lender."
+            },
+            {
+                question: "What is operational risk in banking?",
+                options: [
+                    "Risk of loan default",
+                    "Risk from process failures",
+                    "Risk of market fluctuations",
+                    "Risk of currency exchange"
+                ],
+                correct: 1,
+                explanation: "Operational risk arises from failures in internal processes, systems, or human errors, like incorrect data entry, impacting operations."
+            },
+            {
+                question: "What is a dividend?",
+                options: [
+                    "A loan repayment",
+                    "A payment to shareholders from profits",
+                    "A type of bond",
+                    "A trade settlement"
+                ],
+                correct: 1,
+                explanation: "A dividend is a payment made by a company to its shareholders, typically from profits, as a return on their investment."
+            },
+            {
+                question: "What is a mutual fund?",
+                options: [
+                    "A loan product",
+                    "A pooled investment vehicle",
+                    "A type of derivative",
+                    "A savings account"
+                ],
+                correct: 1,
+                explanation: "A mutual fund pools money from investors to invest in securities like stocks or bonds, managed by professionals."
+            },
+            {
+                question: "What is the role of Bloomberg in investment banking?",
+                options: [
+                    "To provide personal loans",
+                    "To offer market data and analytics",
+                    "To settle trades",
+                    "To manage client accounts"
+                ],
+                correct: 1,
+                explanation: "Bloomberg provides market data, analytics, and trading tools, widely used in investment banking for research and execution."
+            },
+            {
+                question: "What is a failed trade?",
+                options: [
+                    "A trade with incorrect pricing",
+                    "A trade that doesn’t settle on time",
+                    "A trade with no buyer",
+                    "A trade without confirmation"
+                ],
+                correct: 1,
+                explanation: "A failed trade occurs when a trade doesn’t settle on time due to issues like insufficient funds or mismatched details."
+            },
+            {
+                question: "What is a custodian bank?",
+                options: [
+                    "A bank issuing loans",
+                    "A bank holding client assets",
+                    "A bank managing derivatives",
+                    "A bank for retail services"
+                ],
+                correct: 1,
+                explanation: "A custodian bank holds and safeguards client assets, such as securities, and performs related services like settlement."
+            },
+            {
+                question: "What is a wire movement?",
+                options: [
+                    "Transferring funds electronically",
+                    "Issuing a loan",
+                    "Tagging a notice",
+                    "Creating a report"
+                ],
+                correct: 0,
+                explanation: "Wire movement refers to the electronic transfer of funds between accounts, often used in trade settlements."
+            },
+            {
+                question: "What is a stock split?",
+                options: [
+                    "A loan restructuring",
+                    "Dividing existing shares into multiple shares",
+                    "A type of bond",
+                    "A derivative contract"
+                ],
+                correct: 1,
+                explanation: "A stock split divides existing shares into multiple shares to increase liquidity and adjust the share price."
+            },
+            {
+                question: "What is a back-office system?",
+                options: [
+                    "A client-facing platform",
+                    "A system for trade execution",
+                    "A system for data processing and reconciliation",
+                    "A loan issuance tool"
+                ],
+                correct: 2,
+                explanation: "Back-office systems handle data processing, reconciliation, and record-keeping for trades and financial operations."
+            },
+            {
+                question: "What is the purpose of MIS reporting?",
+                options: [
+                    "To issue loans",
+                    "To track and summarize transactions",
+                    "To execute trades",
+                    "To manage client queries"
+                ],
+                correct: 1,
+                explanation: "Management Information System (MIS) reporting tracks and summarizes transactions to provide insights for decision-making."
+            },
+            {
+                question: "What is a floating interest rate?",
+                options: [
+                    "A fixed rate loan",
+                    "A rate that changes with market conditions",
+                    "A rate for unsecured loans",
+                    "A rate for derivatives"
+                ],
+                correct: 1,
+                explanation: "A floating interest rate varies with market conditions, unlike a fixed rate, affecting loan payments."
+            },
+            {
+                question: "What is a trade queue?",
+                options: [
+                    "A list of client queries",
+                    "A list of pending trades",
+                    "A loan application list",
+                    "A report of settled trades"
+                ],
+                correct: 1,
+                explanation: "A trade queue is a list of pending trades awaiting processing, monitoring, or settlement."
+            },
+            {
+                question: "What is a treasury bill?",
+                options: [
+                    "A long-term bond",
+                    "A short-term government debt security",
+                    "A type of equity",
+                    "A loan agreement"
+                ],
+                correct: 1,
+                explanation: "A treasury bill is a short-term government debt security with a maturity of less than one year, used in money market funds."
+            },
+            {
+                question: "What is a margin call?",
+                options: [
+                    "A loan repayment demand",
+                    "A request for additional funds to cover losses",
+                    "A trade confirmation",
+                    "A corporate action"
+                ],
+                correct: 1,
+                explanation: "A margin call is a demand by a broker for additional funds to cover potential losses in a margin account."
+            },
+            {
+                question: "What is a futures contract?",
+                options: [
+                    "A loan agreement",
+                    "An agreement to buy/sell an asset at a future date",
+                    "A savings plan",
+                    "A type of bond"
+                ],
+                correct: 1,
+                explanation: "A futures contract is a derivative agreement to buy or sell an asset at a set price on a future date."
+            },
+            {
+                question: "What is a reconciliation application?",
+                options: [
+                    "A loan processing tool",
+                    "A system to match financial records",
+                    "A trade execution platform",
+                    "A client query tool"
+                ],
+                correct: 1,
+                explanation: "Reconciliation applications match financial records (e.g., trades, accounts) to ensure accuracy and consistency."
+            },
+            {
+                question: "What is a large trade?",
+                options: [
+                    "A trade with high volume or value",
+                    "A trade with no collateral",
+                    "A trade with low risk",
+                    "A trade for retail clients"
+                ],
+                correct: 0,
+                explanation: "A large trade involves a high volume or value of securities, often requiring special monitoring due to its impact."
+            },
+            {
+                question: "What is a hedge fund?",
+                options: [
+                    "A retail banking product",
+                    "A pooled investment with flexible strategies",
+                    "A type of loan",
+                    "A government bond"
+                ],
+                correct: 1,
+                explanation: "A hedge fund is a pooled investment vehicle using flexible strategies to achieve high returns, often for accredited investors."
+            },
+            {
+                question: "What is the role of a back-office analyst?",
+                options: [
+                    "To execute trades",
+                    "To process and reconcile transactions",
+                    "To issue loans",
+                    "To manage client portfolios"
+                ],
+                correct: 1,
+                explanation: "A back-office analyst processes, reconciles, and records transactions, ensuring accuracy and compliance."
+            },
+            {
+                question: "What is a rights issue?",
+                options: [
+                    "A loan restructuring",
+                    "Offering new shares to existing shareholders",
+                    "A type of derivative",
+                    "A trade settlement"
+                ],
+                correct: 1,
+                explanation: "A rights issue allows existing shareholders to buy additional shares at a discount, raising capital for the company."
+            },
+            {
+                question: "What is a counterparty?",
+                options: [
+                    "A loan borrower",
+                    "The other party in a financial transaction",
+                    "A bank employee",
+                    "A regulatory body"
+                ],
+                correct: 1,
+                explanation: "A counterparty is the other party involved in a financial transaction, such as a buyer or seller in a trade."
+            },
+            {
+                question: "What is a yield curve?",
+                options: [
+                    "A loan repayment schedule",
+                    "A graph of interest rates vs. maturities",
+                    "A trade settlement timeline",
+                    "A client query log"
+                ],
+                correct: 1,
+                explanation: "A yield curve plots interest rates of bonds with different maturities, showing the relationship between time and yield."
+            },
+            {
+                question: "What is a portfolio?",
+                options: [
+                    "A loan agreement",
+                    "A collection of investments",
+                    "A type of bond",
+                    "A trade queue"
+                ],
+                correct: 1,
+                explanation: "A portfolio is a collection of investments, such as stocks, bonds, or mutual funds, held by an individual or entity."
+            },
+            {
+                question: "What is the purpose of a trade blotter?",
+                options: [
+                    "To record loan applications",
+                    "To track all trade activities",
+                    "To issue dividends",
+                    "To manage client queries"
+                ],
+                correct: 1,
+                explanation: "A trade blotter is a record of all trade activities, used for tracking and reconciliation in investment banking."
+            },
+            {
+                question: "What is a stop-loss order?",
+                options: [
+                    "A loan repayment instruction",
+                    "An order to sell a security at a specific price",
+                    "A type of bond",
+                    "A corporate action"
+                ],
+                correct: 1,
+                explanation: "A stop-loss order automatically sells a security when it reaches a specific price to limit losses."
+            },
+            {
+                question: "What is a repo agreement?",
+                options: [
+                    "A loan restructuring",
+                    "A short-term borrowing with securities as collateral",
+                    "A type of equity",
+                    "A client query"
+                ],
+                correct: 1,
+                explanation: "A repo (repurchase) agreement is a short-term borrowing where securities are sold and repurchased later, used for liquidity."
+            },
+            {
+                question: "What is a credit rating?",
+                options: [
+                    "A loan interest rate",
+                    "An assessment of creditworthiness",
+                    "A type of bond",
+                    "A trade settlement"
+                ],
+                correct: 1,
+                explanation: "A credit rating assesses the creditworthiness of a borrower, indicating their ability to repay debt."
+            },
+            {
+                question: "What is a book runner in investment banking?",
+                options: [
+                    "A loan processor",
+                    "The lead manager of a securities offering",
+                    "A trade settlement agent",
+                    "A client query handler"
+                ],
+                correct: 1,
+                explanation: "A book runner is the lead investment bank managing a securities offering, coordinating the issuance process."
+            },
+            {
+                question: "What is a call option?",
+                options: [
+                    "A loan repayment demand",
+                    "A right to buy an asset at a set price",
+                    "A type of bond",
+                    "A corporate action"
+                ],
+                correct: 1,
+                explanation: "A call option gives the holder the right, but not the obligation, to buy an asset at a specified price within a period."
+            },
+            {
+                question: "What is a put option?",
+                options: [
+                    "A loan agreement",
+                    "A right to sell an asset at a set price",
+                    "A type of equity",
+                    "A trade settlement"
+                ],
+                correct: 1,
+                explanation: "A put option gives the holder the right, but not the obligation, to sell an asset at a specified price within a period."
+            },
+            {
+                question: "What is a settlement date?",
+                options: [
+                    "The date a loan is issued",
+                    "The date a trade is completed",
+                    "The date a dividend is paid",
+                    "The date a report is filed"
+                ],
+                correct: 1,
+                explanation: "The settlement date is when a trade is completed, with the buyer receiving the asset and the seller receiving payment."
+            },
+            {
+                question: "What is a prospectus?",
+                options: [
+                    "A loan agreement",
+                    "A document detailing a securities offering",
+                    "A trade confirmation",
+                    "A client query log"
+                ],
+                correct: 1,
+                explanation: "A prospectus is a legal document providing details about a securities offering, including risks and financials."
+            },
+            {
+                question: "What is a market order?",
+                options: [
+                    "A loan application",
+                    "An order to buy/sell at the current market price",
+                    "A type of bond",
+                    "A corporate action"
+                ],
+                correct: 1,
+                explanation: "A market order is an instruction to buy or sell a security immediately at the current market price."
+            },
+            {
+                question: "What is a limit order?",
+                options: [
+                    "A loan repayment plan",
+                    "An order to buy/sell at a specific price",
+                    "A trade settlement",
+                    "A client query"
+                ],
+                correct: 1,
+                explanation: "A limit order is an instruction to buy or sell a security at a specific price or better, ensuring price control."
+            },
+            {
+                question: "What is a short sale?",
+                options: [
+                    "Selling a loan",
+                    "Selling borrowed securities",
+                    "Issuing a bond",
+                    "Processing a dividend"
+                ],
+                correct: 1,
+                explanation: "A short sale involves selling borrowed securities, expecting to buy them back at a lower price to profit."
+            },
+            {
+                question: "What is a prime broker?",
+                options: [
+                    "A loan issuer",
+                    "A bank providing services to hedge funds",
+                    "A trade settlement agent",
+                    "A retail banker"
+                ],
+                correct: 1,
+                explanation: "A prime broker provides services like trade execution, settlement, and financing to hedge funds and institutional clients."
+            },
+            {
+                question: "What is a T+2 settlement?",
+                options: [
+                    "Settlement in two hours",
+                    "Settlement two days after the trade",
+                    "A type of loan",
+                    "A corporate action"
+                ],
+                correct: 1,
+                explanation: "T+2 settlement means the trade is finalized two business days after the trade date."
+            },
+            {
+                question: "What is a dividend yield?",
+                options: [
+                    "A loan interest rate",
+                    "The ratio of dividend to stock price",
+                    "A type of bond",
+                    "A trade settlement"
+                ],
+                correct: 1,
+                explanation: "Dividend yield is the ratio of a company’s annual dividend to its stock price, expressed as a percentage."
+            },
+            {
+                question: "What is a credit spread?",
+                options: [
+                    "The difference between loan rates",
+                    "The difference between bond yields",
+                    "A type of equity",
+                    "A trade queue"
+                ],
+                correct: 1,
+                explanation: "A credit spread is the difference in yields between two bonds, reflecting the credit risk of one relative to the other."
+            },
+            {
+                question: "What is a trade affirmation?",
+                options: [
+                    "A loan approval",
+                    "The buyer’s acceptance of trade terms",
+                    "A dividend payment",
+                    "A client query"
+                ],
+                correct: 1,
+                explanation: "Trade affirmation is when the buyer confirms agreement with the trade terms before settlement."
+            },
+            {
+                question: "What is a coupon rate?",
+                options: [
+                    "A loan interest rate",
+                    "The interest rate paid by a bond",
+                    "A type of equity",
+                    "A trade settlement"
+                ],
+                correct: 1,
+                explanation: "The coupon rate is the annual interest rate paid by a bond, expressed as a percentage of its face value."
+            },
+            {
+                question: "What is a share mailbox?",
+                options: [
+                    "A loan application portal",
+                    "A system for client queries",
+                    "A trade execution tool",
+                    "A financial report"
+                ],
+                correct: 1,
+                explanation: "A share mailbox is a system used to receive and manage client queries or communications in operations."
+            },
+            {
+                question: "What is a process flow in operations?",
+                options: [
+                    "A loan repayment plan",
+                    "The sequence of steps in a process",
+                    "A type of bond",
+                    "A client query log"
+                ],
+                correct: 1,
+                explanation: "A process flow outlines the sequence of steps in an operational process, ensuring efficiency and clarity."
+            },
+            {
+                question: "What is a regulatory report?",
+                options: [
+                    "A loan agreement",
+                    "A report submitted to regulators",
+                    "A trade execution record",
+                    "A client query response"
+                ],
+                correct: 1,
+                explanation: "A regulatory report is submitted to authorities to ensure compliance with financial regulations."
+            },
+            {
+                question: "What is a trade break?",
+                options: [
+                    "A loan default",
+                    "A mismatch in trade details",
+                    "A type of bond",
+                    "A corporate action"
+                ],
+                correct: 1,
+                explanation: "A trade break occurs when there’s a mismatch in trade details between parties, requiring resolution."
+            },
+            {
+                question: "What is a custodian reconciliation?",
+                options: [
+                    "Reconciling loan accounts",
+                    "Matching custodian records with internal records",
+                    "Issuing dividends",
+                    "Processing client queries"
+                ],
+                correct: 1,
+                explanation: "Custodian reconciliation matches a firm’s internal records with those of the custodian bank to ensure accuracy."
+            },
+            {
+                question: "What is a market maker?",
+                options: [
+                    "A loan issuer",
+                    "A firm providing liquidity by quoting prices",
+                    "A trade settlement agent",
+                    "A client query handler"
+                ],
+                correct: 1,
+                explanation: "A market maker provides liquidity by continuously quoting buy and sell prices for securities."
+            },
+            {
+                question: "What is a trade allocation?",
+                options: [
+                    "Assigning trades to client accounts",
+                    "Issuing a loan",
+                    "Tagging a notice",
+                    "Creating a report"
+                ],
+                correct: 0,
+                explanation: "Trade allocation involves assigning executed trades to specific client accounts or portfolios."
+            },
+            {
+                question: "What is a payment date?",
+                options: [
+                    "The date a loan is issued",
+                    "The date dividends or interest is paid",
+                    "The date a trade is executed",
+                    "The date a report is filed"
+                ],
+                correct: 1,
+                explanation: "The payment date is when dividends or interest payments are distributed to shareholders or bondholders."
+            },
+            {
+                question: "What is a SWIFT code?",
+                options: [
+                    "A loan identifier",
+                    "A code for international bank transfers",
+                    "A type of bond",
+                    "A trade settlement code"
+                ],
+                correct: 1,
+                explanation: "A SWIFT code identifies banks for international wire transfers, ensuring accurate routing."
+            },
+            {
+                question: "What is a trade lifecycle event?",
+                options: [
+                    "A loan repayment",
+                    "A stage like execution or settlement",
+                    "A client query",
+                    "A corporate action"
+                ],
+                correct: 1,
+                explanation: "A trade lifecycle event is a stage in the trade process, such as execution, confirmation, or settlement."
+            },
+            {
+                question: "What is a basis point?",
+                options: [
+                    "A loan interest rate",
+                    "One hundredth of a percent",
+                    "A type of equity",
+                    "A trade settlement"
+                ],
+                correct: 1,
+                explanation: "A basis point is one hundredth of a percent (0.01%), used to measure changes in interest rates or yields."
+            },
+            {
+                question: "What is a trade confirmation system?",
+                options: [
+                    "A loan processing tool",
+                    "A system to verify trade details",
+                    "A client query platform",
+                    "A financial report"
+                ],
+                correct: 1,
+                explanation: "A trade confirmation system verifies trade details between parties to ensure agreement before settlement."
+            },
+            {
+                question: "What is a depository receipt?",
+                options: [
+                    "A loan agreement",
+                    "A security representing shares in a foreign company",
+                    "A type of bond",
+                    "A trade settlement"
+                ],
+                correct: 1,
+                explanation: "A depository receipt (e.g., ADR) represents shares in a foreign company, traded on a local exchange."
+            },
+            {
+                question: "What is a trade execution?",
+                options: [
+                    "Processing a loan",
+                    "Placing a trade order in the market",
+                    "Tagging a notice",
+                    "Creating a report"
+                ],
+                correct: 1,
+                explanation: "Trade execution is the process of placing and completing a trade order in the market."
+            },
+            {
+                question: "What is a capital market?",
+                options: [
+                    "A market for personal loans",
+                    "A market for trading securities",
+                    "A market for retail banking",
+                    "A market for client queries"
+                ],
+                correct: 1,
+                explanation: "Capital markets facilitate the trading of securities like stocks and bonds to raise capital."
+            },
+            {
+                question: "What is a financial instrument?",
+                options: [
+                    "A loan application",
+                    "An asset like a stock or bond",
+                    "A trade settlement",
+                    "A client query"
+                ],
+                correct: 1,
+                explanation: "A financial instrument is an asset, such as a stock, bond, or derivative, used for investment or financing."
+            },
+            {
+                question: "What is a trade reconciliation?",
+                options: [
+                    "Issuing a loan",
+                    "Matching trade records for accuracy",
+                    "Processing dividends",
+                    "Tagging notices"
+                ],
+                correct: 1,
+                explanation: "Trade reconciliation matches trade records between parties or systems to ensure accuracy and resolve discrepancies."
+            },
+            {
+                question: "What is a margin loan?",
+                options: [
+                    "A loan for personal expenses",
+                    "A loan to buy securities using collateral",
+                    "A type of bond",
+                    "A corporate action"
+                ],
+                correct: 1,
+                explanation: "A margin loan allows investors to borrow money to buy securities, using their portfolio as collateral."
+            },
+            {
+                question: "What is a clearing member?",
+                options: [
+                    "A loan issuer",
+                    "A firm facilitating trade clearing",
+                    "A client query handler",
+                    "A retail banker"
+                ],
+                correct: 1,
+                explanation: "A clearing member is a firm that facilitates trade clearing through a clearinghouse, ensuring settlement."
+            },
+            {
+                question: "What is a trade date?",
+                options: [
+                    "The date a loan is issued",
+                    "The date a trade is executed",
+                    "The date a dividend is paid",
+                    "The date a report is filed"
+                ],
+                correct: 1,
+                explanation: "The trade date is when a trade is executed, marking the start of the trade lifecycle."
+            },
+            {
+                question: "What is a yield to maturity?",
+                options: [
+                    "A loan repayment rate",
+                    "The total return on a bond if held to maturity",
+                    "A type of equity",
+                    "A trade settlement"
+                ],
+                correct: 1,
+                explanation: "Yield to maturity is the total return expected on a bond if held until it matures, including interest and price changes."
+            },
+            {
+                question: "What is a back-office function?",
+                options: [
+                    "Client-facing services",
+                    "Data processing and reconciliation",
+                    "Trade execution",
+                    "Loan issuance"
+                ],
+                correct: 1,
+                explanation: "Back-office functions involve data processing, reconciliation, and record-keeping to support financial operations."
+            },
+            {
+                question: "What is a corporate bond?",
+                options: [
+                    "A loan for personal use",
+                    "A debt security issued by a company",
+                    "A type of equity",
+                    "A trade settlement"
+                ],
+                correct: 1,
+                explanation: "A corporate bond is a debt security issued by a company to raise capital, paying interest to bondholders."
+            },
+            {
+                question: "What is a trade settlement system?",
+                options: [
+                    "A loan processing tool",
+                    "A system to finalize trade payments",
+                    "A client query platform",
+                    "A financial report"
+                ],
+                correct: 1,
+                explanation: "A trade settlement system finalizes trade payments and asset transfers, ensuring completion."
+            },
+            {
+                question: "What is a financial derivative?",
+                options: [
+                    "A loan agreement",
+                    "A contract based on an underlying asset",
+                    "A savings account",
+                    "A trade settlement"
+                ],
+                correct: 1,
+                explanation: "A financial derivative is a contract whose value is based on an underlying asset, like stocks or commodities."
+            },
+            {
+                question: "What is a process improvement?",
+                options: [
+                    "Issuing a loan",
+                    "Streamlining operational workflows",
+                    "Processing dividends",
+                    "Tagging notices"
+                ],
+                correct: 1,
+                explanation: "Process improvement involves analyzing and optimizing workflows to enhance efficiency and accuracy."
+            },
+            {
+                question: "What is a client query in operations?",
+                options: [
+                    "A loan application",
+                    "A request for information from a client",
+                    "A trade execution",
+                    "A financial report"
+                ],
+                correct: 1,
+                explanation: "A client query is a request for information or clarification from a client, often handled via share mailboxes."
+            },
+            {
+                question: "What is a trade lifecycle management system?",
+                options: [
+                    "A loan processing tool",
+                    "A system to manage trade stages",
+                    "A client query platform",
+                    "A financial report"
+                ],
+                correct: 1,
+                explanation: "A trade lifecycle management system oversees all stages of a trade, from execution to settlement."
+            }
+        ];
+
+        let score = 0;
+        const totalQuestions = questions.length;
+        const questionsEl = document.getElementById('questions');
+        const scoreEl = document.getElementById('score');
+        const gameOverEl = document.getElementById('game-over');
+        const finalScoreEl = document.getElementById('final-score');
+
+        function loadQuestions() {
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-card';
+                questionDiv.innerHTML = `
+                    <p class="text-sm text-yellow-400 mb-2">${index + 1}. ${q.question}</p>
+                    <div class="options space-y-2"></div>
+                    <div class="feedback hidden"></div>
+                `;
+                const optionsDiv = questionDiv.querySelector('.options');
+                const feedbackDiv = questionDiv.querySelector('.feedback');
+                q.options.forEach((option, optIndex) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option w-full text-left p-2 text-sm';
+                    btn.textContent = option;
+                    btn.onclick = () => selectOption(index, optIndex, btn, feedbackDiv);
+                    optionsDiv.appendChild(btn);
+                });
+                questionsEl.appendChild(questionDiv);
+            });
+        }
+
+        function selectOption(questionIndex, optionIndex, button, feedbackDiv) {
+            const q = questions[questionIndex];
+            const buttons = button.parentElement.getElementsByClassName('option');
+            for (let btn of buttons) {
+                btn.disabled = true;
+            }
+            if (optionIndex === q.correct) {
+                button.classList.add('correct');
+                score++;
+                scoreEl.textContent = score;
+                feedbackDiv.innerHTML = `<p class="text-green-400">Correct!</p><p>${q.explanation}</p>`;
+            } else {
+                button.classList.add('incorrect');
+                buttons[q.correct].classList.add('correct');
+                feedbackDiv.innerHTML = `<p class="text-red-400">Incorrect!</p><p>${q.explanation}</p>`;
+            }
+            feedbackDiv.classList.remove('hidden');
+            checkGameOver();
+        }
+
+        function checkGameOver() {
+            const answeredQuestions = document.querySelectorAll('.feedback:not(.hidden)').length;
+            if (answeredQuestions === totalQuestions) {
+                gameOverEl.style.display = 'block';
+                finalScoreEl.textContent = score;
+                questionsEl.style.display = 'none';
+            }
+        }
+
+        loadQuestions();
+    </script>
+</body>
+</html>
