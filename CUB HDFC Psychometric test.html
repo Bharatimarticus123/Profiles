@@ -1,0 +1,386 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HDFC AMCAT & City Union Bank Test - NES Edition</title>
+  <style>
+    body {
+      background-color: #1a1a1a;
+      color: #ffffff;
+      font-family: 'Press Start 2P', cursive;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+      background-image: url('https://opengameart.org/sites/default/files/nes_background.png');
+      background-size: cover;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      border: 4px solid #00ff00;
+      border-radius: 10px;
+      display: none;
+    }
+    .title-screen {
+      max-width: 800px;
+      margin: auto;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      border: 4px solid #ff00ff;
+      border-radius: 10px;
+    }
+    .title-screen h1 {
+      font-size: 24px;
+      color: #ff00ff;
+      text-shadow: 3px 3px #000;
+    }
+    .title-screen p {
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .question, .explanation {
+      font-size: 14px;
+      margin: 20px 0;
+      text-shadow: 2px 2px #000;
+    }
+    .options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .option {
+      background: #3333ff;
+      padding: 10px;
+      border: 2px solid #00ffff;
+      cursor: pointer;
+      transition: background 0.3s;
+      font-size: 12px;
+    }
+    .option:hover {
+      background: #6666ff;
+    }
+    .correct {
+      background: #00ff00;
+    }
+    .incorrect {
+      background: #ff0000;
+    }
+    .explanation {
+      display: none;
+      background: #222;
+      padding: 15px;
+      border: 2px solid #ffff00;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    #score {
+      font-size: 18px;
+      margin: 20px 0;
+      color: #ff00ff;
+    }
+    #next, #startGame {
+      background: #ff00ff;
+      padding: 10px 20px;
+      border: 2px solid #ffffff;
+      cursor: pointer;
+      font-size: 14px;
+      font-family: 'Press Start 2P', cursive;
+    }
+    #next:hover, #startGame:hover {
+      background: #ff66ff;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="title-screen" id="titleScreen">
+    <h1>HDFC AMCAT & City Union Bank Test</h1>
+    <p>NES Edition</p>
+    <p>Test your skills with 200 questions across multiple domains. Click Start to begin!</p>
+    <button id="startGame">Start Game</button>
+  </div>
+  <div class="container" id="gameContainer">
+    <h1>HDFC AMCAT & City Union Bank Test - NES Edition</h1>
+    <div id="score">Score: 0</div>
+    <div id="question" class="question"></div>
+    <div id="options" class="options"></div>
+    <div id="explanation" class="explanation"></div>
+    <button id="next">Next Question</button>
+  </div>
+  <script>
+    const questions = [
+      // Quantitative Aptitude (40 Questions)
+      { section: "Quantitative Aptitude", text: "What is 1234.567 - 89.123 + 456.789?", options: ["1602.233", "1601.233", "1603.233", "1600.233"], correct: 0, explanation: "Step 1: 1234.567 - 89.123 = 1145.444. Step 2: 1145.444 + 456.789 = 1602.233." },
+      { section: "Quantitative Aptitude", text: "A person spends 25% of their salary on rent, 15% of the remainder on utilities, and saves ₹18,000. What is their salary?", options: ["₹32,000", "₹30,000", "₹28,000", "₹34,000"], correct: 1, explanation: "Let salary = S. Rent = 0.25S. Remaining = 0.75S. Utilities = 0.15 × 0.75S = 0.1125S. Savings = 0.6375S = 18,000. S ≈ ₹28,235, closest: ₹30,000." },
+      { section: "Quantitative Aptitude", text: "The ratio of ages of A and B is 4:5. Six years from now, the ratio will be 5:6. What is A’s current age?", options: ["24 years", "20 years", "28 years", "16 years"], correct: 0, explanation: "4x + 6 / 5x + 6 = 5/6 → 24x + 36 = 25x + 30 → x = 6. A’s age = 4x = 24 years." },
+      { section: "Quantitative Aptitude", text: "A train travels 480 km in 6 hours. What is its speed in m/s?", options: ["20 m/s", "22.22 m/s", "25 m/s", "18 m/s"], correct: 1, explanation: "Speed = 480 / 6 = 80 km/h. Convert: 80 × 5/18 ≈ 22.22 m/s." },
+      { section: "Quantitative Aptitude", text: "If 8% of a number is 40, what is 25% of that number?", options: ["125", "150", "100", "120"], correct: 0, explanation: "0.08x = 40 → x = 500. 25% of 500 = 0.25 × 500 = 125." },
+      { section: "Quantitative Aptitude", text: "A shopkeeper sells an item at a 15% profit. If the cost price is ₹400, what is the selling price?", options: ["₹460", "₹450", "₹470", "₹480"], correct: 0, explanation: "Profit = 0.15 × 400 = ₹60. Selling price = 400 + 60 = ₹460." },
+      { section: "Quantitative Aptitude", text: "The average of 6 numbers is 24. If one number is removed, the average becomes 22. What is the removed number?", options: ["32", "34", "36", "38"], correct: 1, explanation: "Sum = 6 × 24 = 144. New sum = 5 × 22 = 110. Removed = 144 - 110 = 34." },
+      { section: "Quantitative Aptitude", text: "If 2/3 of a number is 48, what is the number?", options: ["64", "72", "80", "88"], correct: 1, explanation: "2/3 x = 48 → x = 48 × 3/2 = 72." },
+      { section: "Quantitative Aptitude", text: "A sum of ₹15,000 amounts to ₹18,150 in 2 years at compound interest. What is the rate?", options: ["10%", "12%", "15%", "8%"], correct: 0, explanation: "18,150 = 15,000(1 + r/100)^2 → 1.21 = (1 + r/100)^2 → r = 10%." },
+      { section: "Quantitative Aptitude", text: "What is the LCM of 15, 20, and 25?", options: ["300", "150", "100", "200"], correct: 0, explanation: "LCM = 2^2 × 3 × 5^2 = 300." },
+      { section: "Quantitative Aptitude", text: "What is the HCF of 36 and 48?", options: ["6", "12", "18", "24"], correct: 1, explanation: "Factors of 36: 1, 2, 3, 4, 6, 9, 12, 18, 36. Factors of 48: 1, 2, 3, 4, 6, 8, 12, 16, 24, 48. HCF = 12." },
+      { section: "Quantitative Aptitude", text: "A car travels 300 km in 5 hours. What is its speed in km/h?", options: ["50", "60", "70", "80"], correct: 1, explanation: "Speed = 300 / 5 = 60 km/h." },
+      { section: "Quantitative Aptitude", text: "If x + 2 = 10, what is x^2?", options: ["64", "36", "100", "16"], correct: 0, explanation: "x = 8 → x^2 = 64." },
+      { section: "Quantitative Aptitude", text: "What is 15% of 200?", options: ["25", "30", "35", "40"], correct: 1, explanation: "0.15 × 200 = 30." },
+      { section: "Quantitative Aptitude", text: "A rectangle has length 12 cm and width 5 cm. What is its perimeter?", options: ["34 cm", "30 cm", "28 cm", "36 cm"], correct: 0, explanation: "Perimeter = 2(12 + 5) = 34 cm." },
+      { section: "Quantitative Aptitude", text: "If 3x = 27, what is x?", options: ["6", "7", "8", "9"], correct: 3, explanation: "3x = 27 → x = 9." },
+      { section: "Quantitative Aptitude", text: "A number increased by 20% is 120. What is the original number?", options: ["90", "100", "110", "120"], correct: 1, explanation: "1.2x = 120 → x = 100." },
+      { section: "Quantitative Aptitude", text: "What is the simple interest on ₹5000 at 5% for 2 years?", options: ["₹500", "₹450", "₹550", "₹600"], correct: 0, explanation: "SI = (5000 × 5 × 2) / 100 = ₹500." },
+      { section: "Quantitative Aptitude", text: "If 5 pencils cost ₹25, what is the cost of 8 pencils?", options: ["₹40", "₹45", "₹50", "₹55"], correct: 0, explanation: "Cost per pencil = 25 / 5 = ₹5. 8 pencils = 8 × 5 = ₹40." },
+      { section: "Quantitative Aptitude", text: "What is 2^5?", options: ["16", "32", "64", "128"], correct: 1, explanation: "2^5 = 32." },
+      { section: "Quantitative Aptitude", text: "A shop offers a 10% discount on a ₹200 item. What is the sale price?", options: ["₹180", "₹190", "₹170", "₹160"], correct: 0, explanation: "Discount = 0.10 × 200 = ₹20. Sale price = 200 - 20 = ₹180." },
+      { section: "Quantitative Aptitude", text: "What is the area of a circle with radius 7 cm? (Use π = 22/7)", options: ["154 cm²", "144 cm²", "164 cm²", "174 cm²"], correct: 0, explanation: "Area = πr^2 = (22/7) × 7^2 = 154 cm²." },
+      { section: "Quantitative Aptitude", text: "If a:b = 3:4 and b:c = 5:6, what is a:c?", options: ["5:8", "3:6", "15:24", "12:15"], correct: 2, explanation: "a:b = 3:4, b:c = 5:6. a:c = 3 × 5 : 4 × 6 = 15:24." },
+      { section: "Quantitative Aptitude", text: "What is 0.75 as a fraction?", options: ["3/4", "1/2", "2/3", "4/5"], correct: 0, explanation: "0.75 = 75/100 = 3/4." },
+      { section: "Quantitative Aptitude", text: "A man walks 4 km in 1 hour. How far does he walk in 3 hours?", options: ["10 km", "12 km", "14 km", "16 km"], correct: 1, explanation: "Distance = 4 × 3 = 12 km." },
+      { section: "Quantitative Aptitude", text: "What is the square root of 144?", options: ["10", "11", "12", "13"], correct: 2, explanation: "√144 = 12." },
+      { section: "Quantitative Aptitude", text: "If 4x + 3 = 19, what is x?", options: ["3", "4", "5", "6"], correct: 1, explanation: "4x = 16 → x = 4." },
+      { section: "Quantitative Aptitude", text: "What is 1/4 of 80?", options: ["20", "25", "15", "30"], correct: 0, explanation: "1/4 × 80 = 20." },
+      { section: "Quantitative Aptitude", text: "A sum doubles in 5 years at simple interest. What is the rate?", options: ["10%", "15%", "20%", "25%"], correct: 2, explanation: "SI = P, Time = 5, Rate = (SI × 100) / (P × T) = 100 / 5 = 20%." },
+      { section: "Quantitative Aptitude", text: "What is the volume of a cube with side 3 cm?", options: ["27 cm³", "18 cm³", "36 cm³", "24 cm³"], correct: 0, explanation: "Volume = 3^3 = 27 cm³." },
+      { section: "Quantitative Aptitude", text: "If 12 workers finish a job in 10 days, how many days will 8 workers take?", options: ["12", "15", "18", "20"], correct: 1, explanation: "Total work = 12 × 10 = 120 worker-days. Days for 8 workers = 120 / 8 = 15." },
+      { section: "Quantitative Aptitude", text: "What is 5! (factorial)?", options: ["100", "120", "140", "160"], correct: 1, explanation: "5! = 5 × 4 × 3 × 2 × 1 = 120." },
+      { section: "Quantitative Aptitude", text: "A number decreased by 25% is 75. What is the original number?", options: ["90", "95", "100", "105"], correct: 2, explanation: "0.75x = 75 → x = 100." },
+      { section: "Quantitative Aptitude", text: "What is the median of 3, 7, 1, 9, 5?", options: ["5", "4", "6", "7"], correct: 0, explanation: "Sorted: 1, 3, 5, 7, 9. Median = 5." },
+      { section: "Quantitative Aptitude", text: "If 2x - 5 = 11, what is x?", options: ["6", "7", "8", "9"], correct: 2, explanation: "2x = 16 → x = 8." },
+      { section: "Quantitative Aptitude", text: "What is 40% of 150?", options: ["50", "60", "70", "80"], correct: 1, explanation: "0.40 × 150 = 60." },
+      { section: "Quantitative Aptitude", text: "A boat travels 20 km in 2 hours. What is its speed?", options: ["8 km/h", "9 km/h", "10 km/h", "11 km/h"], correct: 2, explanation: "Speed = 20 / 2 = 10 km/h." },
+      { section: "Quantitative Aptitude", text: "What is the sum of angles in a triangle?", options: ["180°", "360°", "90°", "270°"], correct: 0, explanation: "Sum of angles in a triangle is 180°." },
+      { section: "Quantitative Aptitude", text: "If 6 books cost ₹240, what is the cost of 10 books?", options: ["₹380", "₹400", "₹420", "₹440"], correct: 1, explanation: "Cost per book = 240 / 6 = ₹40. 10 books = 40 × 10 = ₹400." },
+      { section: "Quantitative Aptitude", text: "What is 3/5 as a percentage?", options: ["50%", "60%", "70%", "80%"], correct: 1, explanation: "3/5 = 0.6 = 60%." },
+
+      // Logical Reasoning (40 Questions)
+      { section: "Logical Reasoning", text: "Which does not belong: Run, Dance, Swim, Paint, Think?", options: ["Run", "Dance", "Swim", "Think"], correct: 3, explanation: "Run, Dance, Swim, Paint are physical; Think is mental." },
+      { section: "Logical Reasoning", text: "If 'CANDLE' is 'AFQIPA' (+3,+1,+3,+1,+3,+1), how is 'TORCH' coded?", options: ["WPUCK", "ILTKF", "QHLTK", "KJSJD"], correct: 0, explanation: "T+3=W, O+1=P, R+3=U, C+1=D, H+3=K → WPUCK." },
+      { section: "Logical Reasoning", text: "Complete the series: 2, 4, 8, 16, ?", options: ["24", "28", "32", "36"], correct: 2, explanation: "Each number doubles: 2 × 2 = 4, 4 × 2 = 8, 8 × 2 = 16, 16 × 2 = 32." },
+      { section: "Logical Reasoning", text: "If A is B’s brother and B is C’s sister, what is A to C?", options: ["Brother", "Cousin", "Uncle", "Father"], correct: 0, explanation: "A (male) and B (female) are siblings, B and C are siblings, so A is C’s brother." },
+      { section: "Logical Reasoning", text: "Which is odd: Apple, Banana, Carrot, Mango?", options: ["Apple", "Banana", "Carrot", "Mango"], correct: 2, explanation: "Carrot is a vegetable; others are fruits." },
+      { section: "Logical Reasoning", text: "If 5 = P, 10 = Q, 15 = R, what is 20?", options: ["S", "T", "U", "V"], correct: 1, explanation: "Pattern: +5 maps to next letter. 20 = T." },
+      { section: "Logical Reasoning", text: "Complete: 1, 3, 6, 10, ?", options: ["12", "15", "18", "21"], correct: 1, explanation: "Triangular numbers: 1, 1+2=3, 3+3=6, 6+4=10, 10+5=15." },
+      { section: "Logical Reasoning", text: "If Monday is day 1, what day is it after 10 days?", options: ["Tuesday", "Wednesday", "Thursday", "Friday"], correct: 2, explanation: "10 days = 1 week + 3 days. Monday + 3 = Thursday." },
+      { section: "Logical Reasoning", text: "Which does not fit: Cat, Dog, Bird, Fish, Car?", options: ["Cat", "Dog", "Bird", "Car"], correct: 3, explanation: "Car is not an animal." },
+      { section: "Logical Reasoning", text: "If 'BOOK' is 'ERRN', how is 'PAGE' coded?", options: ["SDJH", "QCFH", "UFLK", "TDJI"], correct: 0, explanation: "Pattern: +3. P+3=S, A+3=D, G+3=J, E+3=H → SDJH." },
+      { section: "Logical Reasoning", text: "Find the odd one: 4, 9, 16, 25, 28", options: ["4", "9", "16", "28"], correct: 3, explanation: "4, 9, 16, 25 are squares; 28 is not." },
+      { section: "Logical Reasoning", text: "If P is east of Q and Q is north of R, where is P relative to R?", options: ["Northeast", "Northwest", "Southeast", "Southwest"], correct: 0, explanation: "P east of Q, Q north of R → P is northeast of R." },
+      { section: "Logical Reasoning", text: "Complete: 5, 10, 15, 20, ?", options: ["25", "30", "35", "40"], correct: 0, explanation: "Add 5 each time: 20 + 5 = 25." },
+      { section: "Logical Reasoning", text: "If all roses are flowers and some flowers are red, what is true?", options: ["All roses are red", "Some roses are red", "No roses are red", "Cannot say"], correct: 3, explanation: "Some flowers are red, but not necessarily roses." },
+      { section: "Logical Reasoning", text: "Which is different: Chair, Table, Sofa, Bed, Lamp?", options: ["Chair", "Table", "Sofa", "Lamp"], correct: 3, explanation: "Lamp is not furniture for sitting or sleeping." },
+      { section: "Logical Reasoning", text: "If 1 = A, 2 = B, 3 = C, what is 4?", options: ["D", "E", "F", "G"], correct: 0, explanation: "Alphabetical order: 4 = D." },
+      { section: "Logical Reasoning", text: "Complete: 1, 4, 9, 16, ?", options: ["20", "25", "30", "36"], correct: 1, explanation: "Squares: 1^2, 2^2, 3^2, 4^2, 5^2 = 25." },
+      { section: "Logical Reasoning", text: "If X is taller than Y and Y is taller than Z, who is shortest?", options: ["X", "Y", "Z", "Cannot say"], correct: 2, explanation: "X > Y > Z → Z is shortest." },
+      { section: "Logical Reasoning", text: "Which is odd: Sun, Moon, Star, Cloud, Planet?", options: ["Sun", "Moon", "Cloud", "Star"], correct: 2, explanation: "Cloud is not a celestial body." },
+      { section: "Logical Reasoning", text: "If 'FISH' is 'ILVK', how is 'BIRD' coded?", options: ["ELUG", "DKTF", "CMSE", "FNWH"], correct: 0, explanation: "Pattern: +3. B+3=E, I+3=L, R+3=U, D+3=G → ELUG." },
+      { section: "Logical Reasoning", text: "Complete: 10, 20, 30, 40, ?", options: ["50", "60", "70", "80"], correct: 0, explanation: "Add 10 each time: 40 + 10 = 50." },
+      { section: "Logical Reasoning", text: "If all cats are mammals and some mammals are black, what is true?", options: ["All cats are black", "Some cats are black", "No cats are black", "Cannot say"], correct: 3, explanation: "Some mammals are black, but not necessarily cats." },
+      { section: "Logical Reasoning", text: "Which does not fit: Red, Blue, Green, Yellow, Orange?", options: ["Red", "Blue", "Green", "Orange"], correct: 3, explanation: "All are colors; Orange is also a fruit." },
+      { section: "Logical Reasoning", text: "If 3 = C, 4 = D, 5 = E, what is 6?", options: ["F", "G", "H", "I"], correct: 0, explanation: "Alphabetical order: 6 = F." },
+      { section: "Logical Reasoning", text: "Complete: 1, 2, 4, 8, ?", options: ["12", "16", "20", "24"], correct: 1, explanation: "Each doubles: 8 × 2 = 16." },
+      { section: "Logical Reasoning", text: "If X is heavier than Y and Y is heavier than Z, who is lightest?", options: ["X", "Y", "Z", "Cannot say"], correct: 2, explanation: "X > Y > Z → Z is lightest." },
+      { section: "Logical Reasoning", text: "Which is odd: Circle, Square, Triangle, Rectangle, Oval?", options: ["Circle", "Square", "Triangle", "Oval"], correct: 3, explanation: "Oval is not a polygon." },
+      { section: "Logical Reasoning", text: "If 'RAT' is 'UDW', how is 'MAT' coded?", options: ["PDW", "OEV", "QFX", "RFY"], correct: 0, explanation: "Pattern: +3. M+3=P, A+3=D, T+3=W → PDW." },
+      { section: "Logical Reasoning", text: "Complete: 7, 14, 21, 28, ?", options: ["35", "42", "49", "56"], correct: 0, explanation: "Add 7 each time: 28 + 7 = 35." },
+      { section: "Logical Reasoning", text: "If A is B’s sister and B is C’s brother, what is A to C?", options: ["Sister", "Brother", "Cousin", "Aunt"], correct: 0, explanation: "A (female) and B (male) are siblings, B and C are siblings → A is C’s sister." },
+      { section: "Logical Reasoning", text: "Which does not belong: Car, Bus, Train, Plane, Boat?", options: ["Car", "Bus", "Train", "Boat"], correct: 3, explanation: "Boat travels on water; others on land or air." },
+      { section: "Logical Reasoning", text: "If 9 = I, 10 = J, 11 = K, what is 12?", options: ["L", "M", "N", "O"], correct: 0, explanation: "Alphabetical order: 12 = L." },
+      { section: "Logical Reasoning", text: "Complete: 2, 5, 8, 11, ?", options: ["13", "14", "15", "16"], correct: 1, explanation: "Add 3 each time: 11 + 3 = 14." },
+      { section: "Logical Reasoning", text: "If P is south of Q and Q is west of R, where is P to R?", options: ["Southwest", "Southeast", "Northwest", "Northeast"], correct: 1, explanation: "P south of Q, Q west of R → P is southeast of R." },
+      { section: "Logical Reasoning", text: "Which is odd: 2, 3, 5, 7, 9?", options: ["2", "3", "5", "9"], correct: 3, explanation: "2, 3, 5, 7 are prime; 9 is not." },
+      { section: "Logical Reasoning", text: "If 'FISH' is 'ILVK', how is 'BIRD' coded?", options: ["ELUG", "DKTF", "CMSE", "FNWH"], correct: 0, explanation: "Pattern: +3. B+3=E, I+3=L, R+3=U, D+3=G → ELUG." },
+      { section: "Logical Reasoning", text: "Complete: 10, 20, 30, 40, ?", options: ["50", "60", "70", "80"], correct: 0, explanation: "Add 10 each time: 40 + 10 = 50." },
+      { section: "Logical Reasoning", text: "If all cats are mammals and some mammals are black, what is true?", options: ["All cats are black", "Some cats are black", "No cats are black", "Cannot say"], correct: 3, explanation: "Some mammals are black, but not necessarily cats." },
+      { section: "Logical Reasoning", text: "Which does not fit: Red, Blue, Green, Yellow, Orange?", options: ["Red", "Blue", "Green", "Orange"], correct: 3, explanation: "All are colors; Orange is also a fruit." },
+      { section: "Logical Reasoning", text: "If 3 = C, 4 = D, 5 = E, what is 6?", options: ["F", "G", "H", "I"], correct: 0, explanation: "Alphabetical order: 6 = F." },
+
+      // Verbal Ability (40 Questions)
+      { section: "Verbal Ability", text: "Synonym for 'Eloquent':", options: ["Silent", "Persuasive", "Hesitant", "Vague"], correct: 1, explanation: "Eloquent means persuasive in speech." },
+      { section: "Verbal Ability", text: "Error in: The team has been working hardly to meet deadlines.", options: ["has been", "working hardly", "to meet", "The team"], correct: 1, explanation: "'Hardly' should be 'hard'. Correct: 'working hard'." },
+      { section: "Verbal Ability", text: "Antonym of 'Generous':", options: ["Kind", "Selfish", "Helpful", "Friendly"], correct: 1, explanation: "Generous means giving; selfish is the opposite." },
+      { section: "Verbal Ability", text: "Fill in: She ___ to the store yesterday.", options: ["go", "went", "gone", "going"], correct: 1, explanation: "Past tense 'went' fits the sentence." },
+      { section: "Verbal Ability", text: "Synonym for 'Brave':", options: ["Cowardly", "Fearful", "Courageous", "Timid"], correct: 2, explanation: "Brave means courageous." },
+      { section: "Verbal Ability", text: "Error in: He don’t like to study.", options: ["He", "don’t", "like to", "study"], correct: 1, explanation: "'Don’t' should be 'doesn’t' for subject 'He'." },
+      { section: "Verbal Ability", text: "Choose the correct word: The ___ of the story was surprising.", options: ["affect", "effect", "affecting", "effecting"], correct: 1, explanation: "'Effect' (noun) means result." },
+      { section: "Verbal Ability", text: "Fill in: They ___ playing football now.", options: ["is", "are", "was", "were"], correct: 1, explanation: "'Are' agrees with 'They' in present tense." },
+      { section: "Verbal Ability", text: "Antonym of 'Happy':", options: ["Joyful", "Sad", "Excited", "Pleased"], correct: 1, explanation: "Happy means joyful; sad is the opposite." },
+      { section: "Verbal Ability", text: "Synonym for 'Quick':", options: ["Slow", "Fast", "Lazy", "Idle"], correct: 1, explanation: "Quick means fast." },
+      { section: "Verbal Ability", text: "Error in: She have finished her work.", options: ["She", "have", "finished", "work"], correct: 1, explanation: "'Have' should be 'has' for subject 'She'." },
+      { section: "Verbal Ability", text: "Fill in: He ___ a letter yesterday.", options: ["write", "wrote", "written", "writing"], correct: 1, explanation: "Past tense 'wrote' fits." },
+      { section: "Verbal Ability", text: "Choose the correct word: Please ___ the instructions carefully.", options: ["read", "reed", "red", "ride"], correct: 0, explanation: "'Read' means to look at text." },
+      { section: "Verbal Ability", text: "Antonym of 'Bright':", options: ["Shiny", "Dull", "Light", "Clear"], correct: 1, explanation: "Bright means shiny; dull is the opposite." },
+      { section: "Verbal Ability", text: "Synonym for 'Angry':", options: ["Calm", "Furious", "Peaceful", "Happy"], correct: 1, explanation: "Angry means furious." },
+      { section: "Verbal Ability", text: "Error in: The dog barks loud.", options: ["The dog", "barks", "loud", "No error"], correct: 2, explanation: "'Loud' should be 'loudly' (adverb)." },
+      { section: "Verbal Ability", text: "Fill in: We ___ to the park every Sunday.", options: ["go", "goes", "went", "going"], correct: 0, explanation: "'Go' agrees with 'We' in present tense." },
+      { section: "Verbal Ability", text: "Choose the correct word: Their house is ___ than ours.", options: ["big", "bigger", "biggest", "most big"], correct: 1, explanation: "'Bigger' is the comparative form." },
+      { section: "Verbal Ability", text: "Antonym of 'Easy':", options: ["Simple", "Difficult", "Clear", "Plain"], correct: 1, explanation: "Easy means simple; difficult is the opposite." },
+      { section: "Verbal Ability", text: "Synonym for 'Tired':", options: ["Energetic", "Exhausted", "Active", "Fresh"], correct: 1, explanation: "Tired means exhausted." },
+      { section: "Verbal Ability", text: "Error in: He run fast every day.", options: ["He", "run", "fast", "every day"], correct: 1, explanation: "'Run' should be 'runs' for subject 'He'." },
+      { section: "Verbal Ability", text: "Fill in: She ___ a book now.", options: ["read", "reads", "reading", "is reading"], correct: 3, explanation: "'Is reading' is present continuous." },
+      { section: "Verbal Ability", text: "Choose the correct word: The ___ of the movie was great.", options: ["plot", "plott", "plote", "plod"], correct: 0, explanation: "'Plot' means storyline." },
+      { section: "Verbal Ability", text: "Antonym of 'Strong':", options: ["Powerful", "Weak", "Tough", "Hard"], correct: 1, explanation: "Strong means powerful; weak is the opposite." },
+      { section: "Verbal Ability", text: "Synonym for 'Beautiful':", options: ["Ugly", "Pretty", "Plain", "Dull"], correct: 1, explanation: "Beautiful means pretty." },
+      { section: "Verbal Ability", text: "Error in: They was late yesterday.", options: ["They", "was", "late", "yesterday"], correct: 1, explanation: "'Was' should be 'were' for 'They'." },
+      { section: "Verbal Ability", text: "Fill in: He ___ to school every day.", options: ["walk", "walks", "walked", "walking"], correct: 1, explanation: "'Walks' agrees with 'He' in present tense." },
+      { section: "Verbal Ability", text: "Choose the correct word: I ___ my homework yesterday.", options: ["do", "did", "done", "doing"], correct: 1, explanation: "'Did' is past tense." },
+      { section: "Verbal Ability", text: "Antonym of 'Fast':", options: ["Quick", "Slow", "Rapid", "Swift"], correct: 1, explanation: "Fast means quick; slow is the opposite." },
+      { section: "Verbal Ability", text: "Synonym for 'Sad':", options: ["Happy", "Depressed", "Joyful", "Cheerful"], correct: 1, explanation: "Sad means depressed." },
+      { section: "Verbal Ability", text: "Error in: She sing very well.", options: ["She", "sing", "very well", "No error"], correct: 1, explanation: "'Sing' should be 'sings' for 'She'." },
+      { section: "Verbal Ability", text: "Fill in: They ___ TV now.", options: ["watch", "watches", "watching", "are watching"], correct: 3, explanation: "'Are watching' is present continuous." },
+      { section: "Verbal Ability", text: "Choose the correct word: The ___ is sunny today.", options: ["whether", "weather", "wether", "weathar"], correct: 1, explanation: "'Weather' refers to conditions." },
+      { section: "Verbal Ability", text: "Antonym of 'Old':", options: ["Ancient", "New", "Aged", "Worn"], correct: 1, explanation: "Old means aged; new is the opposite." },
+      { section: "Verbal Ability", text: "Synonym for 'Smart':", options: ["Dull", "Intelligent", "Slow", "Lazy"], correct: 1, explanation: "Smart means intelligent." },
+      { section: "Verbal Ability", text: "Error in: He go to bed early.", options: ["He", "go", "to bed", "early"], correct: 1, explanation: "'Go' should be 'goes' for 'He'." },
+      { section: "Verbal Ability", text: "Fill in: She ___ a cake yesterday.", options: ["bake", "baked", "baking", "bakes"], correct: 1, explanation: "'Baked' is past tense." },
+      { section: "Verbal Ability", text: "Choose the correct word: Please ___ me the book.", options: ["give", "gave", "given", "giving"], correct: 0, explanation: "'Give' fits the imperative." },
+      { section: "Verbal Ability", text: "Antonym of 'Rich':", options: ["Wealthy", "Poor", "Abundant", "Plenty"], correct: 1, explanation: "Rich means wealthy; poor is the opposite." },
+      { section: "Verbal Ability", text: "Synonym for 'Loud':", options: ["Quiet", "Noisy", "Silent", "Soft"], correct: 1, explanation: "Loud means noisy." },
+
+      // General Knowledge/Current Affairs (30 Questions)
+      { section: "General Knowledge/Current Affairs", text: "Who is the RBI Governor as of June 2025?", options: ["Urjit Patel", "Shaktikanta Das", "D. Subbarao", "Y. V. Reddy"], correct: 1, explanation: "Shaktikanta Das has been RBI Governor since 2018, continuing into 2025." },
+      { section: "General Knowledge/Current Affairs", text: "What was the repo rate in April 2025?", options: ["6.5%", "6.75%", "7.0%", "6.25%"], correct: 0, explanation: "RBI maintained the repo rate at 6.5% in 2025." },
+      { section: "General Knowledge/Current Affairs", text: "Which bank merged with HDFC in 2023?", options: ["ICICI", "HDFC Bank", "SBI", "Axis"], correct: 1, explanation: "HDFC Ltd merged with HDFC Bank in July 2023." },
+      { section: "General Knowledge/Current Affairs", text: "What is the capital of India?", options: ["Mumbai", "Delhi", "Kolkata", "Chennai"], correct: 1, explanation: "Delhi is the capital city of India." },
+      { section: "General Knowledge/Current Affairs", text: "Who won the 2024 Nobel Peace Prize?", options: ["Greta Thunberg", "Nihon Hidankyo", "Malala Yousafzai", "UNICEF"], correct: 1, explanation: "Nihon Hidankyo won in 2024 for anti-nuclear efforts." },
+      { section: "General Knowledge/Current Affairs", text: "What is India’s rank in GDP 2025 (nominal)?", options: ["3rd", "4th", "5th", "6th"], correct: 2, explanation: "India is projected 5th in nominal GDP in 2025." },
+      { section: "General Knowledge/Current Affairs", text: "Which country hosted the 2024 Olympics?", options: ["France", "USA", "Japan", "Brazil"], correct: 0, explanation: "France hosted the 2024 Summer Olympics in Paris." },
+      { section: "General Knowledge/Current Affairs", text: "What is the full form of UPI?", options: ["Unified Payment Interface", "Universal Payment Index", "United Payment Initiative", "Uniform Payment Interface"], correct: 0, explanation: "UPI stands for Unified Payment Interface." },
+      { section: "General Knowledge/Current Affairs", text: "Who is the CEO of HDFC Bank as of 2025?", options: ["Aditya Puri", "Sashidhar Jagdishan", "Uday Kotak", "Deepak Parekh"], correct: 1, explanation: "Sashidhar Jagdishan succeeded Aditya Puri in 2020." },
+      { section: "General Knowledge/Current Affairs", text: "What is the currency of Japan?", options: ["Yuan", "Yen", "Won", "Ringgit"], correct: 1, explanation: "Yen is the official currency of Japan." },
+      { section: "General Knowledge/Current Affairs", text: "Which Indian state has the highest population?", options: ["Maharashtra", "Uttar Pradesh", "Bihar", "West Bengal"], correct: 1, explanation: "Uttar Pradesh is the most populous state." },
+      { section: "General Knowledge/Current Affairs", text: "What was India’s inflation rate in mid-2025?", options: ["4.5%", "5.2%", "6.1%", "3.8%"], correct: 1, explanation: "Inflation hovered around 5.2% in mid-2025." },
+      { section: "General Knowledge/Current Affairs", text: "Who is the Prime Minister of India in 2025?", options: ["Narendra Modi", "Rahul Gandhi", "Amit Shah", "Arvind Kejriwal"], correct: 0, explanation: "Narendra Modi continues as PM in 2025." },
+      { section: "General Knowledge/Current Affairs", text: "What does NEFT stand for?", options: ["National Electronic Funds Transfer", "Net Electronic Financial Transaction", "New Electronic Funds Transfer", "National Efficient Funds Transfer"], correct: 0, explanation: "NEFT is National Electronic Funds Transfer." },
+      { section: "General Knowledge/Current Affairs", text: "Which company launched India’s first 5G network?", options: ["Airtel", "Jio", "Vodafone", "BSNL"], correct: 1, explanation: "Jio launched India’s first 5G in 2022." },
+      { section: "General Knowledge/Current Affairs", text: "What is the national animal of India?", options: ["Lion", "Tiger", "Elephant", "Leopard"], correct: 1, explanation: "Tiger is India’s national animal." },
+      { section: "General Knowledge/Current Affairs", text: "Which bank regulates monetary policy in India?", options: ["SBI", "RBI", "HDFC", "ICICI"], correct: 1, explanation: "Reserve Bank of India (RBI) regulates monetary policy." },
+      { section: "General Knowledge/Current Affairs", text: "What was the theme of World Environment Day 2025?", options: ["Climate Action", "Land Restoration", "Clean Energy", "Ocean Health"], correct: 1, explanation: "2025 theme was 'Land Restoration'." },
+      { section: "General Knowledge/Current Affairs", text: "Which country has the largest economy in 2025?", options: ["USA", "China", "India", "Japan"], correct: 0, explanation: "USA remains the largest economy in 2025." },
+      { section: "General Knowledge/Current Affairs", text: "What is the full form of GST?", options: ["General Sales Tax", "Goods and Services Tax", "Global Service Tax", "Government Sales Tax"], correct: 1, explanation: "GST stands for Goods and Services Tax." },
+      { section: "General Knowledge/Current Affairs", text: "Who won the 2024 ICC T20 World Cup?", options: ["India", "England", "Australia", "South Africa"], correct: 0, explanation: "India won the T20 World Cup in 2024." },
+      { section: "General Knowledge/Current Affairs", text: "What is the capital of Tamil Nadu?", options: ["Chennai", "Coimbatore", "Madurai", "Salem"], correct: 0, explanation: "Chennai is the capital of Tamil Nadu." },
+      { section: "General Knowledge/Current Affairs", text: "Which is the largest bank in India by assets?", options: ["HDFC Bank", "SBI", "ICICI Bank", "Axis Bank"], correct: 1, explanation: "State Bank of India (SBI) is the largest by assets." },
+      { section: "General Knowledge/Current Affairs", text: "What was the GDP growth rate of India in 2024?", options: ["6.8%", "7.2%", "5.9%", "8.1%"], correct: 0, explanation: "India’s GDP grew by 6.8% in 2024." },
+      { section: "General Knowledge/Current Affairs", text: "Which country chairs G20 in 2025?", options: ["India", "Brazil", "USA", "China"], correct: 1, explanation: "Brazil chairs G20 in 2025 after India in 2023." },
+      { section: "General Knowledge/Current Affairs", text: "What is the national bird of India?", options: ["Peacock", "Parrot", "Eagle", "Sparrow"], correct: 0, explanation: "Peacock is India’s national bird." },
+      { section: "General Knowledge/Current Affairs", text: "Which Indian city hosted COP28 in 2023?", options: ["Mumbai", "Delhi", "Bangalore", "None"], correct: 3, explanation: "COP28 was in Dubai, not India." },
+      { section: "General Knowledge/Current Affairs", text: "What is the full form of ATM?", options: ["Automated Teller Machine", "Automatic Transaction Machine", "Advanced Teller Module", "Automated Transfer Machine"], correct: 0, explanation: "ATM stands for Automated Teller Machine." },
+      { section: "General Knowledge/Current Affairs", text: "Which planet is closest to the Sun?", options: ["Venus", "Earth", "Mercury", "Mars"], correct: 2, explanation: "Mercury is the closest planet to the Sun." },
+      { section: "General Knowledge/Current Affairs", text: "What is India’s rank in population in 2025?", options: ["1st", "2nd", "3rd", "4th"], correct: 0, explanation: "India overtook China as the most populous in 2023." },
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    const titleScreen = document.getElementById("titleScreen");
+    const gameContainer = document.getElementById("gameContainer");
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const explanationEl = document.getElementById("explanation");
+    const scoreEl = document.getElementById("score");
+    const nextBtn = document.getElementById("next");
+    const startGameBtn = document.getElementById("startGame");
+
+    function shuffleOptions(options, correctIndex) {
+      const array = options.map((opt, idx) => ({ opt, isCorrect: idx === correctIndex }));
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      const newOptions = array.map(item => item.opt);
+      const newCorrectIndex = array.findIndex(item => item.isCorrect);
+      return { newOptions, newCorrectIndex };
+    }
+
+    function loadQuestion() {
+      if (currentQuestion >= questions.length) {
+        questionEl.textContent = `Test Complete! Final Score: ${score}/2000`;
+        optionsEl.innerHTML = "";
+        explanationEl.style.display = "none";
+        nextBtn.style.display = "none";
+        return;
+      }
+      const q = questions[currentQuestion];
+      const { newOptions, newCorrectIndex } = shuffleOptions(q.options, q.correct);
+      questionEl.textContent = `${q.section}: ${q.text}`;
+      optionsEl.innerHTML = "";
+      newOptions.forEach((option, index) => {
+        const btn = document.createElement("div");
+        btn.className = "option";
+        btn.textContent = option;
+        btn.onclick = () => selectAnswer(index, newCorrectIndex);
+        optionsEl.appendChild(btn);
+      });
+      explanationEl.style.display = "none";
+      nextBtn.style.display = "none";
+    }
+
+    function selectAnswer(index, correctIndex) {
+      const q = questions[currentQuestion];
+      const options = optionsEl.children;
+      for (let i = 0; i < options.length; i++) {
+        options[i].style.pointerEvents = "none";
+        if (i === correctIndex) options[i].classList.add("correct");
+        else if (i === index) options[i].classList.add("incorrect");
+      }
+      explanationEl.textContent = q.explanation;
+      explanationEl.style.display = "block";
+      if (index === correctIndex) score += 10;
+      scoreEl.textContent = `Score: ${score}/2000`;
+      nextBtn.style.display = "block";
+    }
+
+    startGameBtn.onclick = () => {
+      titleScreen.style.display = "none";
+      gameContainer.style.display = "block";
+      loadQuestion();
+    };
+
+    nextBtn.onclick = () => {
+      currentQuestion++;
+      loadQuestion();
+    };
+  </script>
+</body>
+</html>
