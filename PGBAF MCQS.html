@@ -14,6 +14,7 @@
       font-family: 'Super Mario 256', sans-serif;
       background-image: url('mario-bg.jpg');
       background-size: cover;
+      background-color: #1a1a1a; /* Fallback if image fails */
       color: #fff;
       overflow-x: hidden;
       margin: 0;
@@ -41,8 +42,9 @@
       background: #8b0000;
       border: 2px solid #00ff00;
       color: #fff;
+      padding: 1rem;
       transition: all 0.2s ease;
-      text-transform: uppercase;
+      text-transform: capitalize;
     }
     .option-button:hover:not(:disabled) {
       background: #00ff00;
@@ -93,7 +95,7 @@
       resizeCanvas();
       window.addEventListener('resize', resizeCanvas);
       const stars = [];
-      for (let i = 0; i < 200; i++) {
+      for (let i = 0; i < 150; i++) {
         stars.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
@@ -118,7 +120,7 @@
     }
     initStarfield();
 
-    // Audio
+    // Audio Handling
     const bgMusic = document.getElementById('bgMusic');
     bgMusic.volume = 0.2;
     bgMusic.play().catch(e => console.log('Background music failed:', e));
@@ -138,7 +140,7 @@
       return array;
     }
 
-    // Questions Array (150 MCQs)
+    // Questions Array (150 Banking MCQs)
     const questions = [
       { id: 1, category: "Retail Banking", question: "What is the full form of NEFT?", options: ["National Electronic Finance Transaction", "National Electronic Funds Transfer", "Net Electronic Funds Transfer", "National Efficient Funds Transfer"], correctAnswer: "National Electronic Funds Transfer", explanation: "NEFT, regulated by RBI, enables electronic fund transfers between bank accounts in India, processed in hourly batches." },
       { id: 2, category: "Insurance", question: "Which body regulates the insurance sector in India?", options: ["RBI", "SEBI", "IRDAI", "NABARD"], correctAnswer: "IRDAI", explanation: "The Insurance Regulatory and Development Authority of India (IRDAI) oversees insurance regulation and policyholder protection." },
@@ -266,7 +268,7 @@
       { id: 124, category: "Retail Banking", question: "What is loan restructuring?", options: ["Stock trading", "Modifying loan terms", "Fixed deposit", "Insurance claim"], correctAnswer: "Modifying loan terms", explanation: "Loan restructuring alters terms to ease financial stress." },
       { id: 125, category: "Retail Banking", question: "What is a digital wallet?", options: ["Physical wallet", "Electronic payment app", "Stock trading app", "Insurance app"], correctAnswer: "Electronic payment app", explanation: "Digital wallet apps store payment information for online and mobile transactions." },
       { id: 126, category: "Insurance", question: "What is a floater policy?", options: ["Individual health insurance", "Family health insurance", "Stock insurance", "Life insurance"], correctAnswer: "Family health insurance", explanation: "Floater policies cover an entire family under a single health insurance plan." },
-      { id: 127, category: "Insurance", question: "What is a top-up health plan?", options: ["Health insurance", "Additional coverage", "Stock insurance", "Fixed deposit"], correctAnswer: "Additional coverage", explanation: "Top-up plans provide extra coverage beyond a basic health insurance." },
+      { id: 127, category: "Insurance", question: "What is a top-up health plan?", options: ["Basic health insurance", "Additional coverage", "Stock insurance", "Fixed deposit"], correctAnswer: "Additional coverage", explanation: "Top-up plans provide extra coverage beyond a basic health insurance plan." },
       { id: 128, category: "Insurance", question: "What is a critical illness policy?", options: ["General health insurance", "Covers serious illnesses", "Life insurance", "Stock insurance"], correctAnswer: "Covers serious illnesses", explanation: "Critical illness policies pay a lump sum for specific serious diseases." },
       { id: 129, category: "Insurance", question: "What is a personal accident policy?", options: ["Health insurance", "Personal injury coverage", "Life insurance", "Stock insurance"], correctAnswer: "Personal injury coverage", explanation: "Personal accident policies cover injuries, disabilities, or deaths due to accidents." },
       { id: 130, category: "Insurance", question: "What is a homeowner’s policy?", options: ["Life insurance", "Property damage coverage", "Stock trading", "Health insurance"], correctAnswer: "Property damage coverage", explanation: "Homeowner’s insurance protects against property damage and liabilities." },
@@ -285,7 +287,7 @@
       { id: 143, category: "Retail Banking", question: "What is an overdraft facility?", options: ["Fixed deposit", "Borrowing beyond balance", "Stock trading", "Insurance"], correctAnswer: "Borrowing beyond balance", explanation: "Overdrafts allow borrowing beyond the account balance, up to a limit." },
       { id: 144, category: "Retail Banking", question: "What is an escrow account?", options: ["Savings account", "Third-party funds for transactions", "Stock trading account", "Bond account"], correctAnswer: "Third-party funds for transactions", explanation: "Escrow accounts hold funds managed by a third party for secure transactions." },
       { id: 145, category: "Retail Banking", question: "What is a chargeback?", options: ["Credit card repayment", "Refund for disputed transaction", "Stock trading refund", "Cash repayment"], correctAnswer: "Refund for disputed transaction", explanation: "Chargebacks are refunds for disputed card transactions." },
-      { id: 146, category: "Retail Banking", question: "What is a loan default?", options: ["Early loan repayment", "Failure to repay loan", "Stock trading loss", "Tax payment"], correctAnswer: "Failure to repay", explanation: "Loan default occurs when a borrower fails to repay as per loan terms." },
+      { id: 146, category: "Retail Banking", question: "What is a loan default?", options: ["Early loan repayment", "Failure to repay loan", "Stock trading loss", "Tax payment"], correctAnswer: "Failure to repay loan", explanation: "Loan default occurs when a borrower fails to repay as per loan terms." },
       { id: 147, category: "Retail Banking", question: "What is a moratorium period?", options: ["Loan repayment holiday", "Stock repayment period", "Insurance premium period", "Fixed deposit term"], correctAnswer: "Loan repayment holiday", explanation: "A moratorium delays loan repayments temporarily, often during financial hardship." },
       { id: 148, category: "Retail Banking", question: "What is a credit limit?", options: ["Savings account balance", "Maximum borrowing amount", "Stock trading limit", "Insurance premium"], correctAnswer: "Maximum borrowing amount", explanation: "A credit limit is the maximum amount borrowable on a credit facility." },
       { id: 149, category: "Retail Banking", question: "What is a bank guarantee?", options: ["Loan approval", "Payment assurance", "Stock trading guarantee", "Insurance policy"], correctAnswer: "Payment assurance", explanation: "A bank guarantee ensures payment if a client fails to meet obligations." },
