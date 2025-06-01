@@ -1,462 +1,1309 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Banking MCQs - Super Mario 64 Edition</title>
-  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/framer-motion@10.16.4/dist/framer-motion.js"></script>
-  <link href="https://fonts.cdnfonts.com/css/super-mario-256" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body {
-      font-family: 'Super Mario 256', sans-serif;
-      background-image: url('mario-bg.jpg');
-      background-size: cover;
-      background-color: #1a1a1a; /* Fallback if image fails */
-      color: #fff;
-      overflow-x: hidden;
-      margin: 0;
-    }
-    .starfield {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: -1;
-    }
-    .mario-card {
-      background: rgba(0, 0, 0, 0.7);
-      border: 3px solid #ffd700;
-      border-radius: 8px;
-      box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-      transition: transform 0.3s ease;
-    }
-    .mario-card:hover {
-      transform: scale(1.02);
-    }
-    .option-button {
-      background: #8b0000;
-      border: 2px solid #00ff00;
-      color: #fff;
-      padding: 1rem;
-      transition: all 0.2s ease;
-      text-transform: capitalize;
-    }
-    .option-button:hover:not(:disabled) {
-      background: #00ff00;
-      color: #000;
-      box-shadow: 0 0 10px #00ff00;
-    }
-    .correct { background: #00ff00 !important; color: #000 !important; border-color: #00ff00; }
-    .incorrect { background: #ff0000 !important; color: #fff !important; border-color: #ff0000; }
-    .progress-bar {
-      background: linear-gradient(to right, #ffd700, #00ff00);
-      box-shadow: 0 0 10px #00ff00;
-    }
-    .header-title {
-      text-shadow: 0 0 10px #ffd700, 0 0 5px #00ff00;
-    }
-    .nav-button {
-      background: #8b0000;
-      border: 2px solid #00ff00;
-      color: #fff;
-      transition: all 0.2s ease;
-    }
-    .nav-button:hover:not(:disabled) {
-      background: #00ff00;
-      color: #000;
-    }
-    .modal {
-      background: rgba(0, 0, 0, 0.9);
-      border: 3px solid #ffd700;
-      box-shadow: 0 0 20px #ffd700;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banking MCQ Game - Neon NES Theme</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #0a0a0a;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        #game-container {
+            background-color: #1c1c1c;
+            border: 5px solid #00ffff;
+            border-radius: 10px;
+            padding: 20px;
+            width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+        }
+        #title {
+            text-align: center;
+            font-size: 24px;
+            color: #ff00ff;
+            text-shadow: 2px 2px #00ff00;
+            margin-bottom: 20px;
+        }
+        #question-container {
+            margin-bottom: 20px;
+        }
+        #question-text {
+            font-size: 18px;
+            color: #00ff00;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px #ff00ff;
+        }
+        .option {
+            background-color: #2a2a2a;
+            padding: 10px;
+            margin: 5px 0;
+            border: 2px solid #00ffff;
+            cursor: pointer;
+            color: #ffffff;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .option:hover {
+            background-color: #3a3a3a;
+            border-color: #ff00ff;
+        }
+        .option.selected {
+            background-color: #0066ff;
+            border-color: #00ffff;
+        }
+        .option.correct {
+            background-color: #00ff00;
+            border-color: #ff00ff;
+        }
+        .option.incorrect {
+            background-color: #ff0000;
+            border-color: #00ffff;
+        }
+        #answer-container {
+            margin-top: 20px;
+            padding: 10px;
+            border: 2px solid #ff00ff;
+            background-color: #1c1c1c;
+            display: none;
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+        }
+        #answer-text {
+            font-size: 16px;
+            color: #00ffff;
+        }
+        #next-button {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #ff00ff;
+            border: 2px solid #00ff00;
+            color: #ffffff;
+            cursor: pointer;
+            text-align: center;
+            font-size: 16px;
+        }
+        #next-button:hover {
+            background-color: #cc00cc;
+            border-color: #00ffff;
+        }
+        #score {
+            text-align: center;
+            font-size: 18px;
+            color: #00ffff;
+            text-shadow: 1px 1px #ff00ff;
+            margin-top: 20px;
+        }
+        .nes-font {
+            font-family: 'Press Start 2P', 'Courier New', monospace;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
-  <canvas id="starfield" class="starfield"></canvas>
-  <div id="root"></div>
-  <audio id="bgMusic" src="bg-music.mp3" loop></audio>
-  <audio id="correctSound" src="correct.mp3"></audio>
-  <audio id="incorrectSound" src="incorrect.mp3"></audio>
-  <script>
-    // Starfield Animation
-    function initStarfield() {
-      const canvas = document.getElementById('starfield');
-      const ctx = canvas.getContext('2d');
-      function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-      }
-      resizeCanvas();
-      window.addEventListener('resize', resizeCanvas);
-      const stars = [];
-      for (let i = 0; i < 150; i++) {
-        stars.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          radius: Math.random() * 2,
-          speed: Math.random() * 0.5 + 0.1
-        });
-      }
-      function animateStars() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        stars.forEach(star => {
-          ctx.beginPath();
-          ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-          ctx.fillStyle = '#ffffff';
-          ctx.fill();
-          star.y -= star.speed;
-          if (star.y < 0) star.y = canvas.height;
-        });
-        requestAnimationFrame(animateStars);
-      }
-      animateStars();
-      return () => window.removeEventListener('resize', resizeCanvas);
-    }
-    initStarfield();
-
-    // Audio Handling
-    const bgMusic = document.getElementById('bgMusic');
-    bgMusic.volume = 0.2;
-    bgMusic.play().catch(e => console.log('Background music failed:', e));
-    function playCorrectSound() {
-      document.getElementById('correctSound').play().catch(e => console.log('Correct sound failed:', e));
-    }
-    function playIncorrectSound() {
-      document.getElementById('incorrectSound').play().catch(e => console.log('Incorrect sound failed:', e));
-    }
-
-    // Shuffle Options
-    function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-      return array;
-    }
-
-    // Questions Array (150 Banking MCQs)
-    const questions = [
-      { id: 1, category: "Retail Banking", question: "What is the full form of NEFT?", options: ["National Electronic Finance Transaction", "National Electronic Funds Transfer", "Net Electronic Funds Transfer", "National Efficient Funds Transfer"], correctAnswer: "National Electronic Funds Transfer", explanation: "NEFT, regulated by RBI, enables electronic fund transfers between bank accounts in India, processed in hourly batches." },
-      { id: 2, category: "Insurance", question: "Which body regulates the insurance sector in India?", options: ["RBI", "SEBI", "IRDAI", "NABARD"], correctAnswer: "IRDAI", explanation: "The Insurance Regulatory and Development Authority of India (IRDAI) oversees insurance regulation and policyholder protection." },
-      { id: 3, category: "Mutual Funds", question: "What is a mutual fund?", options: ["A bank savings account", "A collective investment scheme", "A government bond", "A fixed deposit"], correctAnswer: "A collective investment scheme", explanation: "Mutual funds pool investor money to invest in securities, managed to diversify risk and generate returns." },
-      { id: 4, category: "Stocks", question: "What is the primary role of SEBI?", options: ["Regulate banking", "Protect investors and regulate securities markets", "Control monetary policy", "Oversee insurance"], correctAnswer: "Protect investors and regulate securities markets", explanation: "SEBI ensures transparency and protects investors in India’s stock markets." },
-      { id: 5, category: "Retail Banking", question: "What does CASA ratio measure in banking?", options: ["Loans to deposits", "Current and savings deposits to total deposits", "Fixed deposits to assets", "NPAs to loans"], correctAnswer: "Current and savings deposits to total deposits", explanation: "CASA ratio indicates the proportion of low-cost current and savings accounts in a bank’s deposits." },
-      { id: 6, category: "Retail Banking", question: "What is the minimum amount for an RTGS transaction?", options: ["₹50,000", "₹1,00,000", "₹2,00,000", "₹5,00,000"], correctAnswer: "₹2,00,000", explanation: "RTGS (Real-Time Gross Settlement) requires a minimum of ₹2,00,000 for instant high-value transfers." },
-      { id: 7, category: "Loans", question: "What is a credit score used for?", options: ["Track savings balance", "Assess loan repayment ability", "Calculate FD interest", "Monitor stock performance"], correctAnswer: "Assess loan repayment ability", explanation: "A credit score evaluates creditworthiness, influencing retail loan approvals and interest rates." },
-      { id: 8, category: "Insurance", question: "What is bancassurance?", options: ["A savings account", "Banks selling insurance products", "A loan scheme", "A stock investment"], correctAnswer: "Banks selling insurance products", explanation: "Bancassurance allows banks to sell insurance products to retail customers." },
-      { id: 9, category: "Retail Banking", question: "What is the role of a loan officer?", options: ["Manage tellers", "Process loan applications", "Handle stock trading", "Conduct audits"], correctAnswer: "Process loan applications", explanation: "Loan officers evaluate and process retail loan applications, ensuring compliance." },
-      { id: 10, category: "Insurance", question: "What is a no-claim bonus in insurance?", options: ["Penalty for claims", "Discount for no claims", "Bonus for renewal", "Fee for late premiums"], correctAnswer: "Discount for no claims", explanation: "A no-claim bonus offers a premium discount for policyholders who don’t file claims." },
-      { id: 11, category: "Retail Banking", question: "What is the full form of KYC?", options: ["Know Your Customer", "Know Your Credit", "Keep Your Cash", "Know Your Currency"], correctAnswer: "Know Your Customer", explanation: "KYC verifies customer identity, mandated by RBI to prevent fraud in retail banking." },
-      { id: 12, category: "Retail Banking", question: "What is a savings account?", options: ["High-interest loan", "Account for small savings", "Trading account", "Insurance account"], correctAnswer: "Account for small savings", explanation: "Savings accounts encourage retail savings with modest interest rates, typically 3–4%." },
-      { id: 13, category: "Retail Banking", question: "What is a fixed deposit?", options: ["Daily transaction account", "High-risk investment", "Time-bound deposit", "Stock trading account"], correctAnswer: "Time-bound deposit", explanation: "Fixed deposits lock retail funds for a specific period, offering higher interest." },
-      { id: 14, category: "Retail Banking", question: "What is the full form of ATM?", options: ["Automated Teller Machine", "Automatic Transfer Mechanism", "All Time Money", "Account Transaction Method"], correctAnswer: "Automated Teller Machine", explanation: "ATMs enable retail customers to perform transactions like withdrawals and deposits." },
-      { id: 15, category: "Retail Banking", question: "What is a current account?", options: ["Fixed deposit", "Active business account", "Savings account", "Loan account"], correctAnswer: "Active business account", explanation: "Current accounts support frequent retail transactions, offering no interest." },
-      { id: 16, category: "Retail Banking", question: "What is a DEMAT account?", options: ["Savings account", "Electronic securities account", "Loan account", "Fixed deposit"], correctAnswer: "Electronic securities account", explanation: "A DEMAT account holds retail investors’ shares and securities electronically." },
-      { id: 17, category: "Retail Banking", question: "What is the Banking Ombudsman?", options: ["Loan provider", "Customer grievance redressal", "Stock regulator", "Insurance agent"], correctAnswer: "Customer grievance redressal", explanation: "The Banking Ombudsman resolves retail customer complaints against banks." },
-      { id: 18, category: "Retail Banking", question: "What is a Non-Performing Asset (NPA)?", options: ["High-yield bond", "Loan not repaid for 90 days", "Savings account", "Stock investment"], correctAnswer: "Loan not repaid for 90 days", explanation: "An NPA is a retail or other loan unpaid for 90 days, impacting bank profitability." },
-      { id: 19, category: "Retail Banking", question: "What is the minimum balance requirement for a savings account?", options: ["Fixed for all banks", "Varies by bank", "Same as current account", "Not applicable"], correctAnswer: "Varies by bank", explanation: "Minimum balance requirements for savings accounts differ across banks." },
-      { id: 20, category: "Retail Banking", question: "What is a passbook in banking?", options: ["Loan document", "Transaction record book", "Stock certificate", "Insurance policy"], correctAnswer: "Transaction record book", explanation: "A passbook records all transactions in a retail savings or current account." },
-      { id: 21, category: "Retail Banking", question: "What is a debit card?", options: ["Credit facility", "Card linked to bank account", "Prepaid card", "Stock trading tool"], correctAnswer: "Card linked to bank account", explanation: "A debit card allows retail customers to spend funds directly from their bank account." },
-      { id: 22, category: "Retail Banking", question: "What is a credit card?", options: ["Savings account", "Card with borrowed funds", "Fixed deposit", "Mutual fund"], correctAnswer: "Card with borrowed funds", explanation: "Credit cards allow retail customers to borrow funds up to a credit limit." },
-      { id: 23, category: "Retail Banking", question: "What is the role of the RBI in retail banking?", options: ["Issue loans", "Regulate banks", "Sell insurance", "Trade stocks"], correctAnswer: "Regulate banks", explanation: "RBI regulates retail banking operations, ensuring financial stability." },
-      { id: 24, category: "Retail Banking", question: "What is a locker facility in banks?", options: ["Loan service", "Safe deposit for valuables", "Stock trading", "Insurance product"], correctAnswer: "Safe deposit for valuables", explanation: "Bank lockers provide retail customers secure storage for valuables." },
-      { id: 25, category: "Retail Banking", question: "What is a standing instruction?", options: ["Loan repayment", "Automated payment order", "Stock purchase", "Insurance claim"], correctAnswer: "Automated payment order", explanation: "Standing instructions automate regular retail payments, such as bills or SIPs." },
-      { id: 26, category: "Retail Banking", question: "What is a nomination in banking?", options: ["Loan application", "Designating an account beneficiary", "Stock trading", "Insurance policy"], correctAnswer: "Designating an account beneficiary", explanation: "Nomination assigns a beneficiary to receive funds after the account holder’s death." },
-      { id: 27, category: "Banking", question: "What is a bank draft?", options: ["Loan agreement", "Guaranteed payment instrument", "Stock certificate", "Insurance policy"], correctAnswer: "Guaranteed payment instrument", explanation: "A bank draft is a secure payment instrument issued by a bank for retail transactions." },
-      { id: 28, category: "Retail Banking", question: "What is a recurring deposit?", options: ["One-time deposit", "Regular fixed deposits", "Loan repayment", "Stock investment"], correctAnswer: "Regular fixed deposits", explanation: "Recurring deposits allow retail customers to save fixed amounts regularly." },
-      { id: 29, category: "Retail Banking", question: "What is a safe deposit box?", options: ["Savings account", "Secure storage for valuables", "Loan facility", "Stock trading"], correctAnswer: "Secure storage for valuables", explanation: "Safe deposit boxes offer retail customers secure storage for valuables." },
-      { id: 30, category: "Retail Banking", question: "What is the purpose of a cheque?", options: ["Loan repayment", "Written payment order", "Stock trading", "Insurance claim"], correctAnswer: "Written payment order", explanation: "A cheque is a written order directing a bank to pay a specified amount to a recipient." },
-      { id: 31, category: "Insurance", question: "What is a term insurance plan?", options: ["Investment plan", "Pure life cover", "Health insurance", "Mutual fund"], correctAnswer: "Pure life cover", explanation: "Term insurance provides life coverage for a specific period, paying benefits on death." },
-      { id: 32, category: "Insurance", question: "What is a Unit Linked Insurance Plan (ULIP)?", options: ["Savings account", "Insurance with investment", "Fixed deposit", "Stock option"], correctAnswer: "Insurance with investment", explanation: "ULIPs combine life insurance with market-linked investments." },
-      { id: 33, category: "Insurance", question: "What is a premium in insurance?", options: ["Claim amount", "Payment for coverage", "Investment return", "Loan interest"], correctAnswer: "Payment for coverage", explanation: "A premium is the amount paid by a policyholder to maintain insurance coverage." },
-      { id: 34, category: "Insurance", question: "What is a rider in insurance?", options: ["Policyholder", "Additional benefit", "Claim process", "Premium discount"], correctAnswer: "Additional benefit", explanation: "Riders are optional benefits added to an insurance policy for extra coverage." },
-      { id: 35, category: "Insurance", question: "What is general insurance?", options: ["Life coverage", "Non-life coverage", "Mutual fund", "Stock investment"], correctAnswer: "Non-life coverage", explanation: "General insurance covers non-life assets like vehicles, health, and property." },
-      { id: 36, category: "Insurance", question: "What is a deductible in insurance?", options: ["Premium amount", "Amount paid before claim", "Claim amount", "Investment return"], correctAnswer: "Amount paid before claim", explanation: "A deductible is the amount the policyholder pays before the insurer covers a claim." },
-      { id: 37, category: "Insurance", question: "What is reinsurance?", options: ["Insurance for insurers", "Life insurance", "Health insurance", "Mutual fund"], correctAnswer: "Insurance for insurers", explanation: "Reinsurance allows insurers to transfer portions of risk to other insurers." },
-      { id: 38, category: "Insurance", question: "What is a claim in insurance?", options: ["Premium payment", "Request for coverage payment", "Investment return", "Loan repayment"], correctAnswer: "Request for coverage payment", explanation: "A claim is a policyholder’s request for payment due to a covered loss." },
-      { id: 39, category: "Insurance", question: "What is a surrender value?", options: ["Loan amount", "Value on policy termination", "Premium refund", "Claim amount"], correctAnswer: "Value on policy termination", explanation: "Surrender value is paid if a policyholder terminates a life insurance policy early." },
-      { id: 40, category: "Insurance", question: "What is a group insurance plan?", options: ["Individual policy", "Policy for multiple people", "Investment fund", "Loan"], correctAnswer: "Policy for multiple people", explanation: "Group insurance covers a group, like employees, under a single policy." },
-      { id: 41, category: "Insurance", question: "What is health insurance portability?", options: ["Changing banks", "Switching insurers", "Investing in stocks", "Buying mutual funds"], correctAnswer: "Switching insurers", explanation: "Health insurance portability allows policyholders to switch insurers without losing benefits." },
-      { id: 42, category: "Insurance", question: "What is a co-payment in health insurance?", options: ["Full claim payment", "Shared claim cost", "Premium refund", "Investment return"], correctAnswer: "Shared claim cost", explanation: "Co-payment is a portion of a claim the policyholder pays, with the insurer covering the rest." },
-      { id: 43, category: "Insurance", question: "What is a maturity benefit?", options: ["Claim on death", "Payment on policy maturity", "Premium discount", "Loan repayment"], correctAnswer: "Payment on policy maturity", explanation: "Maturity benefit is the amount paid when an insurance policy reaches its term." },
-      { id: 44, category: "Insurance", question: "What is the purpose of insurance penetration?", options: ["Measure premium growth", "Measure insurance coverage", "Measure claims", "Measure investments"], correctAnswer: "Measure insurance coverage", explanation: "Insurance penetration measures the ratio of premiums to GDP, indicating coverage extent." },
-      { id: 45, category: "Insurance", question: "What is a whole life insurance?", options: ["Temporary coverage", "Lifelong coverage", "Health insurance", "Investment fund"], correctAnswer: "Lifelong coverage", explanation: "Whole life insurance provides coverage for the policyholder’s entire life." },
-      { id: 46, category: "Insurance", question: "What is a policy lapse?", options: ["Policy renewal", "Non-payment of premiums", "Claim approval", "Investment return"], correctAnswer: "Non-payment of premiums", explanation: "A policy lapses when premiums are not paid, causing coverage termination." },
-      { id: 47, category: "Insurance", question: "What is an endowment policy?", options: ["Pure life cover", "Life cover with investment", "Health insurance", "Stock"], correctAnswer: "Life cover with investment", explanation: "Endowment policies combine life insurance with a savings component." },
-      { id: 48, category: "Insurance", question: "What is a third-party insurance?", options: ["Covers policyholder", "Covers third-party damage", "Investment plan", "Loan repayment"], correctAnswer: "Covers third-party damage", explanation: "Third-party insurance covers damage caused to others by the policyholder." },
-      { id: 49, category: "Insurance", question: "What is a comprehensive insurance policy?", options: ["Covers only theft", "Covers all damages", "Life insurance", "Mutual fund"], correctAnswer: "Covers all damages", explanation: "Comprehensive insurance covers damage to the insured and third parties." },
-      { id: 50, category: "Insurance", question: "What is a grace period in insurance?", options: ["Claim processing time", "Premium payment extension", "Policy cancellation", "Investment period"], correctAnswer: "Premium payment extension", explanation: "A grace period allows late premium payments without losing coverage." },
-      { id: 51, category: "Mutual Funds", question: "Who regulates mutual funds in India?", options: ["RBI", "SEBI", "IRDAI", "NABARD"], correctAnswer: "SEBI", explanation: "SEBI regulates mutual funds to protect investors and ensure transparency." },
-      { id: 52, category: "Mutual Funds", question: "What is a Systematic Investment Plan (SIP)?", options: ["One-time investment", "Regular fixed investments", "Loan repayment", "Stock trading"], correctAnswer: "Regular fixed investments", explanation: "SIP allows retail investors to invest fixed amounts regularly in mutual funds." },
-      { id: 53, category: "Mutual Funds", question: "What is Net Asset Value (NAV)?", options: ["Fund’s total assets", "Fund’s market value per unit", "Fund’s liabilities", "Fund’s expense ratio"], correctAnswer: "Fund’s market value per unit", explanation: "NAV is the net worth of a mutual fund’s assets divided by the number of units." },
-      { id: 54, category: "Mutual Funds", question: "What is an Equity Mutual Fund?", options: ["Invests in bonds", "Invests in stocks", "Invests in real estate", "Invests in gold"], correctAnswer: "Invests in stocks", explanation: "Equity mutual funds invest primarily in stocks for capital appreciation." },
-      { id: 55, category: "Mutual Funds", question: "What is a Debt Mutual Fund?", options: ["Invests in stocks", "Invests in bonds", "Invests in commodities", "Invests in real estate"], correctAnswer: "Invests in bonds", explanation: "Debt mutual funds invest in fixed-income securities like bonds for stable returns." },
-      { id: 56, category: "Mutual Funds", question: "What is a Hybrid Mutual Fund?", options: ["Invests only in stocks", "Invests in stocks and bonds", "Invests only in bonds", "Invests in gold"], correctAnswer: "Invests in stocks and bonds", explanation: "Hybrid funds balance risk and return by investing in both stocks and bonds." },
-      { id: 57, category: "Mutual Funds", question: "What is an Expense Ratio?", options: ["Fund’s profit", "Fund’s management cost", "Fund’s NAV", "Fund’s tax"], correctAnswer: "Fund’s management cost", explanation: "The expense ratio is the annual fee charged to cover mutual fund operating costs." },
-      { id: 58, category: "Mutual Funds", question: "What is a Dividend Option in mutual funds?", options: ["Regular payouts", "Capital gains", "Loan repayment", "Fixed deposit"], correctAnswer: "Regular payouts", explanation: "The dividend option distributes a fund’s profits to investors periodically." },
-      { id: 59, category: "Mutual Funds", question: "What is a Growth Option in mutual funds?", options: ["Pays dividends", "Reinvests profits", "Fixed income", "Loan repayment"], correctAnswer: "Reinvests profits", explanation: "The growth option reinvests profits to increase the fund’s NAV." },
-      { id: 60, category: "Mutual Funds", question: "What is an ELSS fund?", options: ["Debt fund", "Equity-linked savings scheme", "Gold fund", "Real estate fund"], correctAnswer: "Equity-linked savings scheme", explanation: "ELSS funds offer tax benefits under section 80C with a three-year lock-in." },
-      { id: 61, category: "Mutual Funds", question: "What is a Fund Manager?", options: ["Bank employee", "Investment decision-maker", "Insurance agent", "Stock broker"], correctAnswer: "Investment decision-maker", explanation: "A fund manager makes investment decisions for a mutual fund’s portfolio." },
-      { id: 62, category: "Mutual Funds", question: "What is a Blue Chip Fund?", options: ["Invests in startups", "Invests in large companies", "Invests in bonds", "Invests in gold"], correctAnswer: "Invests in large companies", explanation: "Blue-chip funds invest in well-established, financially stable companies." },
-      { id: 63, category: "Mutual Funds", question: "What is a Sectoral Fund?", options: ["Invests in all sectors", "Invests in one sector", "Invests in bonds", "Invests in gold"], correctAnswer: "Invests in one sector", explanation: "Sectoral funds focus investments in a specific sector, like technology." },
-      { id: 64, category: "Mutual Funds", question: "What is a Load in mutual funds?", options: ["Investment return", "Fee for buying/selling", "Tax on fund profits", "Bank interest"], correctAnswer: "Fee for buying/selling", explanation: "A load is a fee charged when buying or selling mutual fund units." },
-      { id: 65, category: "Mutual Funds", question: "What is a Systematic Withdrawal Plan (SWP)?", options: ["Regular investments", "Regular withdrawals", "Loan repayment", "Stock trading"], correctAnswer: "Regular withdrawals", explanation: "SWP allows investors to withdraw fixed amounts from a mutual fund periodically." },
-      { id: 66, category: "Mutual Funds", question: "What is a Folio Number in mutual funds?", options: ["Bank account number", "Unique investor ID", "Stock ticker", "Insurance policy number"], correctAnswer: "Unique investor ID", explanation: "A folio number uniquely identifies an investor’s mutual fund holdings." },
-      { id: 67, category: "Mutual Funds", question: "What is a large-cap fund?", options: ["Invests in small companies", "Invests in large companies", "Invests in bonds", "Invests in gold"], correctAnswer: "Invests in large companies", explanation: "Large-cap funds invest in companies with high market capitalization." },
-      { id: 68, category: "Mutual Funds", question: "What is a mid-cap fund?", options: ["Invests in large companies", "Invests in medium companies", "Invests in bonds", "Invests in small companies"], correctAnswer: "Invests in medium companies", explanation: "Mid-cap funds invest in companies with medium market capitalization." },
-      { id: 69, category: "Mutual Funds", question: "What is a small-cap fund?", options: ["Invests in large companies", "Invests in small companies", "Invests in bonds", "Invests in gold"], correctAnswer: "Invests in small companies", explanation: "Small-cap funds invest in companies with low market capitalization." },
-      { id: 70, category: "Mutual Funds", question: "What is a balanced advantage fund?", options: ["Invests only in stocks", "Dynamically allocates stocks and bonds", "Invests only in bonds", "Invests in gold"], correctAnswer: "Dynamically allocates stocks and bonds", explanation: "Balanced advantage funds adjust allocations between stocks and bonds based on market conditions." },
-      { id: 71, category: "Stocks", question: "What is a stock exchange?", options: ["Bank branch", "Platform for trading securities", "Insurance market", "Loan agency"], correctAnswer: "Platform for trading securities", explanation: "Stock exchanges like BSE and NSE facilitate the buying and selling of securities." },
-      { id: 72, category: "Stocks", question: "What is an Initial Public Offering (IPO)?", options: ["Loan offering", "Company’s first stock sale", "Bond issuance", "Mutual fund launch"], correctAnswer: "Company’s first stock sale", explanation: "An IPO is when a company offers its shares to the public for the first time." },
-      { id: 73, category: "Stocks", question: "What is market capitalization?", options: ["Company’s revenue", "Total value of company shares", "Annual profit", "Loan amount"], correctAnswer: "Total value of company shares", explanation: "Market capitalization is the total value of a company’s outstanding shares." },
-      { id: 74, category: "Stocks", question: "What is a dividend in stocks?", options: ["Loan interest", "Profit shared with shareholders", "Stock price", "Insurance premium"], correctAnswer: "Profit shared with shareholders", explanation: "Dividends are portions of a company’s profits distributed to shareholders." },
-      { id: 75, category: "Stocks", question: "What is a stock broker?", options: ["Bank employee", "Facilitates stock trading", "Insurance agent", "Mutual fund manager"], correctAnswer: "Facilitates stock trading", explanation: "Stock brokers execute buy and sell orders for retail clients in the stock market." },
-      { id: 76, category: "Stocks", question: "What is dematerialization?", options: ["Physical to electronic securities", "Debt repayment", "Stock splitting", "Insurance claim"], correctAnswer: "Physical to electronic securities", explanation: "Dematerialization converts physical share certificates into electronic form." },
-      { id: 77, category: "Stocks", question: "What is the National Stock Exchange (NSE)?", options: ["Banking regulator", "Stock trading platform", "Insurance company", "Mutual fund"], correctAnswer: "Stock trading platform", explanation: "The NSE is a leading stock exchange in India, offering electronic trading." },
-      { id: 78, category: "Stocks", question: "What is Nifty 50?", options: ["50 banks", "50 company index", "50 mutual funds", "50 insurance companies"], correctAnswer: "50 company index", explanation: "Nifty 50 is an NSE index tracking 50 large, actively traded companies." },
-      { id: 79, category: "Stocks", question: "What is a blue-chip stock?", options: ["Small company stock", "Large, stable company stock", "Government bond", "Mutual fund"], correctAnswer: "Large, stable company stock", explanation: "Blue-chip stocks belong to well-established, financially stable companies." },
-      { id: 80, category: "Stocks", question: "What is a stock split?", options: ["Dividing company profits", "Increasing number of shares", "Selling stocks", "Buying bonds"], correctAnswer: "Increasing number of shares", explanation: "A stock split increases the number of shares, reducing the price per share." },
-      { id: 81, category: "Stocks", question: "What is a trading account?", options: ["Savings account", "Account for stock trading", "Loan account", "Fixed deposit"], correctAnswer: "Account for stock trading", explanation: "A trading account facilitates buying and selling stocks through a brokerage." },
-      { id: 82, category: "Stocks", question: "What is a bull market?", options: ["Falling stock prices", "Rising stock prices", "Stable prices", "High inflation"], correctAnswer: "Rising stock prices", explanation: "A bull market is characterized by rising stock prices and investor optimism." },
-      { id: 83, category: "Stocks", question: "What is a bear market?", options: ["Rising stock prices", "Falling stock prices", "Stable prices", "Low inflation"], correctAnswer: "Falling stock prices", explanation: "A bear market occurs when stock prices decline, reflecting pessimism." },
-      { id: 84, category: "Stocks", question: "What is a portfolio in stock investing?", options: ["Single stock", "Collection of investments", "Loan account", "Insurance policy"], correctAnswer: "Collection of investments", explanation: "A portfolio includes various investments like stocks and bonds." },
-      { id: 85, category: "Stocks", question: "What is a share in a stock market?", options: ["Loan amount", "Unit of company ownership", "Fixed deposit", "Insurance premium"], correctAnswer: "Unit of company ownership", explanation: "A share represents a unit of ownership in a company, entitling dividends." },
-      { id: 86, category: "Bonds", question: "What is a government bond?", options: ["Stock share", "Debt issued by government", "Mutual fund", "Government loan"], correctAnswer: "Debt issued by government", explanation: "Government bonds are debt securities issued to finance government expenditure." },
-      { id: 87, category: "Bonds", question: "What is a corporate bond?", options: ["Government bond", "Company-issued debt", "Equity share", "Mutual fund"], correctAnswer: "Company-issued debt", explanation: "Corporate bonds are debt securities issued by companies to raise funds." },
-      { id: 88, category: "Bonds", question: "What is a convertible bond?", options: ["Fixed deposit", "Convertible to equity", "Government bond", "Insurance policy"], correctAnswer: "Convertible to equity", explanation: "Convertible bonds allow conversion into equity shares of the issuer company." },
-      { id: 89, category: "Bonds", question: "What is a zero-coupon bond?", options: ["Pays regular interest", "No interest, sold at discount", "Stock bond", "Mutual fund"], correctAnswer: "No interest, sold at discount", explanation: "Zero-coupon bonds are sold at a discount and redeemed at maturity without periodic interest." },
-      { id: 90, category: "Bonds", question: "What is a bond’s maturity date?", options: ["Interest payment date", "Bond repayment date", "Stock issuance date", "Loan issuance"], correctAnswer: "Bond repayment date", explanation: "Maturity date is when a bond’s principal is repaid to the bondholder." },
-      { id: 91, category: "Debentures", question: "What is a debenture?", options: ["Stock share", "Unsecured debt instrument", "Savings account", "Mutual fund"], correctAnswer: "Unsecured debt instrument", explanation: "Debentures are unsecured debt securities issued by companies, backed by their creditworthiness." },
-      { id: 92, category: "Debentures", question: "What is a convertible debenture?", options: ["Fixed deposit", "Convertible to equity shares", "Government debt", "Loan repayment"], correctAnswer: "Convertible to equity shares", explanation: "Convertible debentures can be converted into shares of the issuer company." },
-      { id: 93, category: "Debentures", question: "What is a non-convertible debenture?", options: ["Convertible to equity", "Cannot convert to shares", "Stock share", "Mutual fund"], correctAnswer: "Cannot convert to shares", explanation: "Non-convertible debentures cannot be converted to equity and are redeemed at maturity." },
-      { id: 94, category: "Debentures", question: "What is a secured debenture?", options: ["Unsecured debt", "Backed by company assets", "Stock share", "Loan repayment"], correctAnswer: "Backed by company assets", explanation: "Secured debentures are backed by specific assets of the company." },
-      { id: 95, category: "Debentures", question: "What is the interest rate on a debenture called?", options: ["Dividend rate", "Coupon rate", "Stock yield", "Market interest"], correctAnswer: "Coupon rate", explanation: "Coupon rate is the interest rate paid on the face value of a debenture." },
-      { id: 96, category: "Loans", question: "What is an EMI in a loan?", options: ["Extra Monthly Income", "Equated Monthly Installment", "Emergency Money Investment", "Equity Market Index"], correctAnswer: "Equated Monthly Installment", explanation: "EMI is a fixed monthly payment for repaying a loan, covering principal and interest." },
-      { id: 97, category: "Loans", question: "What is a secured loan?", options: ["Loan without collateral", "Loan backed by collateral", "Credit loan", "Gold loan"], correctAnswer: "Loan backed by collateral", explanation: "Secured loans, like home loans, are backed by assets as collateral." },
-      { id: 98, category: "Loans", question: "What is an unsecured loan?", options: ["Loan with collateral", "Loan without collateral", "Stock loan", "Fixed deposit"], correctAnswer: "Loan without collateral", explanation: "Unsecured loans, like personal loans, are granted based on creditworthiness." },
-      { id: 99, category: "Loans", question: "What is a home loan?", options: ["Loan for stock trading", "Loan for purchasing property", "Loan for mutual funds", "Loan for insurance"], correctAnswer: "Loan for purchasing property", explanation: "Home loans are secured loans for retail customers to purchase property." },
-      { id: 100, category: "Loans", question: "What is a personal loan?", options: ["Loan for business", "Loan for personal use", "Loan for stocks", "Loan for bonds"], correctAnswer: "Loan for personal use", explanation: "Personal loans are unsecured loans for retail customers’ personal expenses." },
-      { id: 101, category: "Retail Banking", question: "What is a bank?", options: ["A place to save money", "A place to borrow money", "Both A and B", "None"], correctAnswer: "Both A and B", explanation: "A bank is a financial institution that accepts deposits, provides loans, and offers various services." },
-      { id: 102, category: "Retail Banking", question: "What is the full form of RBI?", options: ["Reserve Bank of India", "Regional Bank of India", "Reserve Board of India", "Rural Bank of India"], correctAnswer: "Reserve Bank of India", explanation: "RBI is India’s central bank, overseeing monetary policy and banking regulation." },
-      { id: 103, category: "Retail Banking", question: "What is a crossed cheque?", options: ["Cheque payable to bearer", "Cheque with two parallel lines", "Government cheque", "Corporate cheque"], correctAnswer: "Cheque with two parallel lines", explanation: "Crossed cheques have two parallel lines, ensuring payment only through a bank account." },
-      { id: 104, category: "Retail Banking", question: "What is a demand draft?", options: ["Loan repayment", "Prepaid payment instrument", "Stock certificate", "Government bond"], correctAnswer: "Prepaid payment instrument", explanation: "A demand draft is a prepaid instrument issued by banks for secure payments." },
-      { id: 105, category: "Retail Banking", question: "What is a minor’s account?", options: ["Account for seniors", "Account for children", "Business account", "Corporate account"], correctAnswer: "Account for children", explanation: "Accounts for minors are managed by a guardian for children under 18 years." },
-      { id: 106, category: "Retail Banking", question: "What is a joint account?", options: ["Single-owner account", "Multiple-owner account", "Collateral account", "Trading account"], correctAnswer: "Multiple-owner account", explanation: "Joint accounts are shared by multiple individuals with equal access." },
-      { id: 107, category: "Retail Banking", question: "What is a dormant account?", options: ["Active account", "Inactive account", "Credit account", "Stock account"], correctAnswer: "Inactive account", explanation: "Dormant accounts have no transactions for a specified period, typically 2 years." },
-      { id: 108, category: "Retail Banking", question: "What is a sweep-in facility?", options: ["Loan repayment", "Auto-transfer to fixed deposit", "Stock trading", "Insurance"], correctAnswer: "Auto-transfer to fixed deposit", explanation: "Sweep-in facilities transfer excess savings to fixed deposits for higher interest." },
-      { id: 109, category: "Retail Banking", question: "What is a net banking service?", options: ["Branch banking", "Online banking", "Stock trading", "Insurance"], correctAnswer: "Online banking", explanation: "Net banking enables customers to perform transactions online through a website." },
-      { id: 110, category: "Retail Banking", question: "What is a mobile banking app?", options: ["Stock trading app", "Banking via smartphone", "Credit calculator", "Savings app"], correctAnswer: "Banking via smartphone", explanation: "Mobile banking apps facilitate transactions and services via smartphones." },
-      { id: 111, category: "Retail Banking", question: "What is a UPI transaction?", options: ["Loan repayment", "Instant mobile payment", "Stock purchase", "Government bond"], correctAnswer: "Instant mobile payment", explanation: "Unified Payments Interface (UPI) enables instant bank-to-bank transfers via mobile." },
-      { id: 112, category: "Retail Banking", question: "What is a prepaid card?", options: ["Credit card", "Preloaded card", "Stock trading card", "Savings card"], correctAnswer: "Preloaded card", explanation: "Prepaid cards are preloaded with funds for transactions without a bank account." },
-      { id: 113, category: "Retail Banking", question: "What is a priority banking service?", options: ["Basic savings account", "Premium banking service", "Premium insurance", "Premium loan"], correctAnswer: "Premium banking service", explanation: "Priority banking provides exclusive services for high-net-worth individuals." },
-      { id: 114, category: "Retail Banking", question: "What is a bank statement?", options: ["Loan agreement", "Transaction summary", "Stock report", "Insurance policy"], correctAnswer: "Transaction summary", explanation: "Bank statements summarize all transactions in an account over a period." },
-      { id: 115, category: "Retail Banking", question: "What is a stop payment?", options: ["Loan repayment", "Halting cheque payment", "Stock purchase", "Insurance claim"], correctAnswer: "Halting cheque payment", explanation: "Stop payment requests prevent a cheque from being processed." },
-      { id: 116, category: "Retail Banking", question: "What is a lien on an account?", options: ["Savings account", "Bank’s claim on funds", "Stock trading", "Insurance"], correctAnswer: "Bank’s claim on funds", explanation: "Liens restrict access to funds until a debt is cleared." },
-      { id: 117, category: "Retail Banking", question: "What is a credit report?", options: ["Stock report", "Credit history record", "Savings balance", "Insurance policy"], correctAnswer: "Credit history record", explanation: "Credit reports detail an individual’s credit accounts and payment history." },
-      { id: 118, category: "Retail Banking", question: "What is foreclosure in loans?", options: ["Early loan repayment", "Stock trading", "Insurance claim", "Fixed deposit"], correctAnswer: "Early loan repayment", explanation: "Foreclosure involves repaying a loan before its scheduled completion." },
-      { id: 119, category: "Retail Banking", question: "What is a loan against property?", options: ["Stock loan", "Real estate loan", "Unsecured loan", "Personal loan"], correctAnswer: "Real estate loan", explanation: "Loans against property are secured by mortgaging real estate." },
-      { id: 120, category: "Loans", question: "What is a gold loan?", options: ["Stock loan", "Loan against gold", "Silver loan", "Unsecured loan"], correctAnswer: "Loan against gold", explanation: "Gold loans are secured against gold jewellery or assets." },
-      { id: 121, category: "Retail Banking", question: "What is a salary account?", options: ["Loan account", "Salary deposit account", "Stock account", "Savings account"], correctAnswer: "Salary deposit account", explanation: "Salary accounts are used by employers to deposit employee salaries." },
-      { id: 122, category: "Retail Banking", question: "What is a zero-balance account?", options: ["High balance", "No minimum balance", "Fixed balance", "Credit balance"], correctAnswer: "No minimum balance", explanation: "Zero-balance accounts require no minimum balance, often for specific schemes." },
-      { id: 123, category: "Retail Banking", question: "What is a cash credit?", options: ["Fixed deposit", "Business credit facility", "Stock trading", "Insurance"], correctAnswer: "Business credit facility", explanation: "Cash credit provides credit for businesses to manage working capital." },
-      { id: 124, category: "Retail Banking", question: "What is loan restructuring?", options: ["Stock trading", "Modifying loan terms", "Fixed deposit", "Insurance claim"], correctAnswer: "Modifying loan terms", explanation: "Loan restructuring alters terms to ease financial stress." },
-      { id: 125, category: "Retail Banking", question: "What is a digital wallet?", options: ["Physical wallet", "Electronic payment app", "Stock trading app", "Insurance app"], correctAnswer: "Electronic payment app", explanation: "Digital wallet apps store payment information for online and mobile transactions." },
-      { id: 126, category: "Insurance", question: "What is a floater policy?", options: ["Individual health insurance", "Family health insurance", "Stock insurance", "Life insurance"], correctAnswer: "Family health insurance", explanation: "Floater policies cover an entire family under a single health insurance plan." },
-      { id: 127, category: "Insurance", question: "What is a top-up health plan?", options: ["Basic health insurance", "Additional coverage", "Stock insurance", "Fixed deposit"], correctAnswer: "Additional coverage", explanation: "Top-up plans provide extra coverage beyond a basic health insurance plan." },
-      { id: 128, category: "Insurance", question: "What is a critical illness policy?", options: ["General health insurance", "Covers serious illnesses", "Life insurance", "Stock insurance"], correctAnswer: "Covers serious illnesses", explanation: "Critical illness policies pay a lump sum for specific serious diseases." },
-      { id: 129, category: "Insurance", question: "What is a personal accident policy?", options: ["Health insurance", "Personal injury coverage", "Life insurance", "Stock insurance"], correctAnswer: "Personal injury coverage", explanation: "Personal accident policies cover injuries, disabilities, or deaths due to accidents." },
-      { id: 130, category: "Insurance", question: "What is a homeowner’s policy?", options: ["Life insurance", "Property damage coverage", "Stock trading", "Health insurance"], correctAnswer: "Property damage coverage", explanation: "Homeowner’s insurance protects against property damage and liabilities." },
-      { id: 131, category: "Mutual Funds", question: "What is a thematic fund?", options: ["Diversified fund", "Theme-specific fund", "Bond fund", "Gold fund"], correctAnswer: "Theme-specific fund", explanation: "Thematic funds invest in companies aligned with a specific theme, like green energy." },
-      { id: 132, category: "Mutual Funds", question: "What is a contra fund?", options: ["Outperforming stocks", "Undervalued stocks", "Bond fund", "Gold fund"], correctAnswer: "Undervalued stocks", explanation: "Contra funds invest in undervalued stocks expected to recover." },
-      { id: 133, category: "Mutual Funds", question: "What is a value fund?", options: ["Growth stocks", "Undervalued stocks", "Bond fund", "Gold fund"], correctAnswer: "Undervalued stocks", explanation: "Value funds target stocks trading below their intrinsic value." },
-      { id: 134, category: "Mutual Funds", question: "What is a focused fund?", options: ["Diversified fund", "Concentrated portfolio", "Bond fund", "Gold fund"], correctAnswer: "Concentrated portfolio", explanation: "Focused funds invest in a small, select group of stocks." },
-      { id: 135, category: "Mutual Funds", question: "What is a dividend yield fund?", options: ["Low-dividend stocks", "High-dividend stocks", "Bond fund", "Gold fund"], correctAnswer: "High-dividend stocks", explanation: "Dividend yield funds invest in stocks with high dividend payouts." },
-      { id: 136, category: "Stocks", question: "What is a penny stock?", options: ["High-value stock", "Low-priced stock", "Government bond", "Mutual fund"], correctAnswer: "Low-priced stock", explanation: "Penny stocks are low-priced, speculative stocks, often below ₹10." },
-      { id: 137, category: "Stocks", question: "What is a preference share?", options: ["Equity share", "Fixed dividend share", "Bond share", "Mutual fund"], correctAnswer: "Fixed dividend share", explanation: "Preference shares offer fixed dividends and priority repayment over equity." },
-      { id: 138, category: "Stocks", question: "What is a rights issue?", options: ["New shares to shareholders", "Dividend payment", "Bond issuance", "Mutual fund"], correctAnswer: "New shares to shareholders", explanation: "A rights issue offers shareholders the right to buy new shares at a discount." },
-      { id: 139, category: "Stocks", question: "What is a bonus share?", options: ["Extra shares from profits", "Dividend payment", "Bond share", "Loan repayment"], correctAnswer: "Extra shares from profits", explanation: "Bonus shares are issued free to shareholders from company profits." },
-      { id: 140, category: "Stocks", question: "What is a circuit breaker in the stock market?", options: ["Price fluctuation limit", "Trading halt", "Insurance policy", "Mutual fund"], correctAnswer: "Trading halt", explanation: "Circuit breakers halt trading if stock prices move sharply." },
-      { id: 141, category: "Retail Banking", question: "What is the purpose of a bank loan?", options: ["Stock trading", "Financing needs", "Insurance", "Fixed deposit"], correctAnswer: "Financing needs", explanation: "Bank loans provide funds for personal or business needs, repaid with interest." },
-      { id: 142, category: "Retail Banking", question: "What is a relationship manager?", options: ["Loan officer", "Banking advisor", "Stock broker", "Insurance agent"], correctAnswer: "Banking advisor", explanation: "Relationship managers provide personalized banking advice to clients." },
-      { id: 143, category: "Retail Banking", question: "What is an overdraft facility?", options: ["Fixed deposit", "Borrowing beyond balance", "Stock trading", "Insurance"], correctAnswer: "Borrowing beyond balance", explanation: "Overdrafts allow borrowing beyond the account balance, up to a limit." },
-      { id: 144, category: "Retail Banking", question: "What is an escrow account?", options: ["Savings account", "Third-party funds for transactions", "Stock trading account", "Bond account"], correctAnswer: "Third-party funds for transactions", explanation: "Escrow accounts hold funds managed by a third party for secure transactions." },
-      { id: 145, category: "Retail Banking", question: "What is a chargeback?", options: ["Credit card repayment", "Refund for disputed transaction", "Stock trading refund", "Cash repayment"], correctAnswer: "Refund for disputed transaction", explanation: "Chargebacks are refunds for disputed card transactions." },
-      { id: 146, category: "Retail Banking", question: "What is a loan default?", options: ["Early loan repayment", "Failure to repay loan", "Stock trading loss", "Tax payment"], correctAnswer: "Failure to repay loan", explanation: "Loan default occurs when a borrower fails to repay as per loan terms." },
-      { id: 147, category: "Retail Banking", question: "What is a moratorium period?", options: ["Loan repayment holiday", "Stock repayment period", "Insurance premium period", "Fixed deposit term"], correctAnswer: "Loan repayment holiday", explanation: "A moratorium delays loan repayments temporarily, often during financial hardship." },
-      { id: 148, category: "Retail Banking", question: "What is a credit limit?", options: ["Savings account balance", "Maximum borrowing amount", "Stock trading limit", "Insurance premium"], correctAnswer: "Maximum borrowing amount", explanation: "A credit limit is the maximum amount borrowable on a credit facility." },
-      { id: 149, category: "Retail Banking", question: "What is a bank guarantee?", options: ["Loan approval", "Payment assurance", "Stock trading guarantee", "Insurance policy"], correctAnswer: "Payment assurance", explanation: "A bank guarantee ensures payment if a client fails to meet obligations." },
-      { id: 150, category: "Retail Banking", question: "What is a letter of credit?", options: ["Credit agreement", "Trade payment security", "Stock purchase order", "Bank statement"], correctAnswer: "Trade payment security", explanation: "A letter of credit guarantees payment for trade transactions." }
-    ];
-
-    // React Component
-    const { useState, useEffect } = React;
-    const { motion } = window.FramerMotion;
-
-    function App() {
-      const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-      const [score, setScore] = useState(0);
-      const [answers, setAnswers] = useState({});
-      const [selectedOption, setSelectedOption] = useState(null);
-      const [showExplanation, setShowExplanation] = useState(false);
-      const [timeElapsed, setTimeElapsed] = useState(0);
-      const [showResults, setShowResults] = useState(false);
-
-      useEffect(() => {
-        const timer = setInterval(() => setTimeElapsed(prev => prev + 1), 1000);
-        return () => clearInterval(timer);
-      }, []);
-
-      const formatTime = (seconds) => {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-      };
-
-      const currentQuestion = questions[currentQuestionIndex];
-      const shuffledOptions = [...currentQuestion.options];
-      shuffle(shuffledOptions);
-
-      const handleOptionClick = (option) => {
-        if (selectedOption) return;
-        setSelectedOption(option);
-        setShowExplanation(true);
-        const isCorrect = option === currentQuestion.correctAnswer;
-        setAnswers({ ...answers, [currentQuestion.id]: { selected: option, isCorrect } });
-        if (isCorrect) {
-          setScore(score + 1);
-          playCorrectSound();
-        } else {
-          playIncorrectSound();
-        }
-      };
-
-      const handleNext = () => {
-        if (currentQuestionIndex < questions.length - 1) {
-          setCurrentQuestionIndex(currentQuestionIndex + 1);
-          setSelectedOption(answers[questions[currentQuestionIndex + 1].id]?.selected || null);
-          setShowExplanation(!!answers[questions[currentQuestionIndex + 1].id]);
-        } else {
-          setShowResults(true);
-        }
-      };
-
-      const handlePrevious = () => {
-        if (currentQuestionIndex > 0) {
-          setCurrentQuestionIndex(currentQuestionIndex - 1);
-          setSelectedOption(answers[questions[currentQuestionIndex - 1].id]?.selected || null);
-          setShowExplanation(!!answers[questions[currentQuestionIndex - 1].id]);
-        }
-      };
-
-      const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
-
-      if (showResults) {
-        return (
-          <div className="flex items-center justify-center min-h-screen">
-            <motion.div
-              className="mario-card p-8 max-w-lg w-full text-center modal"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <h2 className="text-3xl font-bold mb-4 header-title">Quiz Completed!</h2>
-              <p className="text-xl mb-2">Score: {score} / {questions.length}</p>
-              <p className="text-xl mb-4">Time Taken: {formatTime(timeElapsed)}</p>
-              <button
-                className="nav-button px-4 py-2 rounded"
-                onClick={() => window.location.reload()}
-              >
-                Restart Quiz
-              </button>
-            </motion.div>
-          </div>
-        );
-      }
-
-      return (
-        <div className="flex flex-col items-center justify-center min-h-screen p-4">
-          <motion.h1
-            className="text-4xl md:text-5xl mb-4 text-center header-title"
-            initial={{ y: -100 }}
-            animate={{ y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            Banking MCQs
-          </motion.h1>
-          <motion.div
-            className="mario-card p-6 w-full max-w-2xl"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="flex justify-between mb-4">
-              <p>Score: {score}</p>
-              <p>Time: {formatTime(timeElapsed)}</p>
-              <p>Question {currentQuestionIndex + 1} / {questions.length}</p>
-            </div>
-            <div className="w-full h-2 bg-gray-700 rounded mb-4">
-              <div
-                className="h-2 progress-bar rounded"
-                style={{ width: `${progress}%` }}
-              ></div>
-            </div>
-            <h2 className="text-lg md:text-2xl font-bold mb-4">{currentQuestion.question}</h2>
-            <div className="grid grid-cols-1 gap-4">
-              {shuffledOptions.map((option, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => handleOptionClick(option)}
-                  disabled={!!selectedOption}
-                  className={`option-button p-4 rounded text-left ${
-                    selectedOption === option
-                      ? option === currentQuestion.correctAnswer
-                        ? 'correct'
-                        : 'incorrect'
-                      : ''
-                  }`}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-            {showExplanation && (
-              <motion.div
-                className="mt-4 p-4 bg-gray-800 rounded"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <p>{currentQuestion.explanation}</p>
-              </motion.div>
-            )}
-            <div className="flex justify-between mt-6">
-              <button
-                onClick={handlePrevious}
-                className="nav-button px-4 py-2 rounded"
-                style={{ visibility: currentQuestionIndex === 0 ? 'hidden' : 'visible' }}
-              >
-                Previous
-              </button>
-              <button
-                onClick={handleNext}
-                className="nav-button px-4 py-2 rounded"
-                disabled={!selectedOption && !answers[currentQuestion.id]}
-              >
-                {currentQuestionIndex === questions.length - 1 ? 'Finish' : 'Next'}
-              </button>
-            </div>
-          </motion.div>
+    <div id="game-container">
+        <div id="title" class="nes-font">Banking MCQ Challenge</div>
+        <div id="question-container">
+            <div id="question-text"></div>
+            <div id="options"></div>
         </div>
-      );
-    }
+        <div id="answer-container">
+            <div id="answer-text"></div>
+        </div>
+        <div id="next-button" class="nes-font">Next</div>
+        <div id="score"></div>
+    </div>
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-  </script>
+    <script>
+        const questions = [
+            {
+                question: "What is a bank?",
+                options: [
+                    "A place to buy groceries",
+                    "A financial institution for saving, loans, and investments",
+                    "A school for financial education",
+                    "A government office for taxes"
+                ],
+                correct: "A financial institution for saving, loans, and investments",
+                answer: "A bank is a place where you can save money, take loans, or invest. It keeps your money safe and offers services like accounts and cards. Banks also help businesses and people manage their finances."
+            },
+            {
+                question: "What is a savings account?",
+                options: [
+                    "An account for daily transactions",
+                    "An account to save money and earn interest",
+                    "An account for business loans",
+                    "An account for investments only"
+                ],
+                correct: "An account to save money and earn interest",
+                answer: "A savings account lets you save money and earn a small interest. It's great for keeping money safe for future needs. You can withdraw funds when needed, but there may be limits."
+            },
+            {
+                question: "What is a current account?",
+                options: [
+                    "An account with high interest rates",
+                    "An account for frequent transactions with no interest",
+                    "An account for long-term investments",
+                    "An account for fixed deposits"
+                ],
+                correct: "An account for frequent transactions with no interest",
+                answer: "A current account is for businesses or people with frequent transactions. It doesn't earn interest but allows unlimited withdrawals and payments. It's ideal for daily financial activities."
+            },
+            {
+                question: "What is CASA in banking?",
+                options: [
+                    "Customer Account Security Act",
+                    "Current Account and Savings Account",
+                    "Centralized Account System Analysis",
+                    "Cash and Savings Allocation"
+                ],
+                correct: "Current Account and Savings Account",
+                answer: "CASA stands for Current Account and Savings Account. These accounts hold customer deposits that banks use for lending. They're low-cost funds for banks, helping them earn profits."
+            },
+            {
+                question: "What is KYC?",
+                options: [
+                    "Know Your Cash",
+                    "Know Your Customer",
+                    "Keep Your Credit",
+                    "Know Your Card"
+                ],
+                correct: "Know Your Customer",
+                answer: "KYC means Know Your Customer. Banks check your ID, like Aadhaar or PAN, to verify who you are. It helps prevent fraud and follows government rules."
+            },
+            {
+                question: "What is Anti-Money Laundering (AML)?",
+                options: [
+                    "A loan repayment program",
+                    "Rules to stop illegal money from entering banks",
+                    "A customer loyalty program",
+                    "A savings account feature"
+                ],
+                correct: "Rules to stop illegal money from entering banks",
+                answer: "AML involves rules to stop illegal money from entering banks. Bank staff monitor transactions to spot suspicious activities. It keeps the financial system clean and safe."
+            },
+            {
+                question: "What is cold calling in banking?",
+                options: [
+                    "Calling customers to close accounts",
+                    "Reaching out to new people to offer bank services",
+                    "Calling to verify transactions",
+                    "Calling to update KYC details"
+                ],
+                correct: "Reaching out to new people to offer bank services",
+                answer: "Cold calling is reaching out to new people to offer bank services like loans or accounts. It's a way to find new customers. You need good communication skills for this."
+            },
+            {
+                question: "What is cross-selling?",
+                options: [
+                    "Selling products across different banks",
+                    "Offering more products to current customers",
+                    "Selling third-party products only",
+                    "Selling accounts to new customers"
+                ],
+                correct: "Offering more products to current customers",
+                answer: "Cross-selling is offering more products to current customers, like a credit card to someone with an account. It helps banks earn more and meets customer needs."
+            },
+            {
+                question: "What are third-party products?",
+                options: [
+                    "Products made by the bank",
+                    "Insurance or mutual funds sold by banks but provided by others",
+                    "Products for business accounts only",
+                    "Products for international banking"
+                ],
+                correct: "Insurance or mutual funds sold by banks but provided by others",
+                answer: "Third-party products are things like insurance or mutual funds sold by banks but provided by other companies. Banks earn a fee for selling them. They add value for customers."
+            },
+            {
+                question: "What are sales targets?",
+                options: [
+                    "Goals for opening new branches",
+                    "Goals like opening 20 accounts in a month",
+                    "Targets for loan repayments",
+                    "Targets for customer complaints"
+                ],
+                correct: "Goals like opening 20 accounts in a month",
+                answer: "Sales targets are goals, like opening 20 accounts in a month. Meeting them shows good performance and can earn you bonuses. They're common in banking sales jobs."
+            },
+            {
+                question: "What are banking operations?",
+                options: [
+                    "Customer-facing sales tasks",
+                    "Behind-the-scenes tasks like processing payments",
+                    "Marketing campaigns for banks",
+                    "Loan approval processes only"
+                ],
+                correct: "Behind-the-scenes tasks like processing payments",
+                answer: "Banking operations are behind-the-scenes tasks like processing payments, opening accounts, and keeping records. They keep the bank running smoothly. Accuracy is key here."
+            },
+            {
+                question: "What does a loan officer do?",
+                options: [
+                    "Handles cash deposits",
+                    "Helps people apply for loans and explains terms",
+                    "Manages bank marketing",
+                    "Processes customer complaints"
+                ],
+                correct: "Helps people apply for loans and explains terms",
+                answer: "A loan officer helps people apply for loans, explains terms, and checks documents. They ensure loans are approved fairly. It's a role that needs trust and clarity."
+            },
+            {
+                question: "What is a fixed deposit?",
+                options: [
+                    "A loan with fixed interest",
+                    "Money locked for a set time to earn higher interest",
+                    "A daily transaction account",
+                    "A short-term savings plan"
+                ],
+                correct: "Money locked for a set time to earn higher interest",
+                answer: "A fixed deposit is when you lock money in a bank for a set time to earn higher interest. You can't withdraw early without a penalty. It's good for long-term savings."
+            },
+            {
+                question: "What is branch banking?",
+                options: [
+                    "Banking through mobile apps",
+                    "Serving customers at a physical bank location",
+                    "Online banking services",
+                    "Automated banking systems"
+                ],
+                correct: "Serving customers at a physical bank location",
+                answer: "Branch banking means serving customers at a physical bank location. People visit for deposits, withdrawals, or advice. It's different from online or mobile banking."
+            },
+            {
+                question: "What is a cheque?",
+                options: [
+                    "A digital payment method",
+                    "A paper to pay someone from your bank account",
+                    "A loan application form",
+                    "A savings account statement"
+                ],
+                correct: "A paper to pay someone from your bank account",
+                answer: "A cheque is a paper you write to pay someone from your bank account. The bank transfers the money when the cheque is cashed. It's a common payment method."
+            },
+            {
+                question: "What is a bank statement?",
+                options: [
+                    "A loan repayment schedule",
+                    "A record of account transactions over a period",
+                    "A customer feedback form",
+                    "A bank policy document"
+                ],
+                correct: "A record of account transactions over a period",
+                answer: "A bank statement shows all your account transactions, like deposits and withdrawals, over a period. It helps you track your spending. You can get it online or in print."
+            },
+            {
+                question: "What is a nomination in banking?",
+                options: [
+                    "Naming a bank manager",
+                    "Naming someone to receive your account money if you pass away",
+                    "Nominating a loan applicant",
+                    "Nominating a sales target"
+                ],
+                correct: "Naming someone to receive your account money if you pass away",
+                answer: "Nomination means naming someone to receive your account money if you pass away. It's set when opening an account. It ensures your money goes to the right person."
+            },
+            {
+                question: "What is an IFSC code?",
+                options: [
+                    "A code for international banking",
+                    "A unique code for a bank branch for online transfers",
+                    "A customer identification number",
+                    "A loan approval code"
+                ],
+                correct: "A unique code for a bank branch for online transfers",
+                answer: "IFSC stands for Indian Financial System Code. It's a unique code for a bank branch used for online money transfers. It ensures funds reach the correct account."
+            },
+            {
+                question: "What is NEFT?",
+                options: [
+                    "National Electronic Funds Transfer for money transfers",
+                    "A type of fixed deposit",
+                    "A loan repayment system",
+                    "A customer verification process"
+                ],
+                correct: "National Electronic Funds Transfer for money transfers",
+                answer: "NEFT, or National Electronic Funds Transfer, lets you send money to another bank account. It's safe and works in batches during bank hours. It's widely used for payments."
+            },
+            {
+                question: "What is RTGS?",
+                options: [
+                    "Real-Time Gross Settlement for large transfers",
+                    "A savings account type",
+                    "A loan processing system",
+                    "A customer feedback tool"
+                ],
+                correct: "Real-Time Gross Settlement for large transfers",
+                answer: "RTGS means Real-Time Gross Settlement, used for large money transfers. It's instant and works for high-value transactions. It's faster than NEFT but has a higher minimum amount."
+            },
+            {
+                question: "What is a debit card?",
+                options: [
+                    "A card for borrowing money",
+                    "A card to spend money from your bank account",
+                    "A card for investments",
+                    "A card for insurance payments"
+                ],
+                correct: "A card to spend money from your bank account",
+                answer: "A debit card lets you spend money directly from your bank account. You can use it for shopping or ATMs. It doesn't involve borrowing, unlike a credit card."
+            },
+            {
+                question: "What is a credit card?",
+                options: [
+                    "A card linked to your savings",
+                    "A card to borrow money for payments",
+                    "A card for fixed deposits",
+                    "A card for direct transfers"
+                ],
+                correct: "A card to borrow money for payments",
+                answer: "A credit card lets you borrow money from the bank to pay for things. You repay later, often with interest. It's handy but needs careful use to avoid debt."
+            },
+            {
+                question: "What is a recurring deposit?",
+                options: [
+                    "A one-time savings plan",
+                    "Saving a fixed amount monthly for a set period",
+                    "A loan repayment plan",
+                    "A daily transaction account"
+                ],
+                correct: "Saving a fixed amount monthly for a set period",
+                answer: "A recurring deposit is when you save a fixed amount every month for a set period. You earn interest and get a lump sum at the end. It encourages regular savings."
+            },
+            {
+                question: "What is an interest rate?",
+                options: [
+                    "A fee for account maintenance",
+                    "A percentage paid on savings or charged on loans",
+                    "A bank transfer fee",
+                    "A penalty for late payments"
+                ],
+                correct: "A percentage paid on savings or charged on loans",
+                answer: "An interest rate is the percentage a bank pays you on savings or charges on loans. It affects how much you earn or owe. Rates vary based on the product."
+            },
+            {
+                question: "What is a loan?",
+                options: [
+                    "Money saved in a bank",
+                    "Money borrowed from a bank to be repaid with interest",
+                    "A type of savings account",
+                    "A bank transfer method"
+                ],
+                correct: "Money borrowed from a bank to be repaid with interest",
+                answer: "A loan is money you borrow from a bank and repay with interest over time. It can be for a house, car, or personal needs. You need to show you can repay it."
+            },
+            {
+                question: "What is EMI?",
+                options: [
+                    "Extra Money Income",
+                    "Equated Monthly Installment for loan repayment",
+                    "Electronic Money Integration",
+                    "Estimated Monthly Interest"
+                ],
+                correct: "Equated Monthly Installment for loan repayment",
+                answer: "EMI, or Equated Monthly Installment, is the fixed amount you pay monthly to repay a loan. It includes interest and principal. It makes loan repayment manageable."
+            },
+            {
+                question: "What is a passbook?",
+                options: [
+                    "A digital banking app",
+                    "A book recording bank account transactions",
+                    "A loan agreement document",
+                    "A customer feedback form"
+                ],
+                correct: "A book recording bank account transactions",
+                answer: "A passbook is a small book that records your bank account transactions. You take it to the bank to update it. It's less common now due to online banking."
+            },
+            {
+                question: "What is net banking?",
+                options: [
+                    "Banking at a physical branch",
+                    "Managing your account online",
+                    "A type of loan processing",
+                    "A customer verification system"
+                ],
+                correct: "Managing your account online",
+                answer: "Net banking lets you manage your account online using a computer or app. You can transfer money, pay bills, or check balances. It's convenient and fast."
+            },
+            {
+                question: "What is mobile banking?",
+                options: [
+                    "Banking through a phone app",
+                    "Banking at a branch",
+                    "Banking via email",
+                    "Banking through letters"
+                ],
+                correct: "Banking through a phone app",
+                answer: "Mobile banking is using a smartphone app to do banking tasks. You can check balances, transfer funds, or pay bills. It's popular for its ease of use."
+            },
+            {
+                question: "What is phone banking?",
+                options: [
+                    "Banking through social media",
+                    "Calling a bank's helpline for transactions",
+                    "Banking via text messages",
+                    "Banking through video calls"
+                ],
+                correct: "Calling a bank's helpline for transactions",
+                answer: "Phone banking is calling a bank's helpline to check your account or do transactions. It's useful if you don't have internet access. Staff assist you over the phone."
+            },
+            {
+                question: "What is a credit score?",
+                options: [
+                    "A score for customer service",
+                    "A number showing how well you manage loans and bills",
+                    "A score for savings accounts",
+                    "A score for bank branches"
+                ],
+                correct: "A number showing how well you manage loans and bills",
+                answer: "A credit score is a number showing how well you manage loans and bills. A high score helps you get loans easily. Banks check it before approving credit."
+            },
+            {
+                question: "What is a balance sheet in banking?",
+                options: [
+                    "A customer transaction record",
+                    "A sheet showing a bank's financial health",
+                    "A loan repayment schedule",
+                    "A marketing plan"
+                ],
+                correct: "A sheet showing a bank's financial health",
+                answer: "A balance sheet shows a bank's financial health, listing assets (what it owns) and liabilities (what it owes). It helps understand the bank's stability. It's checked regularly."
+            },
+            {
+                question: "What does a teller do daily?",
+                options: [
+                    "Approves loans",
+                    "Handles cash, processes deposits, and answers queries",
+                    "Manages bank investments",
+                    "Creates banking policies"
+                ],
+                correct: "Handles cash, processes deposits, and answers queries",
+                answer: "A teller handles cash, processes deposits, withdrawals, and answers customer queries. They keep records accurate and ensure the cash counter balances. It's a busy, customer-facing role."
+            },
+            {
+                question: "What is a bank audit?",
+                options: [
+                    "A customer feedback survey",
+                    "A check to ensure the bank follows rules",
+                    "A loan approval process",
+                    "A sales target review"
+                ],
+                correct: "A check to ensure the bank follows rules",
+                answer: "A bank audit is a check to ensure the bank follows rules and manages money correctly. It looks at transactions and records. It prevents errors or fraud."
+            },
+            {
+                question: "What is a demand draft?",
+                options: [
+                    "A digital payment method",
+                    "A secure payment guaranteed by the bank",
+                    "A loan application form",
+                    "A savings account type"
+                ],
+                correct: "A secure payment guaranteed by the bank",
+                answer: "A demand draft is a secure way to pay someone through a bank. It's like a cheque but guaranteed by the bank. It's used for large payments."
+            },
+            {
+                question: "What is account reconciliation?",
+                options: [
+                    "Matching bank records with customer transactions",
+                    "Opening new accounts",
+                    "Calculating loan interest",
+                    "Creating sales targets"
+                ],
+                correct: "Matching bank records with customer transactions",
+                answer: "Account reconciliation is matching a bank's records with customer transactions to ensure accuracy. It catches errors or fraud. It's a key back-office task."
+            },
+            {
+                question: "What is cash handling in banking?",
+                options: [
+                    "Managing digital payments",
+                    "Managing physical money like deposits",
+                    "Approving loans",
+                    "Creating bank policies"
+                ],
+                correct: "Managing physical money like deposits",
+                address: "Cash handling means managing physical money, like counting deposits or giving withdrawals. Tellers do this carefully to avoid mistakes. Accuracy is crucial."
+            },
+            {
+                question: "What is a locker facility?",
+                options: [
+                    "A loan storage system",
+                    "A safe box to store valuables",
+                    "A digital banking app",
+                    "A customer feedback system"
+                ],
+                correct: "A safe box to store valuables",
+                answer: "A locker facility is a safe box in a bank to store valuables like jewelry or documents. You pay a fee to rent it. It's secure and private."
+            },
+            {
+                question: "What is a savings goal?",
+                options: [
+                    "A target amount to save for a purpose",
+                    "A loan repayment plan",
+                    "A sales target for staff",
+                    "A bank audit goal"
+                ],
+                correct: "A target amount to save for a purpose",
+                answer: "A savings goal is a target amount you plan to save for something, like a trip or gadget. Banks offer tools to track it. It helps you stay disciplined."
+            },
+            {
+                question: "What is a prepaid card?",
+                options: [
+                    "A card linked to a savings account",
+                    "A card loaded with a fixed amount for spending",
+                    "A card for loans",
+                    "A card for investments"
+                ],
+                correct: "A card loaded with a fixed amount for spending",
+                answer: "A prepaid card is loaded with a fixed amount of money for spending. It's not linked to a bank account. It's great for budgeting or gifting."
+            },
+            {
+                question: "What is a PIN in banking?",
+                options: [
+                    "Personal Investment Number",
+                    "Personal Identification Number for cards",
+                    "Payment Integration Number",
+                    "Policy Identification Number"
+                ],
+                correct: "Personal Identification Number for cards",
+                answer: "A PIN (Personal Identification Number) is a secret code for your debit or credit card. You use it for transactions or ATM withdrawals. It keeps your money safe."
+            },
+            {
+                question: "What is a customer query?",
+                options: [
+                    "A loan application",
+                    "A question or issue a customer has",
+                    "A bank audit report",
+                    "A sales target"
+                ],
+                correct: "A question or issue a customer has",
+                answer: "A customer query is a question or issue a customer has, like checking a balance or fixing a transaction error. Bank staff resolve these quickly. It's part of good service."
+            },
+            {
+                question: "What is a banking regulation?",
+                options: [
+                    "A customer feedback system",
+                    "Rules to ensure banks operate safely",
+                    "A loan repayment plan",
+                    "A sales strategy"
+                ],
+                correct: "Rules to ensure banks operate safely",
+                answer: "Banking regulations are rules set by authorities like the RBI to ensure banks operate safely. They cover lending, deposits, and customer protection. Compliance is mandatory."
+            },
+            {
+                question: "What is a relationship manager's role?",
+                options: [
+                    "Managing bank branches",
+                    "Building trust with customers and offering products",
+                    "Processing loans only",
+                    "Handling cash transactions"
+                ],
+                correct: "Building trust with customers and offering products",
+                answer: "A relationship manager builds trust with customers, offers products, and solves issues. They aim to keep clients happy and grow business. It needs strong people skills."
+            },
+            {
+                question: "What is a loan agreement?",
+                options: [
+                    "A savings account contract",
+                    "A contract detailing loan terms",
+                    "A customer feedback form",
+                    "A bank audit report"
+                ],
+                correct: "A contract detailing loan terms",
+                answer: "A loan agreement is a contract between you and the bank, detailing loan amount, interest, and repayment terms. You sign it before getting the loan. It's legally binding."
+            },
+            {
+                question: "What is a transaction receipt?",
+                options: [
+                    "Proof of a bank transaction",
+                    "A loan application form",
+                    "A savings goal tracker",
+                    "A bank policy document"
+                ],
+                correct: "Proof of a bank transaction",
+                answer: "A transaction receipt is proof of a bank transaction, like a deposit or payment. It shows the amount, date, and account details. Customers may need it for records."
+            },
+            {
+                question: "What is a cash deposit?",
+                options: [
+                    "Putting money into a bank account",
+                    "Taking money out of an account",
+                    "Applying for a loan",
+                    "Buying insurance"
+                ],
+                correct: "Putting money into a bank account",
+                answer: "A cash deposit is when you put physical money into your bank account. It's done at a branch or ATM. Tellers ensure it's counted correctly."
+            },
+            {
+                question: "What is a loan default?",
+                options: [
+                    "Repaying a loan early",
+                    "Failing to repay a loan on time",
+                    "Applying for a loan",
+                    "Canceling a loan"
+                ],
+                correct: "Failing to repay a loan on time",
+                answer: "A loan default happens when you fail to repay a loan on time. It hurts your credit score and may lead to penalties. Banks try to recover the money."
+            },
+            {
+                question: "What is a bank verification process?",
+                options: [
+                    "Checking customer details before approving accounts or loans",
+                    "Auditing bank branches",
+                    "Processing customer complaints",
+                    "Setting sales targets"
+                ],
+                correct: "Checking customer details before approving accounts or loans",
+                answer: "A bank verification process checks your details, like ID or income, before approving accounts or loans. It ensures trust and compliance. It may take a few days."
+            },
+            {
+                question: "What is a savings plan?",
+                options: [
+                    "A strategy to save money regularly",
+                    "A loan repayment schedule",
+                    "A bank audit plan",
+                    "A sales target plan"
+                ],
+                correct: "A strategy to save money regularly",
+                answer: "A savings plan is a strategy to save money regularly for goals like buying a car. Banks offer accounts or tools to help. It builds financial discipline."
+            },
+            {
+                question: "What is a contactless payment?",
+                options: [
+                    "Paying by cheque",
+                    "Paying by tapping a card or phone",
+                    "Paying through net banking",
+                    "Paying with cash"
+                ],
+                correct: "Paying by tapping a card or phone",
+                answer: "A contactless payment uses a card or phone to pay by tapping a machine. It's fast and secure for small transactions. Many banks now offer this."
+            },
+            {
+                question: "What is a helpline in banking?",
+                options: [
+                    "A phone number for bank support",
+                    "A digital banking app",
+                    "A loan processing system",
+                    "A customer feedback form"
+                ],
+                correct: "A phone number for bank support",
+                answer: "A helpline is a phone number you call for bank support, like reporting a lost card. Staff help with queries or issues. It's available 24/7 in many banks."
+            },
+            {
+                question: "What is a bank branch?",
+                options: [
+                    "A digital banking platform",
+                    "A physical location for customer services",
+                    "A loan processing center",
+                    "A bank audit office"
+                ],
+                correct: "A physical location for customer services",
+                answer: "A bank branch is a physical location where customers go for services like deposits or loans. Staff there assist in person. It's key for traditional banking."
+            },
+            {
+                question: "What is a password in net banking?",
+                options: [
+                    "A code for loan approval",
+                    "A secret code to log into your online account",
+                    "A code for ATM withdrawals",
+                    "A code for sales targets"
+                ],
+                correct: "A secret code to log into your online account",
+                answer: "A password is a secret code you use to log into your online bank account. It protects your account from unauthorized access. You should keep it private."
+            },
+            {
+                question: "What is a loan tenure?",
+                options: [
+                    "The time to repay a loan",
+                    "The time to open an account",
+                    "The time to process a transaction",
+                    "The time to audit a bank"
+                ],
+                correct: "The time to repay a loan",
+                answer: "Loan tenure is the time you get to repay a loan, like 5 years for a car loan. Longer tenures mean smaller EMIs but more interest. It's your choice."
+            },
+            {
+                question: "What is a withdrawal?",
+                options: [
+                    "Taking money out of your bank account",
+                    "Depositing money into an account",
+                    "Applying for a loan",
+                    "Buying insurance"
+                ],
+                correct: "Taking money out of your bank account",
+                answer: "A withdrawal is taking money out of your bank account, via ATM, branch, or online transfer. You need enough balance to do it. It's a common transaction."
+            },
+            {
+                question: "What is a banking policy?",
+                options: [
+                    "A customer feedback system",
+                    "Rules on how banks operate",
+                    "A loan application form",
+                    "A sales target plan"
+                ],
+                correct: "Rules on how banks operate",
+                answer: "A banking policy is a set of rules on how banks operate, like interest rates or loan approvals. It ensures fairness and compliance. Customers benefit from clear policies."
+            },
+            {
+                question: "What is a home loan?",
+                options: [
+                    "A loan to buy a car",
+                    "A loan to buy a house",
+                    "A loan for personal needs",
+                    "A loan for investments"
+                ],
+                correct: "A loan to buy a house",
+                answer: "A home loan is money borrowed from a bank to buy a house. You repay it in EMIs over many years. Banks check your income before approval."
+            },
+            {
+                question: "What is a card statement?",
+                options: [
+                    "A loan repayment schedule",
+                    "A list of card transactions",
+                    "A customer feedback form",
+                    "A bank policy document"
+                ],
+                correct: "A list of card transactions",
+                answer: "A card statement lists all transactions made with your debit or credit card in a period. It shows spending, payments, and due dates. It helps track expenses."
+            },
+            {
+                question: "What is a fraud alert in banking?",
+                options: [
+                    "A warning about suspicious activity",
+                    "A loan approval notice",
+                    "A savings goal reminder",
+                    "A sales target alert"
+                ],
+                correct: "A warning about suspicious activity",
+                answer: "A fraud alert is a warning from the bank about suspicious activity, like an unusual transaction. It protects your account. You may need to confirm or block it."
+            },
+            {
+                question: "What is a deposit slip?",
+                options: [
+                    "A form to deposit money or cheques",
+                    "A loan application form",
+                    "A bank audit report",
+                    "A sales target tracker"
+                ],
+                correct: "A form to deposit money or cheques",
+                answer: "A deposit slip is a form you fill out to deposit money or cheques into your account. It details the amount and account number. Tellers use it to process deposits."
+            },
+            {
+                question: "What is a sales lead?",
+                options: [
+                    "A customer complaint",
+                    "A potential customer interested in bank products",
+                    "A loan repayment plan",
+                    "A bank audit report"
+                ],
+                correct: "A potential customer interested in bank products",
+                answer: "A sales lead is a potential customer interested in bank products, like a loan or account. Staff follow up to convert them into clients. It's key for sales roles."
+            },
+            {
+                question: "What is a cash withdrawal limit?",
+                options: [
+                    "The maximum amount you can deposit daily",
+                    "The maximum amount you can withdraw daily",
+                    "The maximum loan amount",
+                    "The maximum savings goal"
+                ],
+                correct: "The maximum amount you can withdraw daily",
+                answer: "A cash withdrawal limit is the maximum amount you can take out daily, like from an ATM. It's set for security. Banks may adjust it on request."
+            },
+            {
+                question: "What is a banking app?",
+                options: [
+                    "A mobile application to manage your account",
+                    "A desktop software for loans",
+                    "A customer feedback system",
+                    "A bank audit tool"
+                ],
+                correct: "A mobile application to manage your account",
+                answer: "A banking app is a mobile application to manage your account, transfer money, or pay bills. It's secure and easy to use. Most banks offer one."
+            },
+            {
+                question: "What is a personal loan?",
+                options: [
+                    "A loan for buying a house",
+                    "A loan for personal needs without collateral",
+                    "A loan for business investments",
+                    "A loan for fixed deposits"
+                ],
+                correct: "A loan for personal needs without collateral",
+                answer: "A personal loan is money borrowed for personal needs, like medical bills or travel. It has no collateral and is repaid in EMIs. Banks check your credit score."
+            },
+            {
+                question: "What is a secure transaction?",
+                options: [
+                    "A transaction protected by passwords or OTPs",
+                    "A cash deposit",
+                    "A loan application",
+                    "A savings goal"
+                ],
+                correct: "A transaction protected by passwords or OTPs",
+                answer: "A secure transaction is one protected by passwords, OTPs, or encryption. It prevents theft or fraud. Banks use these for online and card payments."
+            },
+            {
+                question: "What is a card limit?",
+                options: [
+                    "The maximum amount you can spend on a card",
+                    "The maximum savings in an account",
+                    "The maximum loan amount",
+                    "The maximum deposit limit"
+                ],
+                correct: "The maximum amount you can spend on a card",
+                answer: "A card limit is the maximum amount you can spend or withdraw using a credit or debit card. It's set by the bank. You can request changes."
+            },
+            {
+                question: "What is a loan application?",
+                options: [
+                    "A form to borrow money",
+                    "A savings account form",
+                    "A bank audit form",
+                    "A customer feedback form"
+                ],
+                correct: "A form to borrow money",
+                answer: "A loan application is a form you submit to borrow money, detailing your income and needs. Banks review it to approve or reject. It's the first step."
+            },
+            {
+                question: "What is a transaction ID?",
+                options: [
+                    "A unique code for each bank transaction",
+                    "A customer identification number",
+                    "A loan approval code",
+                    "A savings goal tracker"
+                ],
+                correct: "A unique code for each bank transaction",
+                answer: "A transaction ID is a unique code for each bank transaction, like a transfer or payment. It helps track or resolve issues. You get it in receipts or statements."
+            },
+            {
+                question: "What is a customer profile?",
+                options: [
+                    "A record of customer details",
+                    "A loan repayment schedule",
+                    "A bank audit report",
+                    "A sales target plan"
+                ],
+                correct: "A record of customer details",
+                answer: "A customer profile is a record of your details, like name, income, and accounts, kept by the bank. It helps offer personalized services. It's updated regularly."
+            },
+            {
+                question: "What is a bank transfer?",
+                options: [
+                    "Moving money between accounts",
+                    "Applying for a loan",
+                    "Depositing cash",
+                    "Buying insurance"
+                ],
+                correct: "Moving money between accounts",
+                answer: "A bank transfer is moving money from one account to another, within the same bank or different banks. It's done online, via apps, or at branches. It's fast and secure."
+            },
+            {
+                question: "What is a banking fee?",
+                options: [
+                    "A charge for services like ATM use",
+                    "A loan interest rate",
+                    "A savings goal tracker",
+                    "A customer feedback fee"
+                ],
+                correct: "A charge for services like ATM use",
+                answer: "A banking fee is a charge for services, like ATM use or account maintenance. It varies by bank and account type. Some accounts have no fees."
+            },
+            {
+                question: "What is a car loan?",
+                options: [
+                    "A loan to buy a vehicle",
+                    "A loan for personal needs",
+                    "A loan for investments",
+                    "A loan for a house"
+                ],
+                correct: "A loan to buy a vehicle",
+                answer: "A car loan is money borrowed to buy a vehicle, repaid in monthly EMIs. The car is collateral until fully paid. Banks check your income first."
+            },
+            {
+                question: "What is an OTP in banking?",
+                options: [
+                    "One-Time Password for secure transactions",
+                    "Online Transaction Protocol",
+                    "Official Transaction Password",
+                    "Overdraft Transaction Plan"
+                ],
+                correct: "One-Time Password for secure transactions",
+                answer: "OTP, or One-Time Password, is a code sent to your phone for secure transactions. It's used for online payments or logins. It's valid for a short time."
+            },
+            {
+                question: "What is a reward point?",
+                options: [
+                    "Points earned on card spending",
+                    "A loan repayment bonus",
+                    "A savings goal tracker",
+                    "A bank audit score"
+                ],
+                correct: "Points earned on card spending",
+                answer: "Reward points are bonuses you earn on credit or debit card spending. You can redeem them for gifts or discounts. Banks offer them to encourage card use."
+            },
+            {
+                question: "What is insurance?",
+                options: [
+                    "A savings account",
+                    "A plan protecting from financial loss",
+                    "A loan repayment plan",
+                    "A bank transfer method"
+                ],
+                correct: "A plan protecting from financial loss",
+                answer: "Insurance is a plan that protects you from financial loss, like in accidents or illness. You pay a premium, and the company covers costs. It gives peace of mind."
+            },
+            {
+                question: "What is a premium?",
+                options: [
+                    "A loan interest rate",
+                    "The amount paid to keep insurance active",
+                    "A bank fee",
+                    "A savings goal"
+                ],
+                correct: "The amount paid to keep insurance active",
+                answer: "A premium is the amount you pay regularly, like monthly, to keep your insurance active. It's based on the coverage type. Missing payments can cancel the policy."
+            },
+            {
+                question: "What is an insurance policy?",
+                options: [
+                    "A contract detailing coverage and premiums",
+                    "A loan agreement",
+                    "A bank audit report",
+                    "A customer feedback form"
+                ],
+                correct: "A contract detailing coverage and premiums",
+                answer: "An insurance policy is a contract detailing what's covered, like health or car damages. It lists premiums and claim rules. You get it when you buy insurance."
+            },
+            {
+                question: "What is a policyholder?",
+                options: [
+                    "The person who buys the insurance policy",
+                    "A bank manager",
+                    "A loan applicant",
+                    "A sales target setter"
+                ],
+                correct: "The person who buys the insurance policy",
+                answer: "A policyholder is the person who buys and owns the insurance policy. They pay premiums and can claim benefits. They're the main person covered."
+            },
+            {
+                question: "What is health insurance?",
+                options: [
+                    "Insurance for car repairs",
+                    "Insurance covering medical costs",
+                    "Insurance for home purchases",
+                    "Insurance for investments"
+                ],
+                correct: "Insurance covering medical costs",
+                answer: "Health insurance covers medical costs, like hospital bills or doctor visits. You pay a premium, and the insurer pays when you're sick. It reduces financial stress."
+            },
+            {
+                question: "What is life insurance?",
+                options: [
+                    "Insurance for medical bills",
+                    "Insurance paying your family if you pass away",
+                    "Insurance for car damages",
+                    "Insurance for home repairs"
+                ],
+                correct: "Insurance paying your family if you pass away",
+                answer: "Life insurance pays money to your family if you pass away. It helps them manage financially. You choose the coverage and pay premiums."
+            },
+            {
+                question: "What is motor insurance?",
+                options: [
+                    "Insurance for medical costs",
+                    "Insurance for vehicle damages",
+                    "Insurance for home purchases",
+                    "Insurance for investments"
+                ],
+                correct: "Insurance for vehicle damages",
+                answer: "Motor insurance covers damages to your vehicle from accidents, theft, or disasters. It's mandatory for vehicles in India. It protects you from big repair costs."
+            },
+            {
+                question: "What is a claim?",
+                options: [
+                    "A loan application",
+                    "Requesting insurance payment for a covered loss",
+                    "A savings goal",
+                    "A bank audit"
+                ],
+                correct: "Requesting insurance payment for a covered loss",
+                answer: "A claim is when you ask the insurance company to pay for a covered loss, like car repairs. You submit documents, and they review it. It's how you get benefits."
+            },
+            {
+                question: "What is a nominee in insurance?",
+                options: [
+                    "The person receiving insurance money if you die",
+                    "A bank manager",
+                    "A loan applicant",
+                    "A sales target setter"
+                ],
+                correct: "The person receiving insurance money if you die",
+                answer: "A nominee is the person you choose to receive insurance money if you die. You name them when buying the policy. It ensures funds go to the right person."
+            },
+            {
+                question: "What is an insurance lead?",
+                options: [
+                    "A customer complaint",
+                    "Someone interested in buying a policy",
+                    "A loan repayment plan",
+                    "A bank audit report"
+                ],
+                correct: "Someone interested in buying a policy",
+                answer: "An insurance lead is someone interested in buying a policy, like health or motor insurance. Sales staff follow up to explain plans. It's key for sales growth."
+            },
+            {
+                question: "What does an insurance sales officer do?",
+                options: [
+                    "Processes loans",
+                    "Explains policies and helps customers buy plans",
+                    "Manages bank branches",
+                    "Handles cash transactions"
+                ],
+                correct: "Explains policies and helps customers buy plans",
+                answer: "An insurance sales officer explains policies, answers questions, and helps customers buy plans. They meet sales targets and handle claims. It's a customer-facing role."
+            },
+            {
+                question: "What is term insurance?",
+                options: [
+                    "Insurance with savings",
+                    "Insurance covering life for a set period",
+                    "Insurance for medical costs",
+                    "Insurance for car repairs"
+                ],
+                correct: "Insurance covering life for a set period",
+                answer: "Term insurance covers your life for a set period, like 10 years. If you pass away during that time, your family gets money. It's affordable but has no savings part."
+            },
+            {
+                question: "What is a policy term?",
+                options: [
+                    "The duration insurance is active",
+                    "The loan repayment period",
+                    "The bank audit period",
+                    "The sales target period"
+                ],
+                correct: "The duration insurance is active",
+                answer: "A policy term is the duration your insurance is active, like 5 or 20 years. It's set when you buy the policy. It affects premiums and coverage."
+            },
+            {
+                question: "What is a claim settlement?",
+                options: [
+                    "Paying a loan",
+                    "Insurer paying or approving a claim",
+                    "Opening an account",
+                    "Setting a sales target"
+                ],
+                correct: "Insurer paying or approving a claim",
+                answer: "Claim settlement is when the insurer pays or approves your claim after review. It involves checking documents and damage. A quick settlement means good service."
+            },
+            {
+                question: "What is an endowment policy?",
+                options: [
+                    "Insurance for car repairs",
+                    "Insurance mixing savings and coverage",
+                    "Insurance for medical costs",
+                    "Insurance for home purchases"
+                ],
+                correct: "Insurance mixing savings and coverage",
+                answer: "An endowment policy mixes insurance and savings. You pay premiums, and get money at the end or if you die. It's good for long-term goals."
+            },
+            {
+                question: "What is a rider in insurance?",
+                options: [
+                    "An extra benefit added to a policy",
+                    "A loan repayment plan",
+                    "A bank audit report",
+                    "A sales target"
+                ],
+                correct: "An extra benefit added to a policy",
+                answer: "A rider is an extra benefit added to your policy, like accident coverage. It costs more but gives extra protection. You choose it when buying insurance."
+            },
+            {
+                question: "What is a premium payment term?",
+                options: [
+                    "The time to pay loan EMIs",
+                    "The time to pay insurance premiums",
+                    "The time to open an account",
+                    "The time to audit a bank"
+                ],
+                correct: "The time to pay insurance premiums",
+                answer: "The premium payment term is how long you pay premiums, like 10 years for a 20-year policy. It can be shorter than the policy term. It affects your costs."
+            },
+            {
+                question: "What is a group insurance plan?",
+                options: [
+                    "Insurance for individuals",
+                    "Insurance covering many people under one policy",
+                    "Insurance for car repairs",
+                    "Insurance for home purchases"
+                ],
+                correct: "Insurance covering many people under one policy",
+                answer: "Group insurance covers many people, like employees in a company, under one policy. It's cheaper and often paid by the employer. It's common in workplaces."
+            },
+            {
+                question: "What is a lapsed policy?",
+                options: [
+                    "A policy that stops due to missed premiums",
+                    "A policy with extra benefits",
+                    "A policy for loans",
+                    "A policy for savings"
+                ],
+                correct: "A policy that stops due to missed premiums",
+                answer: "A lapsed policy is one that stops because you missed premium payments. You lose coverage unless you revive it. Insurers may offer a grace period."
+            },
+            {
+                question: "What is a policy renewal?",
+                options: [
+                    "Continuing insurance by paying the next premium",
+                    "Applying for a loan",
+                    "Opening a new account",
+                    "Auditing a bank"
+                ],
+                correct: "Continuing insurance by paying the next premium",
+                answer: "Policy renewal is continuing your insurance by paying the next premium. It keeps your coverage active. Insurers remind you before the due date."
+            },
+            {
+                question: "What is a sum assured?",
+                options: [
+                    "The amount paid for a loan",
+                    "The amount an insurer pays for a claim",
+                    "The amount in a savings account",
+                    "The amount for a bank audit"
+                ],
+                correct: "The amount an insurer pays for a claim",
+                answer: "Sum assured is the amount the insurer pays if something happens, like death or damage. It's set when you buy the policy. It affects your premium."
+            },
+            {
+                question: "What is an insurance agent?",
+                options: [
+                    "A person who sells policies and helps with claims",
+                    "A bank manager",
+                    "A loan officer",
+                    "A teller"
+                ],
+                correct: "A person who sells policies and helps with claims",
+                answer: "An insurance agent sells policies, explains benefits, and helps with claims. They connect customers with insurers. They earn commissions for sales."
+            },
+            {
+                question: "What is a no-claim bonus?",
+                options: [
+                    "A bonus for loan repayment",
+                    "A discount on premiums for no claims",
+                    "A savings account bonus",
+                    "A bank audit reward"
+                ],
+                correct: "A discount on premiums for no claims",
+                answer: "A no-claim bonus is a discount on your premium if you don't make claims in a year. It's common in motor insurance. It rewards safe behavior."
+            },
+            {
+                question: "What is a policy document?",
+                options: [
+                    "A loan agreement",
+                    "A paper detailing insurance terms",
+                    "A bank audit report",
+                    "A customer feedback form"
+                ],
+                correct: "A paper detailing insurance terms",
+                answer: "A policy document is the official paper or file detailing your insurance terms, like coverage and premiums. You get it after buying. Keep it safe for claims."
+            },
+            {
+                question: "What is bancassurance?",
+                options: [
+                    "Banks selling insurance products",
+                    "A loan repayment plan",
+                    "A savings account type",
+                    "A bank audit process"
+                ],
+                correct: "Banks selling insurance products",
+                answer: "Bancassurance is when banks sell insurance products to their customers. It's a partnership between banks and insurers. It's convenient for customers."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let usedQuestionIndices = [];
+        let selectedOption = null;
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function getRandomQuestionIndex() {
+            const availableIndices = questions.map((_, index) => index).filter(index => !usedQuestionIndices.includes(index));
+            if (availableIndices.length === 0) {
+                usedQuestionIndices = [];
+                return Math.floor(Math.random() * questions.length);
+            }
+            return availableIndices[Math.floor(Math.random() * availableIndices.length)];
+        }
+
+        function loadQuestion() {
+            const questionIndex = getRandomQuestionIndex();
+            usedQuestionIndices.push(questionIndex);
+            const question = questions[questionIndex];
+            const shuffledOptions = shuffle([...question.options]);
+            const correctIndex = shuffledOptions.indexOf(question.correct);
+            document.getElementById('question-text').textContent = `Q${currentQuestionIndex + 1}: ${question.question}`;
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            shuffledOptions.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option nes-font';
+                optionDiv.textContent = option;
+                optionDiv.dataset.index = index;
+                optionDiv.addEventListener('click', () => selectOption(index, question, correctIndex));
+                optionsContainer.appendChild(optionDiv);
+            });
+            document.getElementById('answer-container').style.display = 'none';
+            document.getElementById('next-button').style.display = 'none';
+            selectedOption = null;
+            updateScore();
+        }
+
+        function selectOption(index, question, correctIndex) {
+            if (selectedOption !== null) return;
+            selectedOption = index;
+            const options = document.querySelectorAll('.option');
+            options.forEach((option, i) => {
+                option.classList.add(i === correctIndex ? 'correct' : 'incorrect');
+                if (i === index) option.classList.add('selected');
+            });
+            if (index === correctIndex) score++;
+            const answerContainer = document.getElementById('answer-container');
+            const answerText = document.getElementById('answer-text');
+            answerText.textContent = `Answer: ${question.correct}\nExplanation: ${question.answer}`;
+            answerContainer.style.display = 'block';
+            document.getElementById('next-button').style.display = 'block';
+            updateScore();
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = `Score: ${score} / ${currentQuestionIndex + 1}`;
+        }
+
+        document.getElementById('next-button').addEventListener('click', () => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                document.getElementById('question-container').innerHTML = '';
+                document.getElementById('answer-container').style.display = 'none';
+                document.getElementById('next-button').style.display = 'none';
+                document.getElementById('score').textContent = `Game Over! Final Score: ${score} / ${questions.length}`;
+            }
+        });
+
+        loadQuestion();
+    </script>
 </body>
 </html>
