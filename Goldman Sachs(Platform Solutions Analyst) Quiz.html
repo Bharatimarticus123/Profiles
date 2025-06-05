@@ -47,15 +47,15 @@
             line-height: 1.4;
         }
         .option {
-            margin: 2rem 0; /* User-friendly spacing between options */
-            padding: 0.5rem; /* Added padding for clarity */
+            margin: 2rem 0; /* User-friendly spacing */
+            padding: 0.5rem; /* Prevents text cramping */
             font-size: 14px;
             color: #ffd700;
             background: rgba(0, 0, 0, 0.7);
             border-radius: 5px;
             transition: background 0.3s;
             line-height: 1.6; /* Improved readability */
-            display: block; /* Ensures full-width options */
+            display: block; /* Full-width options */
         }
         .option:hover {
             background: rgba(255, 215, 0, 0.2);
@@ -133,43 +133,43 @@
                 question: "What does a Platform Solutions Analyst primarily do at Goldman Sachs?",
                 options: ["Develop financial models", "Monitor transactions for fraud", "Manage client portfolios", "Design marketing campaigns"],
                 correct: "Monitor transactions for fraud",
-                explanation: "A Platform Solutions Analyst monitors card transactions in real-time to detect and prevent fraud, collaborating with risk and compliance teams to protect customers and ensure regulatory adherence."
+                explanation: "A Platform Solutions Analyst monitors card transactions in real-time to detect and prevent fraud, collaborating with risk and compliance teams to ensure customer protection and regulatory adherence."
             },
             {
                 question: "What is card fraud?",
                 options: ["Unauthorized use of payment cards", "Disputing legitimate transactions", "Processing errors in transactions", "Delayed transaction settlements"],
                 correct: "Unauthorized use of payment cards",
-                explanation: "Card fraud involves unauthorized transactions using stolen or fake cards. Monitoring prevents financial loss, ensures compliance, and maintains customer trust."
+                explanation: "Card fraud involves unauthorized transactions using stolen or fake cards. Monitoring systems flag suspicious activities to prevent financial loss and maintain trust."
             },
             {
                 question: "What is used to prioritize alerts in fraud monitoring?",
                 options: ["Transaction time", "Risk scoring models", "Customer name", "Merchant location"],
                 correct: "Risk scoring models",
-                explanation: "Risk scoring models prioritize alerts based on factors like transaction amount, location, and customer behavior, ensuring high-risk cases are investigated first."
+                explanation: "Risk scoring models assign scores based on transaction amount, location, and behavior, prioritizing high-risk alerts for immediate investigation."
             },
             {
                 question: "What is the first step in setting up real-time transaction monitoring?",
                 options: ["Assign risk scores", "Define risk rules", "Load data feeds", "Configure the dashboard"],
                 correct: "Define risk rules",
-                explanation: "Defining risk rules, such as flagging high-value or unusual transactions, is the first step to trigger alerts in real-time monitoring systems."
+                explanation: "Defining risk rules, such as flagging unusual transactions, is the initial step to trigger alerts in real-time monitoring setups."
             },
             {
                 question: "What is a false positive in fraud detection?",
-                options: ["A legitimate transaction flagged as fraudulent", "A missed fraudulent transaction", "A transaction with missing data", "A delayed transaction"],
-                correct: "A legitimate transaction flagged as fraudulent",
-                explanation: "A false positive occurs when a legitimate transaction is incorrectly flagged, potentially causing inconvenience and requiring rule refinement."
+                options: ["A legitimate transaction flagged as fraudulent", "A missed fraudulent transaction", "A transaction with missing data", "A delayed response to alert"],
+                correct: "A legitimate transaction",
+                explanation: "A false positive occurs when a legitimate transaction is flagged as fraudulent, requiring rule adjustments to minimize customer inconvenience."
             },
             {
                 question: "What type of card fraud involves online transactions without the physical card?",
                 options: ["Skimming", "Card-not-present fraud", "Lost/stolen card fraud", "Application fraud"],
                 correct: "Card-not-present fraud",
-                explanation: "Card-not-present (CNP) fraud occurs in online or phone transactions using stolen card details, requiring velocity checks and address verification."
+                explanation: "Card-not-present (CNP) fraud occurs in online or phone transactions using stolen card details, mitigated by velocity checks and address verification."
             },
             {
                 question: "Which tool is commonly used for querying transaction data in fraud detection?",
                 options: ["Excel", "SQL", "PowerPoint", "Tableau"],
                 correct: "SQL",
-                explanation: "SQL is used to query transaction databases, enabling analysts to extract and analyze data for fraud investigations efficiently."
+                explanation: "SQL enables analysts to query transaction databases efficiently, extracting data for fraud investigations and pattern analysis."
             },
             {
                 question: "How does machine learning improve fraud detection?",
@@ -181,23 +181,542 @@
                 question: "What is PCI-DSS?",
                 options: ["A fraud detection algorithm", "A data security standard", "A transaction processing protocol", "A customer verification system"],
                 correct: "A data security standard",
-                explanation: "PCI-DSS ensures secure handling of cardholder data through encryption and access controls, protecting customers and maintaining compliance."
+                explanation: "PCI-DSS ensures secure handling of cardholder data through encryption and access controls, maintaining compliance and customer trust."
             },
             {
                 question: "What is a red flag for card fraud?",
                 options: ["Low-value local purchases", "Multiple rapid transactions", "Regular grocery shopping", "Frequent small deposits"],
                 correct: "Multiple rapid transactions",
-                explanation: "Multiple rapid transactions in quick succession can indicate fraudulent activity, such as a fraudster testing a stolen card."
+                explanation: "Multiple rapid transactions in quick succession often indicate a fraudster testing a stolen card, triggering monitoring alerts."
             },
-            // Placeholder for additional 90 questions, to be sourced from GS Question Bank 1.pdf, GS Question Bank 2.pdf, and online research
-            // Example additional question:
             {
                 question: "What is the role of FATF in fraud monitoring?",
                 options: ["Sets anti-money laundering standards", "Develops fraud detection software", "Manages transaction databases", "Handles customer disputes"],
                 correct: "Sets anti-money laundering standards",
-                explanation: "FATF (Financial Action Task Force) sets global anti-money laundering standards, guiding fraud monitoring to detect suspicious flows and ensure compliance."
+                explanation: "FATF sets global anti-money laundering standards, guiding fraud monitoring to detect suspicious financial flows and ensure compliance."
             },
-            // Add 89 more questions here in the same format
+            {
+                question: "What is device fingerprinting in fraud detection?",
+                options: ["Tracking customer locations", "Collecting device details", "Encrypting transaction data", "Verifying cardholder identity"],
+                correct: "Collecting device details",
+                explanation: "Device fingerprinting collects non-PII details like browser version and OS to create a unique profile, flagging mismatches for potential fraud."
+            },
+            {
+                question: "How do you reduce false positives in fraud detection?",
+                options: ["Increase alert thresholds", "Add contextual data", "Remove all rules", "Ignore low-value transactions"],
+                correct: "Add contextual data",
+                explanation: "Contextual data like travel notifications or behavioral profiles helps distinguish legitimate transactions, reducing false positives."
+            },
+            {
+                question: "What is an MCC in fraud detection?",
+                options: ["Merchant Category Code", "Money Control Code", "Merchant Credit Check", "Monitoring Compliance Code"],
+                correct: "Merchant Category Code",
+                explanation: "MCC is a 4-digit code classifying merchant types (e.g., 5411 for groceries), used to detect unusual transaction patterns."
+            },
+            {
+                question: "What is skimming in the context of card fraud?",
+                options: ["Copying card data at ATMs", "Online phishing attacks", "Disputing valid transactions", "Creating fake merchant accounts"],
+                correct: "Copying card data at ATMs",
+                explanation: "Skimming involves devices placed on ATMs or POS terminals to steal card data, often detected through physical inspections or transaction anomalies."
+            },
+            {
+                question: "Which regulation governs data protection in the EU for fraud monitoring?",
+                options: ["PCI-DSS", "GDPR", "FATF", "SOX"],
+                correct: "GDPR",
+                explanation: "GDPR governs data protection in the EU, requiring secure handling of personal data in fraud monitoring to protect customer privacy."
+            },
+            {
+                question: "What is a velocity check in fraud detection?",
+                options: ["Checking transaction speed", "Monitoring transaction frequency", "Verifying merchant location", "Encrypting card details"],
+                correct: "Monitoring transaction frequency",
+                explanation: "Velocity checks monitor the frequency and volume of transactions to flag rapid, suspicious activities indicative of fraud."
+            },
+            {
+                question: "What Excel function is useful for fraud data analysis?",
+                options: ["VLOOKUP", "SUM", "AVERAGE", "PRINT"],
+                correct: "VLOOKUP",
+                explanation: "VLOOKUP is used to cross-reference transaction data with customer profiles or merchant lists, aiding fraud investigations."
+            },
+            {
+                question: "What is a common indicator of application fraud?",
+                options: ["Multiple transactions at one merchant", "Inconsistent identity details", "Low-value purchases", "Regular bill payments"],
+                correct: "Inconsistent identity details",
+                explanation: "Application fraud involves fake identities for card applications, often detected by mismatched or inconsistent identity details."
+            },
+            {
+                question: "What does a high-risk merchant category imply in fraud monitoring?",
+                options: ["Low transaction volume", "Increased fraud likelihood", "Trusted vendor status", "Encrypted transactions"],
+                correct: "Increased fraud likelihood",
+                explanation: "High-risk merchant categories (e.g., online gambling) are more prone to fraud, requiring stricter monitoring and rule sets."
+            },
+            {
+                question: "What SQL clause filters fraud transactions by amount?",
+                options: ["SELECT", "WHERE", "JOIN", "GROUP BY"],
+                correct: "WHERE",
+                explanation: "The WHERE clause in SQL filters transactions by criteria like amount (e.g., WHERE amount > 1000) to identify potential fraud."
+            },
+            {
+                question: "What is a chargeback in fraud monitoring?",
+                options: ["A reversed transaction", "A high-value purchase", "A merchant discount", "An encrypted payment"],
+                correct: "A reversed transaction",
+                explanation: "A chargeback is a transaction reversed by the cardholder’s bank, often due to fraud or disputes, impacting merchant accounts."
+            },
+            {
+                question: "What is the purpose of address verification in fraud detection?",
+                options: ["Encrypt card details", "Confirm cardholder location", "Increase transaction speed", "Reduce merchant fees"],
+                correct: "Confirm cardholder location",
+                explanation: "Address verification compares billing addresses to cardholder records, flagging mismatches to prevent card-not-present fraud."
+            },
+            {
+                question: "What is a common fraud detection rule for international transactions?",
+                options: ["Flag all low-value transactions", "Require CVV for local purchases", "Alert on foreign IP addresses", "Ignore recurring payments"],
+                correct: "Alert on foreign IP addresses",
+                explanation: "Foreign IP addresses for transactions can indicate card-not-present fraud, triggering alerts for further verification."
+            },
+            {
+                question: "What is anomaly detection in fraud monitoring?",
+                options: ["Encrypting transaction data", "Identifying unusual patterns", "Processing chargebacks", "Verifying merchant accounts"],
+                correct: "Identifying unusual patterns",
+                explanation: "Anomaly detection uses algorithms to identify transactions deviating from normal customer behavior, signaling potential fraud."
+            },
+            {
+                question: "What is a common use of Tableau in fraud detection?",
+                options: ["Writing SQL queries", "Visualizing transaction trends", "Encrypting data", "Automating alerts"],
+                correct: "Visualizing transaction trends",
+                explanation: "Tableau visualizes transaction trends and patterns, helping analysts identify fraud hotspots and optimize monitoring rules."
+            },
+            {
+                question: "What is the purpose of a fraud rule sandbox?",
+                options: ["Test new rules safely", "Store transaction data", "Encrypt communications", "Process chargebacks"],
+                correct: "Test new rules safely",
+                explanation: "A fraud rule sandbox allows testing of new detection rules without affecting live transactions, ensuring accuracy."
+            },
+            {
+                question: "What is a phishing attack in the context of card fraud?",
+                options: ["Stealing card data via fake emails", "Copying card data at POS", "Creating fake merchant accounts", "Disputing valid transactions"],
+                correct: "Stealing card data via fake emails",
+                explanation: "Phishing attacks use fake emails or websites to trick users into revealing card details, often leading to card-not-present fraud."
+            },
+            {
+                question: "What is a key benefit of real-time fraud monitoring?",
+                options: ["Delayed transaction processing", "Immediate fraud prevention", "Reduced customer interaction", "Simplified reporting"],
+                correct: "Immediate fraud prevention",
+                explanation: "Real-time monitoring detects and blocks fraudulent transactions instantly, minimizing financial losses and customer impact."
+            },
+            {
+                question: "What SQL function aggregates fraud transaction counts?",
+                options: ["COUNT", "SUM", "AVG", "MAX"],
+                correct: "COUNT",
+                explanation: "The COUNT function in SQL tallies the number of transactions meeting fraud criteria, aiding in trend analysis."
+            },
+            {
+                question: "What is a common fraudster tactic to test stolen cards?",
+                options: ["Large single purchases", "Multiple small transactions", "Recurring subscriptions", "Local grocery shopping"],
+                correct: "Multiple small transactions",
+                explanation: "Fraudsters often test stolen cards with small transactions to avoid detection before attempting larger fraud."
+            },
+            {
+                question: "What is the role of a fraud analyst in alert triage?",
+                options: ["Encrypt transaction data", "Prioritize and investigate alerts", "Develop machine learning models", "Process customer refunds"],
+                correct: "Prioritize and investigate alerts",
+                explanation: "Fraud analysts triage alerts by prioritizing high-risk cases and investigating to confirm or dismiss fraud suspicions."
+            },
+            {
+                question: "What is a CVV in card transactions?",
+                options: ["Card Verification Value", "Customer Validation Variable", "Credit Value Voucher", "Card Vendor Verification"],
+                correct: "Card Verification Value",
+                explanation: "CVV is a 3-4 digit code on cards, used to verify card-not-present transactions and reduce fraud risk."
+            },
+            {
+                question: "What is a common challenge in fraud detection?",
+                options: ["Too many transactions", "Balancing false positives", "Lack of merchant data", "Slow transaction processing"],
+                correct: "Balancing false positives",
+                explanation: "Balancing false positives ensures legitimate transactions aren’t flagged while maintaining strong fraud detection."
+            },
+            {
+                question: "What is a key feature of in-house fraud detection platforms?",
+                options: ["Generic rule sets", "Customizable rules", "No data integration", "Manual alert processing"],
+                correct: "Customizable rules",
+                explanation: "In-house platforms allow customizable rules tailored to specific fraud patterns, enhancing detection accuracy."
+            },
+            {
+                question: "What is a synthetic identity in fraud?",
+                options: ["A fake identity combining real and false data", "A stolen card number", "A legitimate customer profile", "An encrypted transaction"],
+                correct: "A fake identity combining real and false data",
+                explanation: "Synthetic identities combine real and fake data to create fraudulent accounts, often detected via identity mismatches."
+            },
+            {
+                question: "What is the purpose of transaction profiling?",
+                options: ["Encrypt card details", "Build customer behavior models", "Process chargebacks", "Verify merchant accounts"],
+                correct: "Build customer behavior models",
+                explanation: "Transaction profiling builds models of normal customer behavior to flag deviations indicative of fraud."
+            },
+            {
+                question: "What is a common fraud monitoring metric?",
+                options: ["Transaction approval rate", "Customer satisfaction score", "Merchant discount rate", "Encryption strength"],
+                correct: "Transaction approval rate",
+                explanation: "Transaction approval rate measures the percentage of transactions approved vs. flagged, indicating rule effectiveness."
+            },
+            {
+                question: "What SQL join type links transaction and customer data?",
+                options: ["INNER JOIN", "LEFT JOIN", "RIGHT JOIN", "FULL JOIN"],
+                correct: "INNER JOIN",
+                explanation: "INNER JOIN links transaction and customer data where records match, useful for fraud analysis."
+            },
+            {
+                question: "What is a common fraud prevention technique for e-commerce?",
+                options: ["Two-factor authentication", "Reducing transaction limits", "Ignoring small transactions", "Manual transaction reviews"],
+                correct: "Two-factor authentication",
+                explanation: "Two-factor authentication adds a verification step (e.g., OTP) to e-commerce transactions, reducing fraud risk."
+            },
+            {
+                question: "What is the role of a fraud detection dashboard?",
+                options: ["Encrypt data", "Visualize alerts and trends", "Process transactions", "Store customer profiles"],
+                correct: "Visualize alerts and trends",
+                explanation: "Dashboards visualize alerts and trends, enabling analysts to monitor fraud patterns and prioritize investigations."
+            },
+            {
+                question: "What is a bust-out fraud scheme?",
+                options: ["Using stolen cards for small purchases", "Maxing out credit before defaulting", "Creating fake merchant accounts", "Phishing for card details"],
+                correct: "Maxing out credit before defaulting",
+                explanation: "Bust-out fraud involves building credit trust, then maxing out limits and defaulting, detected via sudden spikes."
+            },
+            {
+                question: "What is a key consideration in fraud rule design?",
+                options: ["Maximize false positives", "Minimize customer impact", "Ignore low-value transactions", "Use generic templates"],
+                correct: "Minimize customer impact",
+                explanation: "Fraud rules should minimize customer impact by reducing false positives while effectively detecting fraud."
+            },
+            {
+                question: "What is a common use of AI in fraud detection?",
+                options: ["Manual alert reviews", "Pattern recognition", "Transaction encryption", "Customer onboarding"],
+                correct: "Pattern recognition",
+                explanation: "AI uses pattern recognition to identify complex fraud patterns, improving detection accuracy over time."
+            },
+            {
+                question: "What is a transaction decline code?",
+                options: ["A code for approved transactions", "A reason for transaction rejection", "A merchant discount rate", "An encryption key"],
+                correct: "A reason for transaction rejection",
+                explanation: "Decline codes indicate why a transaction was rejected (e.g., suspected fraud), aiding analyst investigations."
+            },
+            {
+                question: "What is a common fraud alert trigger?",
+                options: ["Recurring local payments", "Unusual transaction location", "Low-value grocery purchases", "Regular utility bills"],
+                correct: "Unusual transaction location",
+                explanation: "Unusual transaction locations, such as foreign countries, trigger alerts due to potential card theft or misuse."
+            },
+            {
+                question: "What is the purpose of a fraud case management system?",
+                options: ["Encrypt transactions", "Track and resolve fraud cases", "Process chargebacks", "Store merchant data"],
+                correct: "Track and resolve fraud cases",
+                explanation: "Case management systems track and resolve fraud cases, streamlining investigations and reporting."
+            },
+            {
+                question: "What is a common fraudster tactic in card-not-present fraud?",
+                options: ["Using stolen cards at ATMs", "Testing cards with micro-transactions", "Applying for credit locally", "Paying utility bills"],
+                correct: "Testing cards with micro-transactions",
+                explanation: "Fraudsters test stolen cards with micro-transactions to verify validity before larger fraudulent purchases."
+            },
+            {
+                question: "What is a key benefit of behavioral biometrics in fraud detection?",
+                options: ["Encrypting card details", "Analyzing user interaction patterns", "Processing chargebacks", "Verifying merchant accounts"],
+                correct: "Analyzing user interaction patterns",
+                explanation: "Behavioral biometrics analyzes typing or mouse patterns to detect deviations, enhancing fraud detection."
+            },
+            {
+                question: "What is a common fraud monitoring report type?",
+                options: ["Customer satisfaction report", "Fraud trend analysis report", "Merchant discount report", "Encryption status report"],
+                correct: "Fraud trend analysis report",
+                explanation: "Fraud trend analysis reports identify patterns and hotspots, guiding rule updates and resource allocation."
+            },
+            {
+                question: "What SQL command retrieves unique fraud transactions?",
+                options: ["SELECT DISTINCT", "SELECT ALL", "SELECT TOP", "SELECT UNIQUE"],
+                correct: "SELECT DISTINCT",
+                explanation: "SELECT DISTINCT retrieves unique transaction records, useful for analyzing fraud without duplicates."
+            },
+            {
+                question: "What is a common fraud prevention strategy for POS terminals?",
+                options: ["Disable CVV checks", "Use EMV chip technology", "Ignore small transactions", "Manual card verification"],
+                correct: "Use EMV chip technology",
+                explanation: "EMV chip technology encrypts card data at POS terminals, reducing skimming and counterfeit fraud."
+            },
+            {
+                question: "What is the role of a fraud analyst in rule optimization?",
+                options: ["Encrypt transaction data", "Adjust rules to reduce false positives", "Develop new merchant accounts", "Process customer refunds"],
+                correct: "Adjust rules to reduce false positives",
+                explanation: "Fraud analysts optimize rules to reduce false positives, balancing detection accuracy and customer experience."
+            },
+            {
+                question: "What is a common indicator of friendly fraud?",
+                options: ["Multiple small transactions", "Disputing legitimate purchases", "Foreign IP addresses", "Rapid high-value purchases"],
+                correct: "Disputing legitimate purchases",
+                explanation: "Friendly fraud occurs when cardholders dispute legitimate purchases, often detected via transaction history."
+            },
+            {
+                question: "What is a key feature of a fraud detection system?",
+                options: ["Manual transaction processing", "Real-time alert generation", "Static rule sets", "No data integration"],
+                correct: "Real-time alert generation",
+                explanation: "Real-time alert generation enables immediate response to suspicious transactions, minimizing fraud impact."
+            },
+            {
+                question: "What is a common use of data analytics in fraud detection?",
+                options: ["Encrypting card details", "Identifying fraud patterns", "Processing chargebacks", "Verifying merchant accounts"],
+                correct: "Identifying fraud patterns",
+                explanation: "Data analytics identifies fraud patterns through historical and real-time data, enhancing detection strategies."
+            },
+            {
+                question: "What is a transaction authorization code?",
+                options: ["A code for declined transactions", "A unique approval identifier", "A merchant discount rate", "An encryption key"],
+                correct: "A unique approval identifier",
+                explanation: "Authorization codes are unique identifiers for approved transactions, used for tracking and fraud analysis."
+            },
+            {
+                question: "What is a common fraud monitoring challenge?",
+                options: ["Too few transactions", "Evolving fraud tactics", "Static customer behavior", "No regulatory requirements"],
+                correct: "Evolving fraud tactics",
+                explanation: "Evolving fraud tactics require continuous rule updates and advanced detection methods to stay effective."
+            },
+            {
+                question: "What is the purpose of a fraud risk assessment?",
+                options: ["Encrypt transaction data", "Evaluate fraud vulnerabilities", "Process chargebacks", "Verify merchant accounts"],
+                correct: "Evaluate fraud vulnerabilities",
+                explanation: "Fraud risk assessments evaluate vulnerabilities in systems and processes, guiding prevention strategies."
+            },
+            {
+                question: "What is a common fraudster tactic in account takeover?",
+                options: ["Using stolen cards at ATMs", "Phishing for login credentials", "Applying for local credit", "Paying utility bills"],
+                correct: "Phishing for login credentials",
+                explanation: "Account takeover often involves phishing to steal login credentials, allowing fraudsters to access accounts."
+            },
+            {
+                question: "What is a key benefit of geolocation in fraud detection?",
+                options: ["Encrypting card details", "Flagging unusual transaction locations", "Processing chargebacks", "Verifying merchant accounts"],
+                correct: "Flagging unusual transaction locations",
+                explanation: "Geolocation flags transactions from unusual locations, helping detect potential card theft or misuse."
+            },
+            {
+                question: "What is a common fraud monitoring KPI?",
+                options: ["Customer retention rate", "Fraud loss rate", "Merchant discount rate", "Encryption strength"],
+                correct: "Fraud loss rate",
+                explanation: "Fraud loss rate measures financial losses due to fraud, indicating the effectiveness of monitoring systems."
+            },
+            {
+                question: "What SQL clause groups fraud transactions by merchant?",
+                options: ["WHERE", "GROUP BY", "ORDER BY", "HAVING"],
+                correct: "GROUP BY",
+                explanation: "GROUP BY in SQL groups transactions by merchant, enabling analysis of fraud patterns by vendor."
+            },
+            {
+                question: "What is a common fraud prevention technique for mobile apps?",
+                options: ["Disable biometric authentication", "Use device binding", "Ignore small transactions", "Manual login reviews"],
+                correct: "Use device binding",
+                explanation: "Device binding links a mobile app to a specific device, reducing account takeover and fraud risks."
+            },
+            {
+                question: "What is the role of a fraud analyst in customer communication?",
+                options: ["Encrypt transaction data", "Notify customers of fraud alerts", "Develop new merchant accounts", "Process customer refunds"],
+                correct: "Notify customers of fraud alerts",
+                explanation: "Fraud analysts notify customers of potential fraud, ensuring prompt action to secure accounts."
+            },
+            {
+                question: "What is a common indicator of refund fraud?",
+                options: ["Multiple small transactions", "Requesting refunds without returns", "Foreign IP addresses", "Rapid high-value purchases"],
+                correct: "Requesting refunds without returns",
+                explanation: "Refund fraud involves requesting refunds without returning goods, detected via transaction and return history."
+            },
+            {
+                question: "What is a key feature of a fraud detection platform?",
+                options: ["Manual transaction reviews", "Machine learning integration", "Static rule sets", "No alert prioritization"],
+                correct: "Machine learning integration",
+                explanation: "Machine learning integration enhances fraud detection by adapting to new patterns and reducing false positives."
+            },
+            {
+                question: "What is a common use of predictive analytics in fraud detection?",
+                options: ["Encrypting card details", "Forecasting fraud risks", "Processing chargebacks", "Verifying merchant accounts"],
+                correct: "Forecasting fraud risks",
+                explanation: "Predictive analytics forecasts fraud risks based on historical data, enabling proactive prevention measures."
+            },
+            {
+                question: "What is a transaction settlement code?",
+                options: ["A code for declined transactions", "A final processing identifier", "A merchant discount rate", "An encryption key"],
+                correct: "A final processing identifier",
+                explanation: "Settlement codes identify completed transactions, used for reconciliation and fraud tracking."
+            },
+            {
+                question: "What is a common fraud monitoring goal?",
+                options: ["Maximize false positives", "Minimize fraud losses", "Increase transaction delays", "Reduce customer interaction"],
+                correct: "Minimize fraud losses",
+                explanation: "Minimizing fraud losses is a primary goal, achieved through effective detection and prevention strategies."
+            },
+            {
+                question: "What is the purpose of a fraud prevention policy?",
+                options: ["Encrypt transaction data", "Define fraud mitigation procedures", "Process chargebacks", "Verify merchant accounts"],
+                correct: "Define fraud mitigation procedures",
+                explanation: "Fraud prevention policies outline procedures for detection, response, and mitigation to reduce risks."
+            },
+            {
+                question: "What is a common fraudster tactic in phishing scams?",
+                options: ["Using stolen cards at ATMs", "Sending fake bank alerts", "Applying for local credit", "Paying utility bills"],
+                correct: "Sending fake bank alerts",
+                explanation: "Phishing scams often use fake bank alerts to trick users into revealing card or login details."
+            },
+            {
+                question: "What is a key benefit of network analysis in fraud detection?",
+                options: ["Encrypting card details", "Identifying fraud rings", "Processing chargebacks", "Verifying merchant accounts"],
+                correct: "Identifying fraud rings",
+                explanation: "Network analysis identifies connections between fraudulent accounts, uncovering organized fraud rings."
+            },
+            {
+                question: "What is a common fraud monitoring tool?",
+                options: ["Microsoft Word", "FICO Falcon", "Adobe Photoshop", "Windows Explorer"],
+                correct: "FICO Falcon",
+                explanation: "FICO Falcon is a widely used fraud monitoring tool, leveraging analytics to detect suspicious transactions."
+            },
+            {
+                question: "What SQL function calculates total fraud transaction amounts?",
+                options: ["COUNT", "SUM", "AVG", "MIN"],
+                correct: "SUM",
+                explanation: "The SUM function in SQL calculates the total amount of transactions flagged as fraudulent."
+            },
+            {
+                question: "What is a common fraud prevention technique for ATMs?",
+                options: ["Disable PIN entry", "Use anti-skimming devices", "Ignore small withdrawals", "Manual card checks"],
+                correct: "Use anti-skimming devices",
+                explanation: "Anti-skimming devices prevent data theft at ATMs, reducing skimming-related card fraud."
+            },
+            {
+                question: "What is the role of a fraud analyst in data analysis?",
+                options: ["Encrypt transaction data", "Identify fraud trends", "Develop new merchant accounts", "Process customer refunds"],
+                correct: "Identify fraud trends",
+                explanation: "Fraud analysts use data analysis to identify trends and patterns, informing rule updates and strategies."
+            },
+            {
+                question: "What is a common indicator of triangulation fraud?",
+                options: ["Multiple small transactions", "Fake storefronts with drop-shipping", "Foreign IP addresses", "Rapid high-value purchases"],
+                correct: "Fake storefronts with drop-shipping",
+                explanation: "Triangulation fraud uses fake storefronts to collect card details, fulfilling orders via drop-shipping."
+            },
+            {
+                question: "What is a key feature of an adaptive fraud detection system?",
+                options: ["Static rule sets", "Learning from new data", "Manual alert reviews", "No data integration"],
+                correct: "Learning from new data",
+                explanation: "Adaptive systems learn from new data, improving detection accuracy as fraud tactics evolve."
+            },
+            {
+                question: "What is a common use of clustering in fraud detection?",
+                options: ["Encrypting card details", "Grouping similar transactions", "Processing chargebacks", "Verifying merchant accounts"],
+                correct: "Grouping similar transactions",
+                explanation: "Clustering groups similar transactions to identify outliers, signaling potential fraudulent activity."
+            },
+            {
+                question: "What is a transaction reversal code?",
+                options: ["A code for approved transactions", "A reason for transaction reversal", "A merchant discount rate", "An encryption key"],
+                correct: "A reason for transaction reversal",
+                explanation: "Reversal codes indicate why a transaction was reversed, aiding fraud and dispute investigations."
+            },
+            {
+                question: "What is a common fraud monitoring strategy?",
+                options: ["Ignore small transactions", "Continuous rule updates", "Static detection models", "Manual transaction reviews"],
+                correct: "Continuous rule updates",
+                explanation: "Continuous rule updates ensure detection systems adapt to evolving fraud tactics, maintaining effectiveness."
+            },
+            {
+                question: "What is the purpose of a fraud alert threshold?",
+                options: ["Encrypt transaction data", "Define risk trigger levels", "Process chargebacks", "Verify merchant accounts"],
+                correct: "Define risk trigger levels",
+                explanation: "Alert thresholds define risk levels (e.g., transaction amount) that trigger fraud alerts for investigation."
+            },
+            {
+                question: "What is a common fraudster tactic in social engineering?",
+                options: ["Using stolen cards at ATMs", "Impersonating bank staff", "Applying for local credit", "Paying utility bills"],
+                correct: "Impersonating bank staff",
+                explanation: "Social engineering often involves impersonating bank staff to trick customers into revealing card details."
+            },
+            {
+                question: "What is a key benefit of tokenization in fraud prevention?",
+                options: ["Encrypting card details", "Replacing card data with tokens", "Processing chargebacks", "Verifying merchant accounts"],
+                correct: "Replacing card data with tokens",
+                explanation: "Tokenization replaces card data with tokens, reducing the risk of data theft during transactions."
+            },
+            {
+                question: "What is a common fraud monitoring process?",
+                options: ["Customer satisfaction surveys", "Alert prioritization", "Merchant account creation", "Encryption audits"],
+                correct: "Alert prioritization",
+                explanation: "Alert prioritization ranks alerts by risk, ensuring high-priority cases are investigated promptly."
+            },
+            {
+                question: "What SQL clause sorts fraud transactions by date?",
+                options: ["WHERE", "GROUP BY", "ORDER BY", "HAVING"],
+                correct: "ORDER BY",
+                explanation: "ORDER BY in SQL sorts transactions by date, aiding in chronological fraud pattern analysis."
+            },
+            {
+                question: "What is a common fraud prevention technique for online banking?",
+                options: ["Disable login alerts", "Use secure session timeouts", "Ignore small transfers", "Manual account reviews"],
+                correct: "Use secure session timeouts",
+                explanation: "Secure session timeouts log users out after inactivity, reducing account takeover risks."
+            },
+            {
+                question: "What is the role of a fraud analyst in compliance?",
+                options: ["Encrypt transaction data", "Ensure regulatory adherence", "Develop new merchant accounts", "Process customer refunds"],
+                correct: "Ensure regulatory adherence",
+                explanation: "Fraud analysts ensure monitoring practices comply with regulations like PCI-DSS and GDPR."
+            },
+            {
+                question: "What is a common indicator of card testing fraud?",
+                options: ["Multiple small transactions", "Disputing legitimate purchases", "Foreign IP addresses", "Rapid high-value purchases"],
+                correct: "Multiple small transactions",
+                explanation: "Card testing fraud involves multiple small transactions to verify stolen card validity."
+            },
+            {
+                question: "What is a key feature of a fraud detection model?",
+                options: ["Static rule sets", "Predictive scoring", "Manual alert reviews", "No data integration"],
+                correct: "Predictive scoring",
+                explanation: "Predictive scoring assigns risk scores to transactions, enhancing fraud detection accuracy."
+            },
+            {
+                question: "What is a common use of neural networks in fraud detection?",
+                options: ["Encrypting card details", "Detecting complex patterns", "Processing chargebacks", "Verifying merchant accounts"],
+                correct: "Detecting complex patterns",
+                explanation: "Neural networks detect complex fraud patterns, improving accuracy in dynamic environments."
+            },
+            {
+                question: "What is a transaction verification code?",
+                options: ["A code for declined transactions", "A security check identifier", "A merchant discount rate", "An encryption key"],
+                correct: "A security check identifier",
+                explanation: "Verification codes confirm transaction security checks, used for fraud prevention and tracking."
+            },
+            {
+                question: "What is a common fraud monitoring objective?",
+                options: ["Maximize transaction delays", "Enhance detection accuracy", "Reduce customer interaction", "Ignore small transactions"],
+                correct: "Enhance detection accuracy",
+                explanation: "Enhancing detection accuracy ensures fraud is identified with minimal false positives."
+            },
+            {
+                question: "What is the purpose of a fraud incident report?",
+                options: ["Encrypt transaction data", "Document fraud cases", "Process chargebacks", "Verify merchant accounts"],
+                correct: "Document fraud cases",
+                explanation: "Fraud incident reports document cases for analysis, compliance, and future prevention."
+            },
+            {
+                question: "What is a common fraudster tactic in card cloning?",
+                options: ["Using stolen cards at ATMs", "Copying magnetic stripe data", "Applying for local credit", "Paying utility bills"],
+                correct: "Copying magnetic stripe data",
+                explanation: "Card cloning involves copying magnetic stripe data to create counterfeit cards for fraudulent use."
+            },
+            {
+                question: "What is a key benefit of multi-factor authentication in fraud prevention?",
+                options: ["Encrypting card details", "Adding verification layers", "Processing chargebacks", "Verifying merchant accounts"],
+                correct: "Adding verification layers",
+                explanation: "Multi-factor authentication adds verification layers (e.g., OTP, biometrics), reducing fraud risks."
+            },
+            {
+                question: "What is a common fraud monitoring technique?",
+                options: ["Customer satisfaction surveys", "Transaction pattern analysis", "Merchant account creation", "Encryption audits"],
+                correct: "Transaction pattern analysis",
+                explanation: "Transaction pattern analysis identifies deviations from normal behavior, flagging potential fraud."
+            }
         ];
 
         let currentQuestion = 0;
