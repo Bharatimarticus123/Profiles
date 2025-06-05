@@ -1,43 +1,4 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -46,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         body {
-            background: url('https://images.unsplash.com/photo-1616530940355-351fabd68c34?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80') no-repeat center center fixed;
+            background: url('https://images.unsplash.com/photo-1622469019749-50a4fdbc0da0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80') no-repeat center center fixed;
             background-size: cover;
             background-color: #1a1a1a;
             color: #ffffff;
@@ -59,15 +20,15 @@
             margin: auto;
             padding: 30px;
             background: rgba(0, 0, 0, 0.85);
-            border: 4px solid #ffcc00;
+            border: 4px solid #ffd700;
             border-radius: 10px;
-            box-shadow: 0 0 15px #ff0000, 0 0 30px #0000ff;
+            box-shadow: 0 0 15px #ff4500, 0 0 30px #00ff00;
         }
         h1 {
             text-align: center;
             font-size: 28px;
-            color: #ffcc00;
-            text-shadow: 2px 2px #ff0000, -2px -2px #0000ff;
+            color: #ffd700;
+            text-shadow: 2px 2px #ff4500, -2px -2px #00ff00;
             margin-bottom: 20px;
         }
         #quiz {
@@ -75,9 +36,9 @@
         }
         #question-number {
             font-size: 20px;
-            color: #00ccff;
+            color: #00b7eb;
             margin-bottom: 15px;
-            text-shadow: 1px 1px #ff0000;
+            text-shadow: 1px 1px #ff4500;
         }
         #question-text {
             font-size: 16px;
@@ -86,24 +47,26 @@
             line-height: 1.4;
         }
         .option {
-            margin: 60px 0; /* Further increased spacing between options for clear visibility */
+            margin: 2rem 0; /* User-friendly spacing between options */
+            padding: 0.5rem; /* Added padding for clarity */
             font-size: 14px;
-            color: #ffcc00;
+            color: #ffd700;
             background: rgba(0, 0, 0, 0.7);
-            padding: 10px;
             border-radius: 5px;
             transition: background 0.3s;
+            line-height: 1.6; /* Improved readability */
+            display: block; /* Ensures full-width options */
         }
         .option:hover {
-            background: rgba(255, 204, 0, 0.2);
+            background: rgba(255, 215, 0, 0.2);
         }
         input[type="radio"] {
             margin-right: 10px;
         }
         button {
-            background: linear-gradient(to bottom, #ff0000, #cc0000);
+            background: linear-gradient(to bottom, #ff4500, #d43d00);
             color: #ffffff;
-            border: 2px solid #ffcc00;
+            border: 2px solid #ffd700;
             padding: 12px 25px;
             cursor: pointer;
             font-family: 'Press Start 2P', cursive;
@@ -117,7 +80,7 @@
             cursor: not-allowed;
         }
         button:hover:not(:disabled) {
-            background: linear-gradient(to bottom, #ff3333, #ff0000);
+            background: linear-gradient(to bottom, #ff6347, #ff4500);
         }
         #feedback {
             margin-top: 20px;
@@ -131,8 +94,8 @@
         #result {
             text-align: center;
             font-size: 18px;
-            color: #ffcc00;
-            text-shadow: 1px 1px #ff0000;
+            color: #ffd700;
+            text-shadow: 1px 1px #ff4500;
         }
         #score, #pass-fail {
             font-size: 22px;
@@ -147,10 +110,10 @@
             <h2 id="question-number">Question <span id="question-count">1</span> of 100</h2>
             <p id="question-text"></p>
             <form id="quiz-form">
-                <label class="option"><input type="radio" name="option" value="a"> <span id="option-a"></span></label><br>
-                <label class="option"><input type="radio" name="option" value="b"> <span id="option-b"></span></label><br>
-                <label class="option"><input type="radio" name="option" value="c"> <span id="option-c"></span></label><br>
-                <label class="option"><input type="radio" name="option" value="d"> <span id="option-d"></span></label><br>
+                <label class="option"><input type="radio" name="option" value="a"> <span id="option-a"></span></label>
+                <label class="option"><input type="radio" name="option" value="b"> <span id="option-b"></span></label>
+                <label class="option"><input type="radio" name="option" value="c"> <span id="option-c"></span></label>
+                <label class="option"><input type="radio" name="option" value="d"> <span id="option-d"></span></label>
                 <button type="button" id="submit">Submit</button>
             </form>
             <div id="feedback"></div>
@@ -226,14 +189,15 @@
                 correct: "Multiple rapid transactions",
                 explanation: "Multiple rapid transactions in quick succession can indicate fraudulent activity, such as a fraudster testing a stolen card."
             },
-            // Additional 90 questions would be added here, sourced from provided documents and online research
+            // Placeholder for additional 90 questions, to be sourced from GS Question Bank 1.pdf, GS Question Bank 2.pdf, and online research
             // Example additional question:
             {
                 question: "What is the role of FATF in fraud monitoring?",
                 options: ["Sets anti-money laundering standards", "Develops fraud detection software", "Manages transaction databases", "Handles customer disputes"],
                 correct: "Sets anti-money laundering standards",
                 explanation: "FATF (Financial Action Task Force) sets global anti-money laundering standards, guiding fraud monitoring to detect suspicious flows and ensure compliance."
-            }
+            },
+            // Add 89 more questions here in the same format
         ];
 
         let currentQuestion = 0;
@@ -321,8 +285,8 @@
             document.getElementById("result").style.display = "block";
             document.getElementById("score").textContent = score;
             document.getElementById("pass-fail").textContent = score >= 60
-                ? "Congratulations! You passed! You're ready to fight fraud like a Street Fighter champion!"
-                : "Sorry, you did not pass. Train harder and try again to master the art of fraud detection!";
+                ? "Congratulations! You passed! You're a Super Star ready to save the Mushroom Kingdom!"
+                : "You didn't pass. Try again to collect more coins and master fraud detection!";
         }
 
         document.getElementById("submit").addEventListener("click", checkAnswer);
